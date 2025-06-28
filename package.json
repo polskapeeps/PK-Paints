@@ -1,0 +1,41 @@
+{
+  "name": "kf-megaglass",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "deploy:clean": "gh-pages-clean && npm run deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/polskapeeps/KF-MegaGlass.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/polskapeeps/KF-MegaGlass/issues"
+  },
+  "homepage": "https://www.kfmegaglass.com/",
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "esbuild": "^0.25.5",
+    "fdir": "^6.4.5",
+    "nanoid": "^3.3.11",
+    "picocolors": "^1.1.1",
+    "picomatch": "^4.0.2",
+    "postcss": "^8.5.4",
+    "rollup": "^4.41.1",
+    "source-map-js": "^1.2.1",
+    "tinyglobby": "^0.2.14"
+  }
+}

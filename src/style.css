@@ -207,7 +207,7 @@ body {
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80');
+  background-image: url('src/assets/panels.JPEG');
 }
 .hero-slide:nth-child(2) {
   background-image: url('https://images.unsplash.com/photo-1581090700227-3d5dbf6a4b1c?auto=format&fit=crop&w=1000&q=80');

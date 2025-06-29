@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add glass glow effect on scroll into view
         if (entry.target.classList.contains('service-card')) {
-          entry.target.style.boxShadow = '0 16px 48px rgba(59, 130, 246, 0.15)';
+          entry.target.style.boxShadow = '0 16px 48px rgba(255, 140, 0, 0.15)';
         }
       }
     });
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .forEach((card) => {
         card.addEventListener('mouseenter', () => {
           card.style.background = 'rgba(255, 255, 255, 0.1)';
-          card.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+          card.style.borderColor = 'rgba(255, 140, 0, 0.3)';
         });
 
         card.addEventListener('mouseleave', () => {
@@ -387,7 +387,7 @@ const initGalleryEnhancements = () => {
       // Add loading animation
       const loader = document.createElement('div');
       loader.innerHTML =
-        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto my-4"></div>';
+        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div>';
       loader.className = 'gallery-loader';
 
       const gallery = document.querySelector('.gallery-grid');

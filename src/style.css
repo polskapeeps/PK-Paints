@@ -207,19 +207,19 @@ body {
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('/assets/panels.JPEG');
+  background-image: url('/public/assets/panels.JPEG');
 }
 .hero-slide:nth-child(2) {
-  background-image: url('/assets/panels2.JPEG');
+  background-image: url('/public/assets/stain_door.JPEG');
 }
 .hero-slide:nth-child(3) {
-  background-image: url('/assets/exteriorJPEG');
+  background-image: url('/public/assets/exterior.JPEG');
 }
 .hero-slide:nth-child(4) {
-  background-image: url('/assets/dine.JPEG');
+  background-image: url('/public/assets/dine.JPEG');
 }
 .hero-slide:nth-child(5) {
-  background-image: url('/assets/dine2.JPEG');
+  background-image: url('/public/assets/dine2.JPEG');
 }
 /* Slideshow indicators (dots) with improved visibility */
 .slideshow-indicators {

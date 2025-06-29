@@ -387,7 +387,7 @@ const initGalleryEnhancements = () => {
       // Add loading animation
       const loader = document.createElement('div');
       loader.innerHTML =
-        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto my-4"></div>';
+        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div>';
       loader.className = 'gallery-loader';
 
       const gallery = document.querySelector('.gallery-grid');

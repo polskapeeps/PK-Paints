@@ -210,16 +210,16 @@ body {
   background-image: url('src/assets/panels.JPEG');
 }
 .hero-slide:nth-child(2) {
-  background-image: url('https://images.unsplash.com/photo-1581090700227-3d5dbf6a4b1c?auto=format&fit=crop&w=1000&q=80');
+  background-image: url('src/assets/panels2.JPEG');
 }
 .hero-slide:nth-child(3) {
-  background-image: url('https://images.unsplash.com/photo-1507668077129-56cfafe4bd54?auto=format&fit=crop&w=1000&q=80');
+  background-image: url('src/assets/exteriorJPEG');
 }
 .hero-slide:nth-child(4) {
-  background-image: url('https://images.unsplash.com/photo-1590608897129-79a9fe5ec97d?auto=format&fit=crop&w=1000&q=80');
+  background-image: url('src/assets/dine.JPEG');
 }
 .hero-slide:nth-child(5) {
-  background-image: url('https://images.unsplash.com/photo-1516035069371-29a1c5b3b8b8?auto=format&fit=crop&w=1000&q=80');
+  background-image: url('src/assets/dine2.JPEG');
 }
 /* Slideshow indicators (dots) with improved visibility */
 .slideshow-indicators {

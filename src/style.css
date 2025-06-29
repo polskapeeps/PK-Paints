@@ -183,17 +183,17 @@ body {
 
 .glass-card-hero h1 .gradient-text {
   text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(57, 132, 185, 0.9), 1px -1px 0px rgba(33, 12, 137, 0.9),
+    -1px -1px 0px rgba(255, 140, 0, 0.9), 1px -1px 0px rgba(255, 90, 0, 0.9),
     -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(59, 130, 246, 0.6) !important;
+    0 0 20px rgba(255, 140, 0, 0.6) !important;
 }
 .glass-card-hero p .gradient-text {
   /* Add custom text-shadow properties here if desired */
   /* For example, to give it a subtle glow similar to the h1, but perhaps less intense: */
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.195),
-    -1px -1px 0px rgba(57, 132, 185, 0.7), 1px -1px 0px rgba(33, 12, 137, 0.7),
+    -1px -1px 0px rgba(255, 140, 0, 0.7), 1px -1px 0px rgba(255, 90, 0, 0.7),
     -1px 1px 0px rgba(0, 0, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(59, 130, 246, 0.4) !important;
+    0 0 10px rgba(255, 140, 0, 0.4) !important;
 }
 
 /* Make the hero card background more refined */
@@ -257,9 +257,9 @@ body {
 }
 
 .glass-indicator.active {
-  background: rgba(59, 130, 246, 0.9) !important;
+  background: rgba(255, 140, 0, 0.9) !important;
   border-color: white !important;
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.8);
 }
 
 /* ==================== SERVICE PAGE HERO ==================== */
@@ -335,9 +335,9 @@ body {
 
 .service-hero .glass-card-hero h1 .gradient-text {
   text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(57, 132, 185, 0.9), 1px -1px 0px rgba(33, 12, 137, 0.9),
+    -1px -1px 0px rgba(255, 140, 0, 0.9), 1px -1px 0px rgba(255, 90, 0, 0.9),
     -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(59, 130, 246, 0.6) !important;
+    0 0 20px rgba(255, 140, 0, 0.6) !important;
 }
 
 /* Mobile optimization */
@@ -399,22 +399,22 @@ body {
 
 .service-card:hover {
   background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(255, 140, 0, 0.3) !important;
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 140, 0, 0.2) !important;
 }
 
 /* Make service icons more premium */
 .service-card .bg-gradient-to-br {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3),
+  background: linear-gradient(135deg, #ff7e00, #ff4500) !important;
+  box-shadow: 0 8px 25px rgba(255, 140, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   transition: all 0.3s ease;
 }
 
 .service-card:hover .bg-gradient-to-br {
   transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4),
+  box-shadow: 0 12px 35px rgba(255, 140, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
@@ -451,9 +451,9 @@ body {
 }
 
 .gallery-item:hover {
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: rgba(255, 140, 0, 0.3);
   transform: scale(1.03) rotate(0.5deg);
-  box-shadow: 0 25px 70px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 25px 70px rgba(255, 140, 0, 0.2);
 }
 
 /* On hover, make the overlay visible */
@@ -481,13 +481,13 @@ body {
 /* Contact icons - glass treatment */
 .contact-card .glass-card {
   background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  border: 1px solid rgba(255, 140, 0, 0.2) !important;
   transition: all 0.3s ease;
 }
 
 .contact-card .glass-card:hover {
-  background: rgba(59, 130, 246, 0.1) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
+  background: rgba(255, 140, 0, 0.1) !important;
+  border-color: rgba(255, 140, 0, 0.4) !important;
   transform: scale(1.05);
 }
 
@@ -505,7 +505,7 @@ footer {
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(135deg, #ff7e00, #ff4500);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -541,7 +541,7 @@ button {
 /* Focus states for accessibility */
 a:focus,
 button:focus {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid #ff7e00;
   outline-offset: 2px;
 }
 
@@ -560,23 +560,23 @@ button:focus {
 
 /* Enhanced shadow system */
 .shadow-glow {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
 }
 
 .shadow-glow-hover:hover {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.4);
 }
 
 /* Improve button visibility */
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #ff7e00, #ff4500) !important;
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
   text-shadow: none; /* Buttons don't need text shadow */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+  box-shadow: 0 6px 20px rgba(255, 140, 0, 0.6);
   transform: translateY(-2px);
 }
 
@@ -603,7 +603,7 @@ button:focus {
   height: 200px;
   background: linear-gradient(
     45deg,
-    rgba(59, 130, 246, 0.03),
+    rgba(255, 140, 0, 0.03),
     rgba(29, 78, 216, 0.03)
   );
   border-radius: 50%;
@@ -618,7 +618,7 @@ button:focus {
   background: linear-gradient(
     45deg,
     rgba(96, 165, 250, 0.03),
-    rgba(59, 130, 246, 0.03)
+    rgba(255, 140, 0, 0.03)
   );
 }
 

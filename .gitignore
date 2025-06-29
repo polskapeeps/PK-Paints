@@ -1,0 +1,9 @@
+.old/
+.test/
+*.old
+old.*
+.dev/
+og.*
+
+node_modules/
+dist/

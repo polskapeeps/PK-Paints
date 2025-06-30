@@ -1,5 +1,10 @@
 /* ==================== BASE STYLES ==================== */
 
+:root {
+  --logo-gradient-start: #b8860b;
+  --logo-gradient-end: #d4af37;
+}
+
 /* Base body styles */
 body {
   font-family: 'Inter', sans-serif; /* Ensure Inter font is primary */
@@ -406,7 +411,7 @@ body {
 
 /* Make service icons more premium */
 .service-card .bg-gradient-to-br {
-  background: linear-gradient(135deg, #d4af37, #b8860b) !important;
+  background: linear-gradient(135deg, var(--logo-gradient-end), var(--logo-gradient-start)) !important;
   box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   transition: all 0.3s ease;
@@ -505,7 +510,7 @@ footer {
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #d4af37, #b8860b);
+  background: linear-gradient(135deg, var(--logo-gradient-end), var(--logo-gradient-start));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -541,7 +546,7 @@ button {
 /* Focus states for accessibility */
 a:focus,
 button:focus {
-  outline: 2px solid #d4af37;
+  outline: 2px solid var(--logo-gradient-end);
   outline-offset: 2px;
 }
 
@@ -569,7 +574,7 @@ button:focus {
 
 /* Improve button visibility */
 .btn-primary {
-  background: linear-gradient(135deg, #d4af37, #b8860b) !important;
+  background: linear-gradient(135deg, var(--logo-gradient-end), var(--logo-gradient-start)) !important;
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
   text-shadow: none; /* Buttons don't need text shadow */
   border: 1px solid rgba(255, 255, 255, 0.2);

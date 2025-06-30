@@ -207,7 +207,7 @@ body {
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('assets/panels.png');
+  background-image: url('assets/painting_162.png');
 }
 .hero-slide:nth-child(2) {
   background-image: url('assets/stain_door.png');

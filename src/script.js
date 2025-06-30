@@ -479,33 +479,7 @@ const initGalleryEnhancements = () => {
 
 // Setup filtering and lightbox interactions
 const initGalleryUI = () => {
-  const filterButtons = document.querySelectorAll('.gallery-filter');
   const galleryItems = document.querySelectorAll('.gallery-item');
-  const categorySections = document.querySelectorAll('[data-category]');
-
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const filter = button.getAttribute('data-filter');
-
-      filterButtons.forEach((btn) => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      categorySections.forEach((section) => {
-        const category = section.getAttribute('data-category');
-        if (filter === 'all' || filter === category) {
-          section.style.display = 'block';
-          setTimeout(() => {
-            section.classList.add('visible');
-          }, 100);
-        } else {
-          section.classList.remove('visible');
-          setTimeout(() => {
-            section.style.display = 'none';
-          }, 300);
-        }
-      });
-    });
-  });
 
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
@@ -514,21 +488,12 @@ const initGalleryUI = () => {
   const lightboxNext = document.querySelector('.lightbox-next');
 
   let currentImageIndex = 0;
-  let visibleImages = [];
-
-  function updateVisibleImages() {
-    visibleImages = Array.from(
-      document.querySelectorAll('.gallery-item img')
-    ).filter((img) => {
-      return img.closest('[data-category]').style.display !== 'none';
-    });
-  }
 
   function openLightbox(index) {
-    updateVisibleImages();
     currentImageIndex = index;
-    lightboxImg.src = visibleImages[currentImageIndex].src;
-    lightboxImg.alt = visibleImages[currentImageIndex].alt;
+    const img = galleryItems[currentImageIndex].querySelector('img');
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -539,26 +504,23 @@ const initGalleryUI = () => {
   }
 
   function nextImage() {
-    updateVisibleImages();
-    currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
-    lightboxImg.src = visibleImages[currentImageIndex].src;
-    lightboxImg.alt = visibleImages[currentImageIndex].alt;
+    currentImageIndex = (currentImageIndex + 1) % galleryItems.length;
+    const img = galleryItems[currentImageIndex].querySelector('img');
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
   }
 
   function prevImage() {
-    updateVisibleImages();
     currentImageIndex =
-      (currentImageIndex - 1 + visibleImages.length) % visibleImages.length;
-    lightboxImg.src = visibleImages[currentImageIndex].src;
-    lightboxImg.alt = visibleImages[currentImageIndex].alt;
+      (currentImageIndex - 1 + galleryItems.length) % galleryItems.length;
+    const img = galleryItems[currentImageIndex].querySelector('img');
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
   }
 
-  galleryItems.forEach((item) => {
+  galleryItems.forEach((item, index) => {
     item.addEventListener('click', () => {
-      updateVisibleImages();
-      const img = item.querySelector('img');
-      const imageIndex = visibleImages.indexOf(img);
-      openLightbox(imageIndex);
+      openLightbox(index);
     });
   });
 
@@ -584,10 +546,6 @@ const initGalleryUI = () => {
     }
   });
 
-  categorySections.forEach((section) => {
-    section.classList.add('visible');
-  });
-
   const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px',
@@ -610,13 +568,11 @@ const initGalleryUI = () => {
 document.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname.includes('gallery')) {
     // 1. build the gallery grid
-    const grids = document.querySelectorAll('[data-category] .gallery-grid');
+    const grid = document.querySelector('.gallery-grid');
     const markup = buildGallery();
-    grids.forEach((grid) => {
-      const section = grid.closest('[data-category]');
-      const category = section ? section.getAttribute('data-category') : '';
-      grid.innerHTML = markup[category] || '';
-    });
+    if (grid) {
+      grid.innerHTML = markup;
+    }
 
     // 2. then wire up your enhancements
     initGalleryEnhancements();

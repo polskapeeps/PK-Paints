@@ -5,7 +5,8 @@
   "main": "script.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "generate:gallery": "node scripts/generate-gallery-json.js",
+    "build": "npm run generate:gallery && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",

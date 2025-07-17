@@ -2,7 +2,7 @@ import './style.css';
 import { buildGallery } from './gallery-builder.js';
 
 // Wait for the DOM to be fully loaded before running scripts
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Hero Slideshow Functionality
   const initHeroSlideshow = () => {
     const slides = document.querySelectorAll('.hero-slide');
@@ -565,11 +565,11 @@ const initGalleryUI = () => {
 };
 
 // Initialize gallery enhancements when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.includes('gallery')) {
     // 1. build the gallery grid
     const grid = document.querySelector('.gallery-grid');
-    const markup = buildGallery();
+    const markup = await buildGallery();
     if (grid) {
       grid.innerHTML = markup;
     }

@@ -796,3 +796,35 @@ button:focus {
 .mobile-contact-item:hover {
   color: rgba(255, 255, 255, 0.9);
 }
+
+/* FORCE GALLERY VISIBLE - DEBUG */
+.gallery-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  gap: 1.5rem !important;
+  padding: 2rem !important;
+  background: rgba(
+    255,
+    0,
+    0,
+    0.1
+  ) !important; /* Red background to see the grid */
+}
+
+.gallery-item {
+  display: block !important;
+  height: 300px !important;
+  background: rgba(0, 255, 0, 0.2) !important; /* Green background */
+  border: 2px solid yellow !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.gallery-item img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}

@@ -21,7 +21,7 @@ export async function buildGallery() {
   } else {
     // Fallback when not running through Vite
     try {
-      const res = await fetch('gallery.json');
+      const res = await fetch('./gallery.json');
       if (res.ok) {
         images = await res.json();
       }

@@ -1,5 +1,5 @@
 {
-  "name": "kf-megaglass",
+  "name": "PK-Paints",
   "version": "1.0.0",
   "description": "",
   "main": "script.js",
@@ -14,16 +14,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/polskapeeps/KF-MegaGlass.git"
+    "url": "git+https://github.com/polskapeeps/PK-Paints.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/polskapeeps/KF-MegaGlass/issues"
+    "url": "https://github.com/polskapeeps/PK-Paints/issues"
   },
-  "homepage": "https://www.kfmegaglass.com/",
+  "homepage": "https://www.pk-paints.com/",
   "devDependencies": {
     "gh-pages": "^6.3.0",
     "vite": "^6.3.5"

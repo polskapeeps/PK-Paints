@@ -4,7 +4,7 @@
 let imageModules = {};
 if (import.meta && typeof import.meta.glob === 'function') {
   imageModules = import.meta.glob(
-    '/src/assets/gallery/**/*.{jpg,jpeg,png,webp}',
+    './assets/gallery/**/*.{jpg,jpeg,png,webp}',
     {
       eager: true,
       as: 'url',

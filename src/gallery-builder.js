@@ -1,15 +1,22 @@
 // gallery-builder.js - Compile gallery images without categories.
 // Uses Vite's import.meta.glob to gather all images in src/assets/gallery.
 
+// Attempt to eagerly import gallery images via Vite's glob import.
+// When running without Vite (e.g. viewing the raw HTML files) this call
+// will throw, in which case we fall back to loading `gallery.json`.
 let imageModules = {};
-if (import.meta && typeof import.meta.glob === 'function') {
+try {
   imageModules = import.meta.glob(
     './assets/gallery/**/*.{jpg,jpeg,png,webp}',
     {
       eager: true,
-      as: 'url',
+      // `as: 'url'` was deprecated in Vite 5+, use `query` with `import`.
+      query: '?url',
+      import: 'default',
     }
   );
+} catch (_) {
+  imageModules = {};
 }
 
 export async function buildGallery() {

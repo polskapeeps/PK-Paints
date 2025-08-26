@@ -1,4 +1,3 @@
-import './style.css';
 import { buildGallery } from './gallery-builder.js';
 
 // Wait for the DOM to be fully loaded before running scripts

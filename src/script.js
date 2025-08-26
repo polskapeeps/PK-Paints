@@ -572,6 +572,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const markup = await buildGallery();
     if (grid) {
       grid.innerHTML = markup;
+      grid.classList.add('visible');
     }
 
     // 2. then wire up your enhancements

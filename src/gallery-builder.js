@@ -40,7 +40,7 @@ export async function buildGallery() {
   let markup = '';
   for (const imageUrl of images) {
     markup += `
-      <div class="gallery-item glass-card rounded-xl overflow-hidden">
+      <div class="gallery-item glass-card rounded-xl overflow-hidden fade-in">
         <img src="${imageUrl}" loading="lazy" alt="gallery image" onerror="this.parentElement.style.display='none'" />
       </div>
     `;

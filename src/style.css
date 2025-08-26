@@ -91,7 +91,7 @@ body {
 }
 
 /* Style for the mobile products dropdown arrow rotation */
-#mobile-products-button[aria-expanded='true'] svg {
+#mobile-services-button[aria-expanded='true'] svg {
   transform: rotate(180deg);
 }
 
@@ -278,21 +278,21 @@ body {
   overflow: hidden;
 }
 
-/* Shower enclosures specific background */
-.shower-hero {
-  background-image: url('/assets/gallery/panels.jpg');
+/* Interior painting specific background */
+.interior-hero {
+  background-image: url('/assets/dine.png');
 }
-/* Glass doors specific background */
-.doors-hero {
-  background-image: url('/assets/gallery/panels2.jpg');
+/* Exterior painting specific background */
+.exterior-hero {
+  background-image: url('/assets/exterior.png');
 }
-/* Partitions specific background */
-.partitions-hero {
-  background-image: url('/assets/gallery/partition_04.jpg');
+/* Carpentry specific background */
+.carpentry-hero {
+  background-image: url('/assets/stain_door.png');
 }
-/* Railings specific background */
-.railings-hero {
-  background-image: url('/assets/gallery/railing_14.jpg');
+/* Remodeling specific background */
+.remodeling-hero {
+  background-image: url('/assets/bunk_bed.png');
 }
 
 /* Dark overlay for text readability */
@@ -775,7 +775,7 @@ button:focus {
 }
 
 /* Mobile products submenu - clear glass */
-#mobile-products-menu {
+#mobile-services-menu {
   background: rgba(255, 255, 255, 0.03) !important;
 }
 .mobile-contact-compact {

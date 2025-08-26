@@ -71,50 +71,50 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
-  // Mobile products dropdown toggle
-  const mobileProductsButton = document.getElementById(
-    'mobile-products-button'
+  // Mobile services dropdown toggle
+  const mobileServicesButton = document.getElementById(
+    'mobile-services-button'
   );
-  const mobileProductsMenu = document.getElementById('mobile-products-menu');
-  const mobileProductsButtonSvg = mobileProductsButton
-    ? mobileProductsButton.querySelector('svg')
+  const mobileServicesMenu = document.getElementById('mobile-services-menu');
+  const mobileServicesButtonSvg = mobileServicesButton
+    ? mobileServicesButton.querySelector('svg')
     : null;
 
-  // Desktop products dropdown toggle (for aria attributes, actual visibility is CSS driven)
-  const desktopProductsButton = document.getElementById(
-    'desktop-products-button'
+  // Desktop services dropdown toggle (for aria attributes, actual visibility is CSS driven)
+  const desktopServicesButton = document.getElementById(
+    'desktop-services-button'
   );
-  const desktopProductsMenu = document.getElementById('desktop-products-menu');
+  const desktopServicesMenu = document.getElementById('desktop-services-menu');
 
   if (mobileMenuButton && mobileMenu) {
     mobileMenuButton.addEventListener('click', () => {
       const isExpanded = mobileMenu.classList.toggle('hidden');
       mobileMenuButton.setAttribute('aria-expanded', !isExpanded); // True if menu is NOT hidden (visible)
 
-      // If mobile menu is closed, also ensure product submenu is closed and its button aria is updated
+      // If mobile menu is closed, also ensure services submenu is closed and its button aria is updated
       if (
         isExpanded &&
-        mobileProductsMenu &&
-        !mobileProductsMenu.classList.contains('hidden')
+        mobileServicesMenu &&
+        !mobileServicesMenu.classList.contains('hidden')
       ) {
-        mobileProductsMenu.classList.add('hidden');
-        if (mobileProductsButton) {
-          mobileProductsButton.setAttribute('aria-expanded', 'false');
-          if (mobileProductsButtonSvg)
-            mobileProductsButtonSvg.style.transform = ''; // Reset arrow
+        mobileServicesMenu.classList.add('hidden');
+        if (mobileServicesButton) {
+          mobileServicesButton.setAttribute('aria-expanded', 'false');
+          if (mobileServicesButtonSvg)
+            mobileServicesButtonSvg.style.transform = ''; // Reset arrow
         }
       }
     });
   }
 
-  if (mobileProductsButton && mobileProductsMenu) {
-    mobileProductsButton.addEventListener('click', (e) => {
+  if (mobileServicesButton && mobileServicesMenu) {
+    mobileServicesButton.addEventListener('click', (e) => {
       e.preventDefault(); // Prevent page jump if it's an anchor
-      const isExpanded = mobileProductsMenu.classList.toggle('hidden');
-      mobileProductsButton.setAttribute('aria-expanded', !isExpanded); // True if menu is NOT hidden
-      if (mobileProductsButtonSvg) {
+      const isExpanded = mobileServicesMenu.classList.toggle('hidden');
+      mobileServicesButton.setAttribute('aria-expanded', !isExpanded); // True if menu is NOT hidden
+      if (mobileServicesButtonSvg) {
         // Rotate arrow icon
-        mobileProductsButtonSvg.style.transform = !isExpanded
+        mobileServicesButtonSvg.style.transform = !isExpanded
           ? 'rotate(180deg)'
           : '';
       }
@@ -122,44 +122,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Handle ARIA for desktop dropdown (visibility is CSS driven by :hover)
-  if (desktopProductsButton && desktopProductsMenu) {
-    const dropdownParent = desktopProductsButton.closest('.dropdown'); // Get the parent .dropdown element
+  if (desktopServicesButton && desktopServicesMenu) {
+    const dropdownParent = desktopServicesButton.closest('.dropdown'); // Get the parent .dropdown element
 
     if (dropdownParent) {
       dropdownParent.addEventListener('mouseenter', () => {
-        desktopProductsButton.setAttribute('aria-expanded', 'true');
+        desktopServicesButton.setAttribute('aria-expanded', 'true');
       });
 
       dropdownParent.addEventListener('mouseleave', () => {
-        desktopProductsButton.setAttribute('aria-expanded', 'false');
+        desktopServicesButton.setAttribute('aria-expanded', 'false');
       });
 
       // For keyboard accessibility
-      desktopProductsButton.addEventListener('focus', () => {
-        desktopProductsButton.setAttribute('aria-expanded', 'true');
+      desktopServicesButton.addEventListener('focus', () => {
+        desktopServicesButton.setAttribute('aria-expanded', 'true');
       });
 
       // Need to handle focusout carefully to not close when focusing on menu items
       const menuItems =
-        desktopProductsMenu.querySelectorAll('a[role="menuitem"]');
+        desktopServicesMenu.querySelectorAll('a[role="menuitem"]');
       const lastMenuItem = menuItems[menuItems.length - 1];
 
       if (lastMenuItem) {
         lastMenuItem.addEventListener('blur', (event) => {
           // If focus moves outside the dropdown menu, close it
           if (
-            !desktopProductsMenu.contains(event.relatedTarget) &&
-            event.relatedTarget !== desktopProductsButton
+            !desktopServicesMenu.contains(event.relatedTarget) &&
+            event.relatedTarget !== desktopServicesButton
           ) {
-            desktopProductsButton.setAttribute('aria-expanded', 'false');
+            desktopServicesButton.setAttribute('aria-expanded', 'false');
           }
         });
       }
       // Close dropdown if Escape key is pressed
       dropdownParent.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-          desktopProductsButton.setAttribute('aria-expanded', 'false');
-          desktopProductsButton.focus(); // Return focus to the button
+          desktopServicesButton.setAttribute('aria-expanded', 'false');
+          desktopServicesButton.focus(); // Return focus to the button
         }
       });
     }
@@ -195,14 +195,14 @@ document.addEventListener('DOMContentLoaded', async () => {
               mobileMenuButton.setAttribute('aria-expanded', 'false');
               // Also close product submenu if open
               if (
-                mobileProductsMenu &&
-                !mobileProductsMenu.classList.contains('hidden')
-              ) {
-                mobileProductsMenu.classList.add('hidden');
-                if (mobileProductsButton)
-                  mobileProductsButton.setAttribute('aria-expanded', 'false');
-                if (mobileProductsButtonSvg)
-                  mobileProductsButtonSvg.style.transform = '';
+        mobileServicesMenu &&
+        !mobileServicesMenu.classList.contains('hidden')
+      ) {
+        mobileServicesMenu.classList.add('hidden');
+        if (mobileServicesButton)
+          mobileServicesButton.setAttribute('aria-expanded', 'false');
+        if (mobileServicesButtonSvg)
+          mobileServicesButtonSvg.style.transform = '';
               }
             }
           } else {

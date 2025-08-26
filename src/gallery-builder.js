@@ -7,7 +7,8 @@ if (import.meta && typeof import.meta.glob === 'function') {
     './assets/gallery/**/*.{jpg,jpeg,png,webp}',
     {
       eager: true,
-      as: 'url',
+      query: '?url',
+      import: 'default',
     }
   );
 }
@@ -21,7 +22,11 @@ export async function buildGallery() {
   } else {
     // Fallback when not running through Vite
     try {
-      const res = await fetch('gallery.json');
+      let res = await fetch('gallery.json');
+      if (!res.ok) {
+        // When opening the HTML directly, the file lives under public/
+        res = await fetch('public/gallery.json');
+      }
       if (res.ok) {
         images = await res.json();
       }

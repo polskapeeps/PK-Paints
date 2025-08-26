@@ -10,7 +10,8 @@ function collectImages(dir) {
   for (const file of files) {
     const ext = path.extname(file).toLowerCase();
     if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
-      images.push('assets/gallery/' + file);
+      // Use the src/ path so the gallery works without a build step
+      images.push('src/assets/gallery/' + file);
     }
   }
   return images;

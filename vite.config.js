@@ -12,10 +12,10 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         gallery: resolve(__dirname, 'gallery.html'),
-        'glass-doors': resolve(__dirname, 'glass-doors.html'),
-        partitions: resolve(__dirname, 'partitions.html'),
-        railings: resolve(__dirname, 'railings.html'),
-        'shower-enclosures': resolve(__dirname, 'shower-enclosures.html'),
+        'exterior-painting': resolve(__dirname, 'exterior-painting.html'),
+        carpentry: resolve(__dirname, 'carpentry.html'),
+        remodeling: resolve(__dirname, 'remodeling.html'),
+        'interior-painting': resolve(__dirname, 'interior-painting.html'),
       },
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]',

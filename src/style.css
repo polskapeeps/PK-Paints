@@ -183,7 +183,7 @@ body {
 
 .glass-card-hero h1 .gradient-text {
   text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(57, 132, 185, 0.9), 1px -1px 0px rgba(33, 12, 137, 0.9),
+    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
     -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
     0 0 20px rgba(212, 175, 55, 0.6) !important;
 }
@@ -191,7 +191,7 @@ body {
   /* Add custom text-shadow properties here if desired */
   /* For example, to give it a subtle glow similar to the h1, but perhaps less intense: */
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.195),
-    -1px -1px 0px rgba(57, 132, 185, 0.7), 1px -1px 0px rgba(33, 12, 137, 0.7),
+    -1px -1px 0px rgba(200, 161, 72, 0.7), 1px -1px 0px rgba(79, 50, 8, 0.7),
     -1px 1px 0px rgba(0, 0, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.6),
     0 0 10px rgba(212, 175, 55, 0.4) !important;
 }
@@ -335,7 +335,7 @@ body {
 
 .service-hero .glass-card-hero h1 .gradient-text {
   text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(57, 132, 185, 0.9), 1px -1px 0px rgba(33, 12, 137, 0.9),
+    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
     -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
     0 0 20px rgba(212, 175, 55, 0.6) !important;
 }
@@ -509,6 +509,17 @@ footer {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Gradient button matching logo colors */
+.btn-gold {
+  background: linear-gradient(135deg, #c8a148, #4f3208);
+  color: #fff;
+}
+
+.btn-gold:hover {
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(212, 175, 55, 0.2);
 }
 
 /* Floating animation for CTA button */

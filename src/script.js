@@ -384,6 +384,9 @@ const initGalleryEnhancements = () => {
 
   categoryFilters.forEach((filter) => {
     filter.addEventListener('click', () => {
+      categoryFilters.forEach((f) => f.classList.remove('active'));
+      filter.classList.add('active');
+
       // Add loading animation
       const loader = document.createElement('div');
       loader.innerHTML =
@@ -403,6 +406,8 @@ const initGalleryEnhancements = () => {
       }
     });
   });
+
+  if (categoryFilters[0]) categoryFilters[0].classList.add('active');
 
   // Keyboard navigation for lightbox
   let touchStartX = 0;
@@ -580,7 +585,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       nav.innerHTML = categories
         .map((cat) => {
           const slug = cat.toLowerCase().replace(/\s+/g, '-');
-          return `<a href="#${slug}" class="gallery-filter px-4 py-2 rounded-md text-sm text-gray-200">${cat}</a>`;
+          return `<a href="#${slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${cat}</a>`;
         })
         .join('');
     }

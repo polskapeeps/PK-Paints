@@ -569,10 +569,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.includes('gallery')) {
     // 1. build the gallery grid
     const grid = document.querySelector('.gallery-grid');
-    const markup = await buildGallery();
+    const nav = document.querySelector('.gallery-nav');
+    const { markup, categories } = await buildGallery();
     if (grid) {
       grid.innerHTML = markup;
       grid.classList.add('visible');
+    }
+
+    if (nav) {
+      nav.innerHTML = categories
+        .map((cat) => {
+          const slug = cat.toLowerCase().replace(/\s+/g, '-');
+          return `<a href="#${slug}" class="gallery-filter px-4 py-2 rounded-md text-sm text-gray-200">${cat}</a>`;
+        })
+        .join('');
     }
 
     // 2. then wire up your enhancements

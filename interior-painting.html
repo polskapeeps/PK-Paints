@@ -178,9 +178,25 @@
   </header>
 
   <main class="relative z-10">
-    <!-- Service Hero Section -->
-    <section class="service-hero interior-hero text-white"
-      style="background-image: url('src/assets/gallery/painting_176.jpeg');">
+    <!-- Service Hero Section with Slideshow -->
+    <section class="hero-bg service-hero text-white">
+      <div class="hero-slideshow">
+        <div class="hero-slide active" style="background-image: url('src/assets/gallery/painting_176.jpeg');"></div>
+        <div class="hero-slide" style="background-image: url('src/assets/gallery/Interior Painting/interior_0001.jpeg');"></div>
+        <div class="hero-slide" style="background-image: url('src/assets/gallery/Interior Painting/interior_0034.jpeg');"></div>
+        <div class="hero-slide" style="background-image: url('src/assets/gallery/Interior Painting/interior_0067.jpeg');"></div>
+        <div class="hero-slide" style="background-image: url('src/assets/gallery/Interior Painting/interior_0100.jpeg');"></div>
+      </div>
+
+      <!-- Slideshow indicators -->
+      <div class="slideshow-indicators">
+        <div class="indicator glass-indicator active" data-slide="0"></div>
+        <div class="indicator glass-indicator" data-slide="1"></div>
+        <div class="indicator glass-indicator" data-slide="2"></div>
+        <div class="indicator glass-indicator" data-slide="3"></div>
+        <div class="indicator glass-indicator" data-slide="4"></div>
+      </div>
+
       <div class="service-hero-content">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div class="glass-card-hero rounded-3xl p-12 max-w-4xl mx-auto">
@@ -248,9 +264,8 @@
           </div>
           <div>
             <div class="gallery-item float-2">
-              <img src="assets/dine.png" alt="Interior painting project"
-                class="rounded-2xl shadow-2xl w-full h-auto object-cover"
-                onerror="this.src='https://images.unsplash.com/photo-1507668077129-56a5b31c7a33?auto=format&fit=crop&w=1000&q=80';" />
+              <img src="src/assets/gallery/Interior Painting/interior_0133.jpeg" alt="Interior painting project"
+                class="rounded-2xl shadow-2xl w-full h-auto object-cover" />
             </div>
           </div>
         </div>

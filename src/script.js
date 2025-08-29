@@ -489,19 +489,25 @@ const initGalleryUI = () => {
 
   let currentImageIndex = 0;
 
-  function openLightbox(index) {
-    currentImageIndex = index;
-    const img = galleryItems[currentImageIndex].querySelector('img');
-    lightboxImg.src = img.src;
-    lightboxImg.alt = img.alt;
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
+    function openLightbox(index) {
+      currentImageIndex = index;
+      const img = galleryItems[currentImageIndex].querySelector('img');
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      if (lightbox.requestFullscreen) {
+        lightbox.requestFullscreen().catch(() => {});
+      }
+    }
 
-  function closeLightbox() {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = 'auto';
-  }
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
 
   function nextImage() {
     currentImageIndex = (currentImageIndex + 1) % galleryItems.length;

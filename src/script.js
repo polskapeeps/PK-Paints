@@ -382,32 +382,45 @@ const initGalleryEnhancements = () => {
   // Smooth category transitions
   const categoryFilters = document.querySelectorAll('.gallery-filter');
 
+  const filterGallery = (slug) => {
+    const sections = document.querySelectorAll('.gallery-grid > section');
+    sections.forEach((section) => {
+      if (slug === 'all' || section.dataset.category === slug) {
+        section.classList.remove('hidden');
+      } else {
+        section.classList.add('hidden');
+      }
+    });
+  };
+
   categoryFilters.forEach((filter) => {
     filter.addEventListener('click', () => {
       categoryFilters.forEach((f) => f.classList.remove('active'));
       filter.classList.add('active');
 
-      // Add loading animation
+      const gallery = document.querySelector('.gallery-grid');
       const loader = document.createElement('div');
       loader.innerHTML =
         '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div>';
       loader.className = 'gallery-loader';
-
-      const gallery = document.querySelector('.gallery-grid');
       if (gallery) {
         gallery.appendChild(loader);
-
-        // Remove loader after transition
-        setTimeout(() => {
-          if (loader.parentNode) {
-            loader.remove();
-          }
-        }, 600);
       }
+
+      filterGallery(filter.dataset.filter);
+
+      setTimeout(() => {
+        if (loader.parentNode) {
+          loader.remove();
+        }
+      }, 600);
     });
   });
 
-  if (categoryFilters[0]) categoryFilters[0].classList.add('active');
+  if (categoryFilters[0]) {
+    categoryFilters[0].classList.add('active');
+    filterGallery(categoryFilters[0].dataset.filter);
+  }
 
   // Keyboard navigation for lightbox
   let touchStartX = 0;
@@ -484,7 +497,15 @@ const initGalleryEnhancements = () => {
 
 // Setup filtering and lightbox interactions
 const initGalleryUI = () => {
-  const galleryItems = document.querySelectorAll('.gallery-item');
+  let galleryItems = Array.from(
+    document.querySelectorAll('.gallery-grid > section:not(.hidden) .gallery-item')
+  );
+  const getGalleryItems = () =>
+    Array.from(
+      document.querySelectorAll(
+        '.gallery-grid > section:not(.hidden) .gallery-item'
+      )
+    );
 
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
@@ -495,6 +516,7 @@ const initGalleryUI = () => {
   let currentImageIndex = 0;
 
   function openLightbox(index) {
+    galleryItems = getGalleryItems();
     currentImageIndex = index;
     const img = galleryItems[currentImageIndex].querySelector('img');
     lightboxImg.src = img.src;
@@ -509,6 +531,7 @@ const initGalleryUI = () => {
   }
 
   function nextImage() {
+    galleryItems = getGalleryItems();
     currentImageIndex = (currentImageIndex + 1) % galleryItems.length;
     const img = galleryItems[currentImageIndex].querySelector('img');
     lightboxImg.src = img.src;
@@ -516,6 +539,7 @@ const initGalleryUI = () => {
   }
 
   function prevImage() {
+    galleryItems = getGalleryItems();
     currentImageIndex =
       (currentImageIndex - 1 + galleryItems.length) % galleryItems.length;
     const img = galleryItems[currentImageIndex].querySelector('img');
@@ -523,8 +547,10 @@ const initGalleryUI = () => {
     lightboxImg.alt = img.alt;
   }
 
-  galleryItems.forEach((item, index) => {
+  galleryItems.forEach((item) => {
     item.addEventListener('click', () => {
+      const items = getGalleryItems();
+      const index = items.indexOf(item);
       openLightbox(index);
     });
   });
@@ -582,10 +608,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (nav) {
-      nav.innerHTML = categories
+      const filters = ['All', ...categories];
+      nav.innerHTML = filters
         .map((cat) => {
-          const slug = cat.toLowerCase().replace(/\s+/g, '-');
-          return `<a href="#${slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${cat}</a>`;
+          const slug =
+            cat === 'All' ? 'all' : cat.toLowerCase().replace(/\s+/g, '-');
+          return `<button type="button" data-filter="${slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${cat}</button>`;
         })
         .join('');
     }

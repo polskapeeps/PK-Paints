@@ -142,17 +142,12 @@
       border-color: rgba(59, 130, 246, 0.3);
     }
 
+    /* Container for all gallery categories. Previously this element
+       was a grid, which caused each category section to be compressed
+       into narrow columns. Removing the grid layout ensures each
+       category spans the full width for larger, seamless image tiles. */
     .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    @media (max-width: 640px) {
-      .gallery-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1rem;
-      }
+      display: block;
     }
 
     .gallery-item {

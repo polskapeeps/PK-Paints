@@ -58,11 +58,11 @@ export async function buildGallery() {
     markup += `
       <section id="${slug}" data-category="${slug}" class="mb-12">
         <h2 class="text-3xl font-semibold text-white mb-6 capitalize">${category}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
     `;
     for (const imageUrl of imagesByCategory[category]) {
       markup += `
-          <div class="gallery-item overflow-hidden fade-in">
+          <div class="gallery-item glass-card rounded-xl overflow-hidden fade-in">
             <img src="${imageUrl}" loading="lazy" alt="${category} image" onerror="this.parentElement.style.display='none'" />
           </div>
       `;

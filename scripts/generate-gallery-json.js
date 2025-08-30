@@ -5,20 +5,21 @@ const galleryDir = path.join(__dirname, '..', 'src', 'assets', 'gallery');
 const outputPath = path.join(__dirname, '..', 'public', 'gallery.json');
 
 function collectImagesByCategory(dir) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const entries = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   const categories = {};
   for (const entry of entries) {
-    if (entry.isDirectory()) {
-      const category = entry.name;
-      const files = fs.readdirSync(path.join(dir, category));
-      const images = [];
-      for (const file of files) {
-        const ext = path.extname(file).toLowerCase();
-        if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
-          images.push(`src/assets/gallery/${category}/${file}`);
-        }
-      }
-      if (images.length > 0) categories[category] = images;
+    const category = entry.name;
+    const files = fs
+      .readdirSync(path.join(dir, category))
+      .filter((file) => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(file).toLowerCase()))
+      .sort();
+
+    if (files.length > 0) {
+      categories[category] = files.map((file) => `src/assets/gallery/${category}/${file}`);
     }
   }
   return categories;

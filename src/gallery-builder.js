@@ -20,8 +20,9 @@ try {
 }
 
 export async function buildGallery() {
-  // Collect images keyed by their first-level folder name
-  let imagesByCategory = {};
+  // Collect images keyed by category slug
+  const imagesByCategory = {};
+  const categoriesSet = new Set();
 
   if (Object.keys(imageModules).length > 0) {
     for (const path in imageModules) {
@@ -32,18 +33,25 @@ export async function buildGallery() {
       if (fileName.startsWith('painting_')) continue;
 
       const galleryIdx = parts.indexOf('gallery');
-      const category = parts[galleryIdx + 1];
-      if (!category || category.startsWith('painting_')) continue;
+      const categoryName = parts[galleryIdx + 1];
+      if (!categoryName || categoryName.startsWith('painting_')) continue;
 
-      if (!imagesByCategory[category]) imagesByCategory[category] = [];
-      imagesByCategory[category].push(url);
+      const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
+      categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
+      if (!imagesByCategory[slug]) imagesByCategory[slug] = [];
+      imagesByCategory[slug].push(url);
     }
   } else {
     // Fallback when not running through Vite
     try {
       const res = await fetch('gallery.json');
       if (res.ok) {
-        imagesByCategory = await res.json();
+        const data = await res.json();
+        for (const categoryName in data) {
+          const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
+          categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
+          imagesByCategory[slug] = data[categoryName];
+        }
       }
     } catch (err) {
       console.error('Failed to load gallery.json', err);
@@ -51,32 +59,13 @@ export async function buildGallery() {
   }
 
   // Sort image URLs within each category to ensure predictable ordering
-  for (const category in imagesByCategory) {
-    imagesByCategory[category].sort((a, b) => a.localeCompare(b));
+  for (const slug in imagesByCategory) {
+    imagesByCategory[slug].sort((a, b) => a.localeCompare(b));
   }
 
-  const categories = Object.keys(imagesByCategory).sort();
+  const categories = Array.from(categoriesSet)
+    .map((c) => JSON.parse(c))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  let markup = '';
-  for (const category of categories) {
-    const slug = category.toLowerCase().replace(/\s+/g, '-');
-    markup += `
-      <section id="${slug}" data-category="${slug}" class="mb-12">
-        <h2 class="text-3xl font-semibold text-white mb-6 capitalize">${category}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
-    `;
-    for (const imageUrl of imagesByCategory[category]) {
-      markup += `
-          <div class="gallery-item overflow-hidden fade-in">
-            <img src="${imageUrl}" loading="lazy" alt="${category} image" onerror="this.parentElement.style.display='none'" />
-          </div>
-      `;
-    }
-    markup += `
-        </div>
-      </section>
-    `;
-  }
-
-  return { markup, categories };
+  return { categories, imagesByCategory };
 }

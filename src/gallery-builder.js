@@ -50,6 +50,11 @@ export async function buildGallery() {
     }
   }
 
+  // Sort image URLs within each category to ensure predictable ordering
+  for (const category in imagesByCategory) {
+    imagesByCategory[category].sort((a, b) => a.localeCompare(b));
+  }
+
   const categories = Object.keys(imagesByCategory).sort();
 
   let markup = '';

@@ -55,28 +55,16 @@ export async function buildGallery() {
     imagesByCategory[category].sort((a, b) => a.localeCompare(b));
   }
 
-  const categories = Object.keys(imagesByCategory).sort();
+  const sorted = Object.keys(imagesByCategory).sort();
+  const categories = sorted.map((name) => ({
+    name,
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+  }));
 
-  let markup = '';
-  for (const category of categories) {
-    const slug = category.toLowerCase().replace(/\s+/g, '-');
-    markup += `
-      <section id="${slug}" data-category="${slug}" class="mb-12">
-        <h2 class="text-3xl font-semibold text-white mb-6 capitalize">${category}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
-    `;
-    for (const imageUrl of imagesByCategory[category]) {
-      markup += `
-          <div class="gallery-item overflow-hidden fade-in">
-            <img src="${imageUrl}" loading="lazy" alt="${category} image" onerror="this.parentElement.style.display='none'" />
-          </div>
-      `;
-    }
-    markup += `
-        </div>
-      </section>
-    `;
+  const images = {};
+  for (const { name, slug } of categories) {
+    images[slug] = imagesByCategory[name];
   }
 
-  return { markup, categories };
+  return { categories, images };
 }

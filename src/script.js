@@ -329,42 +329,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Enhanced Gallery Functionality
 const initGalleryEnhancements = () => {
-  // Lazy loading for gallery images
-  const galleryImages = document.querySelectorAll('.gallery-item img');
-
-  const imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        if (img.dataset.src) {
-          img.src = img.dataset.src;
-          img.removeAttribute('data-src');
-        }
-        imageObserver.unobserve(img);
-      }
-    });
-  });
-
-  galleryImages.forEach((img) => {
-    imageObserver.observe(img);
-  });
-
-  // Preload critical gallery images
-  const preloadImages = [
-    'assets/gallery/showers_35.jpg',
-    'assets/gallery/shower-2.jpg',
-    'assets/gallery/doors_03.jpg',
-    'assets/gallery/railing_04.jpg',
-  ];
-
-  preloadImages.forEach((src) => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = src;
-    document.head.appendChild(link);
-  });
-
   // Gallery item hover effects
   const galleryItems = document.querySelectorAll('.gallery-item');
 
@@ -379,54 +343,9 @@ const initGalleryEnhancements = () => {
     });
   });
 
-  // Smooth category transitions
-  const categoryFilters = document.querySelectorAll('.gallery-filter');
-
-  const filterGallery = (slug) => {
-    const sections = document.querySelectorAll('.gallery-grid > section');
-    sections.forEach((section) => {
-      if (slug === 'all' || section.dataset.category === slug) {
-        section.classList.remove('hidden');
-      } else {
-        section.classList.add('hidden');
-      }
-    });
-  };
-
-  categoryFilters.forEach((filter) => {
-    filter.addEventListener('click', () => {
-      categoryFilters.forEach((f) => f.classList.remove('active'));
-      filter.classList.add('active');
-
-      const gallery = document.querySelector('.gallery-grid');
-      const loader = document.createElement('div');
-      loader.innerHTML =
-        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div>';
-      loader.className = 'gallery-loader';
-      if (gallery) {
-        gallery.appendChild(loader);
-      }
-
-      filterGallery(filter.dataset.filter);
-
-      setTimeout(() => {
-        if (loader.parentNode) {
-          loader.remove();
-        }
-      }, 600);
-    });
-  });
-
-  if (categoryFilters[0]) {
-    categoryFilters[0].classList.add('active');
-    filterGallery(categoryFilters[0].dataset.filter);
-  }
-
-  // Keyboard navigation for lightbox
+  // Touch gestures for mobile lightbox navigation
   let touchStartX = 0;
   let touchEndX = 0;
-
-  // Touch gestures for mobile lightbox navigation
   const lightbox = document.getElementById('lightbox');
   if (lightbox) {
     lightbox.addEventListener('touchstart', (e) => {
@@ -441,71 +360,40 @@ const initGalleryEnhancements = () => {
     function handleGesture() {
       const swipeThreshold = 100;
       if (touchEndX < touchStartX - swipeThreshold) {
-        // Swipe left - next image
         const nextBtn = document.querySelector('.lightbox-next');
         if (nextBtn) nextBtn.click();
       }
 
       if (touchEndX > touchStartX + swipeThreshold) {
-        // Swipe right - previous image
         const prevBtn = document.querySelector('.lightbox-prev');
         if (prevBtn) prevBtn.click();
       }
     }
   }
 
-  // Gallery statistics counter
-  const updateGalleryStats = () => {
-    const totalImages = document.querySelectorAll('.gallery-item').length;
-    const categoryStats = {};
-
-    document.querySelectorAll('[data-category]').forEach((section) => {
-      const category = section.getAttribute('data-category');
-      const count = section.querySelectorAll('.gallery-item').length;
-      categoryStats[category] = count;
-    });
-
-    // You can display these stats somewhere if needed
-    console.log('Gallery Stats:', { total: totalImages, ...categoryStats });
-  };
-
-  updateGalleryStats();
-
-  // Performance optimization for large galleries
-  const optimizeForPerformance = () => {
-    // Reduce motion for users who prefer it
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    );
-
-    if (prefersReducedMotion.matches) {
-      const style = document.createElement('style');
-      style.textContent = `
-        .gallery-item,
-        .gallery-filter,
-        .lightbox-content {
-          transition: none !important;
-          animation: none !important;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-  };
-
-  optimizeForPerformance();
+  // Reduce motion for users who prefer it
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (prefersReducedMotion.matches) {
+    const style = document.createElement('style');
+    style.textContent = `
+      .gallery-item,
+      .gallery-filter,
+      .lightbox-content {
+        transition: none !important;
+        animation: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 };
 
 // Setup filtering and lightbox interactions
 const initGalleryUI = () => {
   let galleryItems = Array.from(
-    document.querySelectorAll('.gallery-grid > section:not(.hidden) .gallery-item')
+    document.querySelectorAll('.gallery-grid .gallery-item')
   );
   const getGalleryItems = () =>
-    Array.from(
-      document.querySelectorAll(
-        '.gallery-grid > section:not(.hidden) .gallery-item'
-      )
-    );
+    Array.from(document.querySelectorAll('.gallery-grid .gallery-item'));
 
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
@@ -598,29 +486,53 @@ const initGalleryUI = () => {
 // Initialize gallery enhancements when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.includes('gallery')) {
-    // 1. build the gallery grid
     const grid = document.querySelector('.gallery-grid');
     const nav = document.querySelector('.gallery-nav');
-    const { markup, categories } = await buildGallery();
-    if (grid) {
-      grid.innerHTML = markup;
+    const { categories, images } = await buildGallery();
+
+    const renderCategory = (slug) => {
+      if (!grid) return;
+      grid.innerHTML =
+        '<div class="gallery-loader"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div></div>';
+      const imgs = images[slug] || [];
+      grid.innerHTML = imgs
+        .map(
+          (url) => `
+          <div class="gallery-item overflow-hidden fade-in">
+            <img src="${url}" loading="lazy" alt="${slug} image" onerror="this.parentElement.style.display='none'" />
+          </div>
+        `
+        )
+        .join('');
       grid.classList.add('visible');
-    }
+      initGalleryEnhancements();
+      initGalleryUI();
+    };
 
     if (nav) {
-      const filters = ['All', ...categories];
-      nav.innerHTML = filters
-        .map((cat) => {
-          const slug =
-            cat === 'All' ? 'all' : cat.toLowerCase().replace(/\s+/g, '-');
-          return `<button type="button" data-filter="${slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${cat}</button>`;
-        })
+      nav.innerHTML = categories
+        .map(
+          ({ name, slug }) =>
+            `<button type="button" data-filter="${slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${name}</button>`
+        )
         .join('');
-    }
 
-    // 2. then wire up your enhancements
-    initGalleryEnhancements();
-    initGalleryUI();
+      nav.querySelectorAll('.gallery-filter').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          nav
+            .querySelectorAll('.gallery-filter')
+            .forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderCategory(btn.dataset.filter);
+        });
+      });
+
+      const first = nav.querySelector('.gallery-filter');
+      if (first) {
+        first.classList.add('active');
+        renderCategory(first.dataset.filter);
+      }
+    }
   }
 });
 

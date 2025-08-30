@@ -184,6 +184,23 @@
       opacity: 1;
     }
 
+    @media (max-width: 640px) {
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+
+      .gallery-item {
+        aspect-ratio: auto;
+      }
+
+      .gallery-item img {
+        object-fit: contain;
+        height: auto;
+      }
+    }
+
     .category-header {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.1));
       backdrop-filter: blur(15px);

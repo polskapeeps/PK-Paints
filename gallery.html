@@ -142,12 +142,23 @@
       border-color: rgba(59, 130, 246, 0.3);
     }
 
-    /* Container for all gallery categories. Previously this element
-       was a grid, which caused each category section to be compressed
-       into narrow columns. Removing the grid layout ensures each
-       category spans the full width for larger, seamless image tiles. */
+    /* Responsive gallery grid showing multiple columns on desktop */
     .gallery-grid {
-      display: block;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
     .gallery-item {
@@ -186,8 +197,6 @@
 
     @media (max-width: 640px) {
       .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
       }
 

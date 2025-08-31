@@ -1,6 +1,8 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
 
+let lightboxInitialized = false;
+
 // Wait for the DOM to be fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', async () => {
   // Hero Slideshow Functionality
@@ -379,98 +381,6 @@ const initGalleryEnhancements = () => {
     });
   });
 
-  // Smooth category transitions
-  const categoryFilters = document.querySelectorAll('.gallery-filter');
-
-  const filterGallery = (slug) => {
-    const sections = document.querySelectorAll('.gallery-grid > section');
-    sections.forEach((section) => {
-      if (slug === 'all' || section.dataset.category === slug) {
-        section.classList.remove('hidden');
-      } else {
-        section.classList.add('hidden');
-      }
-    });
-  };
-
-  categoryFilters.forEach((filter) => {
-    filter.addEventListener('click', () => {
-      categoryFilters.forEach((f) => f.classList.remove('active'));
-      filter.classList.add('active');
-
-      const gallery = document.querySelector('.gallery-grid');
-      const loader = document.createElement('div');
-      loader.innerHTML =
-        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div>';
-      loader.className = 'gallery-loader';
-      if (gallery) {
-        gallery.appendChild(loader);
-      }
-
-      filterGallery(filter.dataset.filter);
-
-      setTimeout(() => {
-        if (loader.parentNode) {
-          loader.remove();
-        }
-      }, 600);
-    });
-  });
-
-  if (categoryFilters[0]) {
-    categoryFilters[0].classList.add('active');
-    filterGallery(categoryFilters[0].dataset.filter);
-  }
-
-  // Keyboard navigation for lightbox
-  let touchStartX = 0;
-  let touchEndX = 0;
-
-  // Touch gestures for mobile lightbox navigation
-  const lightbox = document.getElementById('lightbox');
-  if (lightbox) {
-    lightbox.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-
-    lightbox.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleGesture();
-    });
-
-    function handleGesture() {
-      const swipeThreshold = 100;
-      if (touchEndX < touchStartX - swipeThreshold) {
-        // Swipe left - next image
-        const nextBtn = document.querySelector('.lightbox-next');
-        if (nextBtn) nextBtn.click();
-      }
-
-      if (touchEndX > touchStartX + swipeThreshold) {
-        // Swipe right - previous image
-        const prevBtn = document.querySelector('.lightbox-prev');
-        if (prevBtn) prevBtn.click();
-      }
-    }
-  }
-
-  // Gallery statistics counter
-  const updateGalleryStats = () => {
-    const totalImages = document.querySelectorAll('.gallery-item').length;
-    const categoryStats = {};
-
-    document.querySelectorAll('[data-category]').forEach((section) => {
-      const category = section.getAttribute('data-category');
-      const count = section.querySelectorAll('.gallery-item').length;
-      categoryStats[category] = count;
-    });
-
-    // You can display these stats somewhere if needed
-    console.log('Gallery Stats:', { total: totalImages, ...categoryStats });
-  };
-
-  updateGalleryStats();
-
   // Performance optimization for large galleries
   const optimizeForPerformance = () => {
     // Reduce motion for users who prefer it
@@ -498,14 +408,10 @@ const initGalleryEnhancements = () => {
 // Setup filtering and lightbox interactions
 const initGalleryUI = () => {
   let galleryItems = Array.from(
-    document.querySelectorAll('.gallery-grid > section:not(.hidden) .gallery-item')
+    document.querySelectorAll('.gallery-grid .gallery-item')
   );
   const getGalleryItems = () =>
-    Array.from(
-      document.querySelectorAll(
-        '.gallery-grid > section:not(.hidden) .gallery-item'
-      )
-    );
+    Array.from(document.querySelectorAll('.gallery-grid .gallery-item'));
 
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
@@ -555,27 +461,56 @@ const initGalleryUI = () => {
     });
   });
 
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxNext.addEventListener('click', nextImage);
-  lightboxPrev.addEventListener('click', prevImage);
+  if (!lightboxInitialized) {
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxNext.addEventListener('click', nextImage);
+    lightboxPrev.addEventListener('click', prevImage);
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-      closeLightbox();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (lightbox.classList.contains('active')) {
-      if (e.key === 'Escape') {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
         closeLightbox();
-      } else if (e.key === 'ArrowRight') {
-        nextImage();
-      } else if (e.key === 'ArrowLeft') {
-        prevImage();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('active')) {
+        if (e.key === 'Escape') {
+          closeLightbox();
+        } else if (e.key === 'ArrowRight') {
+          nextImage();
+        } else if (e.key === 'ArrowLeft') {
+          prevImage();
+        }
+      }
+    });
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    lightbox.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    lightbox.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleGesture();
+    });
+
+    function handleGesture() {
+      const swipeThreshold = 100;
+      if (touchEndX < touchStartX - swipeThreshold) {
+        const nextBtn = document.querySelector('.lightbox-next');
+        if (nextBtn) nextBtn.click();
+      }
+
+      if (touchEndX > touchStartX + swipeThreshold) {
+        const prevBtn = document.querySelector('.lightbox-prev');
+        if (prevBtn) prevBtn.click();
       }
     }
-  });
+
+    lightboxInitialized = true;
+  }
 
   const observerOptions = {
     threshold: 0.1,
@@ -598,56 +533,49 @@ const initGalleryUI = () => {
 // Initialize gallery enhancements when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.includes('gallery')) {
-    // 1. build the gallery grid
     const grid = document.querySelector('.gallery-grid');
     const nav = document.querySelector('.gallery-nav');
-    const { markup, categories } = await buildGallery();
-    if (grid) {
-      grid.innerHTML = markup;
+    const { categories, imagesByCategory } = await buildGallery();
+
+    const renderCategory = (slug) => {
+      if (!grid) return;
+      const images = imagesByCategory[slug] || [];
+      grid.innerHTML = images
+        .map(
+          (url) =>
+            `<div class="gallery-item overflow-hidden fade-in"><img src="${url}" loading="lazy" alt="Gallery image" onerror="this.parentElement.style.display='none'" /></div>`
+        )
+        .join('');
       grid.classList.add('visible');
-    }
+      initGalleryEnhancements();
+      initGalleryUI();
+    };
 
     if (nav) {
-      const filters = ['All', ...categories];
-      nav.innerHTML = filters
-        .map((cat) => {
-          const slug =
-            cat === 'All' ? 'all' : cat.toLowerCase().replace(/\s+/g, '-');
-          return `<button type="button" data-filter="${slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${cat}</button>`;
-        })
+      nav.innerHTML = categories
+        .map(
+          (c) =>
+            `<button type="button" data-filter="${c.slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${c.name}</button>`
+        )
         .join('');
+
+      const buttons = nav.querySelectorAll('.gallery-filter');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderCategory(btn.dataset.filter);
+        });
+      });
+
+      if (buttons[0]) {
+        buttons[0].classList.add('active');
+      }
     }
 
-    // 2. then wire up your enhancements
-    initGalleryEnhancements();
-    initGalleryUI();
+    if (categories[0]) {
+      renderCategory(categories[0].slug);
+    }
   }
 });
 
-// Add this CSS for the loading animation (add to your style.css)
-const galleryStyles = `
-.gallery-loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  opacity: 0.7;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-`;
-
-// Inject styles if on gallery page
-if (window.location.pathname.includes('gallery')) {
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = galleryStyles;
-  document.head.appendChild(styleSheet);
-}

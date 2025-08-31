@@ -1,6 +1,7 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
 
+const galleryDataPromise = buildGallery();
 let lightboxInitialized = false;
 
 // Wait for the DOM to be fully loaded before running scripts
@@ -82,11 +83,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     ? mobileServicesButton.querySelector('svg')
     : null;
 
+  // Mobile gallery dropdown toggle
+  const mobileGalleryButton = document.getElementById('mobile-gallery-button');
+  const mobileGalleryMenu = document.getElementById('mobile-gallery-menu');
+  const mobileGalleryButtonSvg = mobileGalleryButton
+    ? mobileGalleryButton.querySelector('svg')
+    : null;
+
   // Desktop services dropdown toggle (for aria attributes, actual visibility is CSS driven)
   const desktopServicesButton = document.getElementById(
     'desktop-services-button'
   );
   const desktopServicesMenu = document.getElementById('desktop-services-menu');
+
+  // Desktop gallery dropdown toggle (for aria attributes, actual visibility is CSS driven)
+  const desktopGalleryButton = document.getElementById(
+    'desktop-gallery-button'
+  );
+  const desktopGalleryMenu = document.getElementById('desktop-gallery-menu');
+
+  // Populate gallery dropdowns
+  const { categories } = await galleryDataPromise;
+  if (desktopGalleryMenu) {
+    desktopGalleryMenu.innerHTML = categories
+      .map(
+        (c) =>
+          `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
+      )
+      .join('');
+  }
+  if (mobileGalleryMenu) {
+    mobileGalleryMenu.innerHTML = categories
+      .map(
+        (c) =>
+          `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
+      )
+      .join('');
+  }
 
   if (mobileMenuButton && mobileMenu) {
     mobileMenuButton.addEventListener('click', () => {
@@ -106,6 +139,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             mobileServicesButtonSvg.style.transform = ''; // Reset arrow
         }
       }
+      if (
+        isExpanded &&
+        mobileGalleryMenu &&
+        !mobileGalleryMenu.classList.contains('hidden')
+      ) {
+        mobileGalleryMenu.classList.add('hidden');
+        if (mobileGalleryButton) {
+          mobileGalleryButton.setAttribute('aria-expanded', 'false');
+          if (mobileGalleryButtonSvg)
+            mobileGalleryButtonSvg.style.transform = '';
+        }
+      }
     });
   }
 
@@ -117,6 +162,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (mobileServicesButtonSvg) {
         // Rotate arrow icon
         mobileServicesButtonSvg.style.transform = !isExpanded
+          ? 'rotate(180deg)'
+          : '';
+      }
+    });
+  }
+
+  if (mobileGalleryButton && mobileGalleryMenu) {
+    mobileGalleryButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isExpanded = mobileGalleryMenu.classList.toggle('hidden');
+      mobileGalleryButton.setAttribute('aria-expanded', !isExpanded);
+      if (mobileGalleryButtonSvg) {
+        mobileGalleryButtonSvg.style.transform = !isExpanded
           ? 'rotate(180deg)'
           : '';
       }
@@ -167,6 +225,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  if (desktopGalleryButton && desktopGalleryMenu) {
+    const dropdownParent = desktopGalleryButton.closest('.dropdown');
+
+    if (dropdownParent) {
+      dropdownParent.addEventListener('mouseenter', () => {
+        desktopGalleryButton.setAttribute('aria-expanded', 'true');
+      });
+
+      dropdownParent.addEventListener('mouseleave', () => {
+        desktopGalleryButton.setAttribute('aria-expanded', 'false');
+      });
+
+      desktopGalleryButton.addEventListener('focus', () => {
+        desktopGalleryButton.setAttribute('aria-expanded', 'true');
+      });
+
+      const menuItems = desktopGalleryMenu.querySelectorAll('a[role="menuitem"]');
+      const lastMenuItem = menuItems[menuItems.length - 1];
+
+      if (lastMenuItem) {
+        lastMenuItem.addEventListener('blur', (event) => {
+          if (
+            !desktopGalleryMenu.contains(event.relatedTarget) &&
+            event.relatedTarget !== desktopGalleryButton
+          ) {
+            desktopGalleryButton.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      dropdownParent.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          desktopGalleryButton.setAttribute('aria-expanded', 'false');
+          desktopGalleryButton.focus();
+        }
+      });
+    }
+  }
+
   // Set current year in footer
   const currentYearElement = document.getElementById('currentYear');
   if (currentYearElement) {
@@ -205,6 +302,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           mobileServicesButton.setAttribute('aria-expanded', 'false');
         if (mobileServicesButtonSvg)
           mobileServicesButtonSvg.style.transform = '';
+              }
+              if (
+        mobileGalleryMenu &&
+        !mobileGalleryMenu.classList.contains('hidden')
+      ) {
+        mobileGalleryMenu.classList.add('hidden');
+        if (mobileGalleryButton)
+          mobileGalleryButton.setAttribute('aria-expanded', 'false');
+        if (mobileGalleryButtonSvg)
+          mobileGalleryButtonSvg.style.transform = '';
               }
             }
           } else {
@@ -534,8 +641,8 @@ const initGalleryUI = () => {
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.includes('gallery')) {
     const grid = document.querySelector('.gallery-grid');
-    const nav = document.querySelector('.gallery-nav');
-    const { categories, imagesByCategory } = await buildGallery();
+    const select = document.getElementById('gallery-select');
+    const { categories, imagesByCategory } = await galleryDataPromise;
 
     const renderCategory = (slug) => {
       if (!grid) return;
@@ -551,30 +658,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       initGalleryUI();
     };
 
-    if (nav) {
-      nav.innerHTML = categories
-        .map(
-          (c) =>
-            `<button type="button" data-filter="${c.slug}" class="gallery-filter px-5 py-2 rounded-full text-sm font-medium text-gray-200 transition-colors duration-200">${c.name}</button>`
-        )
+    if (select) {
+      select.innerHTML = categories
+        .map((c) => `<option value="${c.slug}">${c.name}</option>`)
         .join('');
-
-      const buttons = nav.querySelectorAll('.gallery-filter');
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          buttons.forEach((b) => b.classList.remove('active'));
-          btn.classList.add('active');
-          renderCategory(btn.dataset.filter);
-        });
+      select.addEventListener('change', () => {
+        renderCategory(select.value);
       });
-
-      if (buttons[0]) {
-        buttons[0].classList.add('active');
-      }
     }
 
-    if (categories[0]) {
-      renderCategory(categories[0].slug);
+    const params = new URLSearchParams(window.location.search);
+    const initial =
+      params.get('category') || (categories[0] ? categories[0].slug : null);
+    if (initial) {
+      if (select) select.value = initial;
+      renderCategory(initial);
     }
   }
 });

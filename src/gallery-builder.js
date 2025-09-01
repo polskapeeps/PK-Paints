@@ -15,7 +15,7 @@ try {
       import: 'default',
     }
   );
-} catch (_) {
+} catch {
   imageModules = {};
 }
 

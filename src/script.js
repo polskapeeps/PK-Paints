@@ -367,31 +367,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     observer.observe(el);
   });
 
-  // Glass theme enhancements - Dynamic glass effects
-  const addDynamicGlassEffects = () => {
-    // Enhanced hover effects for glass cards
-    document
-      .querySelectorAll('.glass-card, .glass-card-strong')
-      .forEach((card) => {
-        card.addEventListener('mouseenter', () => {
-          card.style.background = 'rgba(255, 255, 255, 0.1)';
-          card.style.borderColor = 'rgba(59, 130, 246, 0.3)';
-        });
-
-        card.addEventListener('mouseleave', () => {
-          // Reset to original glass styling
-          if (card.classList.contains('glass-card-strong')) {
-            card.style.background = 'rgba(255, 255, 255, 0.08)';
-          } else {
-            card.style.background = 'rgba(255, 255, 255, 0.05)';
-          }
-          card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-        });
-      });
-  }; // Added closing brace here
-  // Initialize dynamic glass effects
-  // addDynamicGlassEffects();
-
   // Background shape animation controls
   const controlBackgroundShapes = () => {
     const shapes = document.querySelectorAll('.bg-shape');

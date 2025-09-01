@@ -160,32 +160,16 @@ body {
   backdrop-filter: blur(1px);
 }
 
-/* Add text shadows to hero text for better readability */
-.glass-card-hero h1,
-.glass-card-hero p {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
+/* Hero title outline variations */
+.hero-title-outline-subtle {
+  -webkit-text-stroke: 1px #000;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.6));
 }
 
-/* Specifically target the main hero heading */
-.glass-card-hero h1 {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-.glass-card-hero h1 .gradient-text {
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
-    -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
+.hero-title-outline-strong {
+  -webkit-text-stroke: 1px #000;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(212, 175, 55, 0.7);
 }
 .glass-card-hero p .gradient-text {
   /* Add custom text-shadow properties here if desired */

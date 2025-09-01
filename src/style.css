@@ -161,31 +161,21 @@ body {
 }
 
 /* Add text shadows to hero text for better readability */
-.glass-card-hero h1,
 .glass-card-hero p {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
   color: white !important;
   font-weight: 700 !important;
 }
 
 /* Specifically target the main hero heading */
 .glass-card-hero h1 {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
+  text-shadow: none !important;
   color: white !important;
   font-weight: 700 !important;
 }
 
 .glass-card-hero h1 .gradient-text {
-  text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000,
-    0 -2px 0 #000, 2px 2px 0 #000, -2px -2px 0 #000,
-    2px -2px 0 #000, -2px 2px 0 #000,
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
 }
 .glass-card-hero p .gradient-text {
   /* Add custom text-shadow properties here if desired */
@@ -324,20 +314,16 @@ body {
 }
 
 /* Service hero text shadows */
-.service-hero .glass-card-hero h1,
 .service-hero .glass-card-hero p {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
 }
 
 .service-hero .glass-card-hero h1 {
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: none !important;
 }
 
 .service-hero .glass-card-hero h1 .gradient-text {
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
-    -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
 }
 
 /* Mobile optimization */
@@ -351,14 +337,14 @@ body {
     background: rgba(255, 255, 255, 0.12) !important;
   }
 
-  .service-hero .glass-card-hero h1,
   .service-hero .glass-card-hero p {
-    text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-      -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-      1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-      0 0 10px rgba(255, 255, 255, 0.5) !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
     color: white !important;
     font-weight: 700 !important;
+  }
+
+  .service-hero .glass-card-hero h1 {
+    text-shadow: none !important;
   }
 }
 

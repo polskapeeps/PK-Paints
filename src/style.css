@@ -207,10 +207,10 @@ body {
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('assets/painting_162.png');
+  background-image: url('src\assets\hero\[21] interior_04-2021.jpeg');
 }
 .hero-slide:nth-child(2) {
-  background-image: url('assets/gallery/painting_142.jpeg');
+  background-image: url('src\assets\hero\[32] interior_07-2021.jpeg');
 }
 .hero-slide:nth-child(3) {
   background-image: url('assets/exterior.png');
@@ -446,7 +446,6 @@ body {
   z-index: 1;
 }
 
-
 .gallery-item:hover {
   transform: scale(1.03);
 }
@@ -517,8 +516,7 @@ footer {
 }
 
 .btn-gold:hover {
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
 }
 
 /* Floating animation for CTA button */

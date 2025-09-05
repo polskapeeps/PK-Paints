@@ -210,16 +210,16 @@ body {
   background-image: url('assets/hero/[21] interior_04-2021.jpeg');
 }
 .hero-slide:nth-child(2) {
-  background-image: url('assets/hero/[67] interior_11-2022.jpeg');
+  background-image: url('assets/interior/[53] interior_04-2022.jpeg');
 }
 .hero-slide:nth-child(3) {
-  background-image: url('assets/exterior.png');
+  background-image: url('assets/interior/[58] interior_11-2022.jpeg');
 }
 .hero-slide:nth-child(4) {
-  background-image: url('assets/dine.png');
+  background-image: url('assets/interior/[76] interior_03-2023.jpeg');
 }
 .hero-slide:nth-child(5) {
-  background-image: url('assets/dine2.png');
+  background-image: url('assets/interior/[87] interior_03-2023.jpeg');
 }
 /* Slideshow indicators (dots) with improved visibility */
 .slideshow-indicators {

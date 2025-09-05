@@ -207,10 +207,10 @@ body {
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('src\assets\hero\[21] interior_04-2021.jpeg');
+  background-image: url('assets/hero/[21] interior_04-2021.jpeg');
 }
 .hero-slide:nth-child(2) {
-  background-image: url('src\assets\hero\[32] interior_07-2021.jpeg');
+  background-image: url('assets/hero/[32] interior_07-2021.jpeg');
 }
 .hero-slide:nth-child(3) {
   background-image: url('assets/exterior.png');

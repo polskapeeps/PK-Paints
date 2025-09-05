@@ -280,7 +280,7 @@ body {
 
 /* Interior painting specific background */
 .interior-hero {
-  background-image: url('/assets/dine.png');
+  background-image: url('src/assets/dine.png');
 }
 /* Exterior painting specific background */
 .exterior-hero {

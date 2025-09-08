@@ -44,7 +44,8 @@ body {
 .glass-nav-item {
   background: rgba(255, 255, 255, 0.1) !important;
   color: rgba(255, 255, 255, 0.95) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow for better readability */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 2px rgba(0, 0, 0, 0.3); /* Subtle layered shadow for better readability */
 }
 
 .hover-glass-nav:hover {
@@ -160,25 +161,23 @@ body {
   backdrop-filter: blur(1px);
 }
 
-/* Add text shadows to hero text for better readability */
+/* Add subtle text shadows to hero text for better readability */
 .glass-card-hero h1,
 .glass-card-hero p {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
   color: white !important;
   font-weight: 700 !important;
 }
 
 /* Specifically target the main hero heading */
 .glass-card-hero h1 {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7),
+    0 0 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Paragraph text in hero */
+.glass-card-hero p {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6),
+    0 0 3px rgba(0, 0, 0, 0.4) !important;
 }
 
 .glass-card-hero h1 .gradient-text {
@@ -353,12 +352,10 @@ body {
 
   .service-hero .glass-card-hero h1,
   .service-hero .glass-card-hero p {
-    text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-      -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-      1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-      0 0 10px rgba(255, 255, 255, 0.5) !important;
     color: white !important;
     font-weight: 700 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7),
+      0 0 4px rgba(0, 0, 0, 0.5) !important;
   }
 }
 

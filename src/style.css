@@ -465,6 +465,25 @@ body {
   z-index: 0;
 }
 
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.gallery-item:hover .gallery-caption {
+  opacity: 1;
+}
+
 /* ==================== CONTACT SECTION ==================== */
 
 /* Contact Section - Premium glass card */

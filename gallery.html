@@ -102,6 +102,22 @@
       right: 20px;
     }
 
+    /* Fullscreen lightbox on mobile */
+    @media (max-width: 640px) {
+      .lightbox-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+      }
+
+      .lightbox-close {
+        top: 10px;
+        right: 15px;
+      }
+    }
+
     .gallery-filter {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(15px);
@@ -111,9 +127,14 @@
     }
 
     .gallery-filter.active {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: rgba(59, 130, 246, 0.4);
-      color: #60a5fa;
+      background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.3),
+        rgba(37, 99, 235, 0.3)
+      );
+      border-color: rgba(59, 130, 246, 0.6);
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     }
 
     .gallery-filter:hover {
@@ -121,16 +142,22 @@
       border-color: rgba(59, 130, 246, 0.3);
     }
 
+    /* Responsive gallery grid showing multiple columns on desktop */
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
 
-    @media (max-width: 640px) {
+    @media (min-width: 768px) {
       .gallery-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -166,6 +193,21 @@
 
     .gallery-item:hover::after {
       opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      .gallery-grid {
+        gap: 0.5rem;
+      }
+
+      .gallery-item {
+        aspect-ratio: auto;
+      }
+
+      .gallery-item img {
+        object-fit: contain;
+        height: auto;
+      }
     }
 
     .category-header {
@@ -268,8 +310,20 @@
               </div>
             </div>
 
-            <a href="gallery.html"
-              class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-blue-500/30">Gallery</a>
+            <div class="relative group dropdown">
+              <button id="desktop-gallery-button"
+                class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-blue-500/30"
+                aria-expanded="false">
+                Gallery
+                <svg class="w-4 h-4 ml-1 transition-transform duration-200" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div id="desktop-gallery-menu"
+                class="dropdown-menu absolute left-0 top-full w-56 glass-dropdown rounded-xl shadow-xl z-20 py-2 opacity-0 invisible transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0"
+                role="menu"></div>
+            </div>
             <a href="index.html#contact"
               class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">Contact
               Us</a>
@@ -356,8 +410,18 @@
               class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">Remodeling</a>
           </div>
         </div>
-        <a href="gallery.html"
-          class="block py-3 px-4 text-base text-gray-200 hover:bg-white/10 transition-colors duration-200 bg-gradient-to-r from-blue-500/20 to-blue-600/20">Gallery</a>
+        <div class="relative">
+          <button id="mobile-gallery-button"
+            class="w-full text-left block py-3 px-4 text-base text-gray-200 hover:bg-white/10 flex justify-between items-center transition-colors duration-200 bg-gradient-to-r from-blue-500/20 to-blue-600/20"
+            aria-expanded="false" aria-controls="mobile-gallery-menu">
+            Gallery
+            <svg class="w-5 h-5 inline transform transition-transform duration-200" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div id="mobile-gallery-menu" class="hidden pl-4 bg-gray-750/50"></div>
+        </div>
         <a href="index.html#contact"
           class="block py-3 px-4 text-base text-gray-200 hover:bg-white/10 transition-colors duration-200">Contact
           Us</a>
@@ -367,27 +431,16 @@
   <main class="relative z-10">
     <!-- Gallery Hero Section -->
     <section class="service-hero text-white" style="background-image: url('src/assets/gallery/painting_207.jpeg');">
-      <div class="service-hero-content">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div class="glass-card-hero rounded-3xl p-12 max-w-4xl mx-auto">
-            <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight">
-              <!-- Past <span class="gradient-text">Projects</span> -->
-            </h1>
-            <!--             <p class="text-xl sm:text-2xl md:text-3xl mb-12 text-gray-200 max-w-3xl mx-auto leading-relaxed">
-              Explore our extensive collection of custom
-              <span class="gradient-text">frameless glass</span> installations
-              showcasing precision craftsmanship and innovative design.
-            </p>
- -->
-          </div>
-        </div>
-      </div>
     </section>
 
     <!-- Gallery Grid -->
     <section class="pb-20 md:pb-32 relative">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="gallery-grid fade-in visible"></div>
+        <div class="mb-8 flex justify-center">
+          <select id="gallery-select"
+            class="gallery-select px-5 py-2 rounded-full text-sm font-medium text-gray-200 bg-white/10 border border-white/20 backdrop-blur-md"></select>
+        </div>
+        <div class="gallery-grid fade-in"></div>
       </div>
     </section>
   </main>

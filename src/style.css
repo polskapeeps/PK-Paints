@@ -207,10 +207,10 @@ body {
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('assets/painting_162.png');
+  background-image: url('assets/hero/[21] interior_04-2021.jpeg');
 }
 .hero-slide:nth-child(2) {
-  background-image: url('assets/gallery/painting_142.jpeg');
+  background-image: url('assets/hero/[67] interior_11-2022.jpeg');
 }
 .hero-slide:nth-child(3) {
   background-image: url('assets/exterior.png');
@@ -280,7 +280,7 @@ body {
 
 /* Interior painting specific background */
 .interior-hero {
-  background-image: url('/assets/dine.png');
+  background-image: url('src/assets/dine.png');
 }
 /* Exterior painting specific background */
 .exterior-hero {
@@ -420,16 +420,12 @@ body {
 
 /* ==================== GALLERY SECTION ==================== */
 
-/* Gallery Items - Enhanced glass effect and fixes */
-/* Gallery Items - Enhanced glass effect and fixes */
+/* Gallery Items - cleaner grid tiles */
 .gallery-item {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1.5rem;
   overflow: hidden;
-  transition: all 0.4s ease;
   position: relative;
   cursor: pointer;
+  transition: transform 0.4s ease;
 }
 
 /* This ::after pseudo-element will act as our hover overlay */
@@ -451,9 +447,7 @@ body {
 }
 
 .gallery-item:hover {
-  border-color: rgba(212, 175, 55, 0.3);
-  transform: scale(1.03) rotate(0.5deg);
-  box-shadow: 0 25px 70px rgba(212, 175, 55, 0.2);
+  transform: scale(1.03);
 }
 
 /* On hover, make the overlay visible */
@@ -461,8 +455,12 @@ body {
   opacity: 1;
 }
 
-/* Ensure the image is behind the overlay */
+/* Ensure images fill their tiles */
 .gallery-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   position: relative;
   z-index: 0;
 }
@@ -518,8 +516,7 @@ footer {
 }
 
 .btn-gold:hover {
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
 }
 
 /* Floating animation for CTA button */
@@ -705,12 +702,9 @@ button:focus {
     ) !important; /* Slightly more opaque on mobile */
   }
 
-  .gallery-item {
-    background: rgba(255, 255, 255, 0.06) !important;
-  }
-
+  /* Allow gallery tiles to span full width on mobile */
   .gallery-item img {
-    height: 16rem; /* Consistent height on mobile */
+    height: auto;
   }
 
   /* Ultra-strong mobile text contrast for hero */

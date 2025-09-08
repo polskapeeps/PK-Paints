@@ -1,5 +1,13 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
+import heroImage1 from './assets/hero/[21] interior_04-2021.jpeg';
+import heroImage2 from './assets/hero/[67] interior_11-2022.jpeg';
+import exterior from './assets/exterior.png';
+import dine from './assets/dine.png';
+import dine2 from './assets/dine2.png';
+
+const galleryDataPromise = buildGallery();
+let lightboxInitialized = false;
 
 // Wait for the DOM to be fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', async () => {
@@ -80,11 +88,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     ? mobileServicesButton.querySelector('svg')
     : null;
 
+  // Mobile gallery dropdown toggle
+  const mobileGalleryButton = document.getElementById('mobile-gallery-button');
+  const mobileGalleryMenu = document.getElementById('mobile-gallery-menu');
+  const mobileGalleryButtonSvg = mobileGalleryButton
+    ? mobileGalleryButton.querySelector('svg')
+    : null;
+
   // Desktop services dropdown toggle (for aria attributes, actual visibility is CSS driven)
   const desktopServicesButton = document.getElementById(
     'desktop-services-button'
   );
   const desktopServicesMenu = document.getElementById('desktop-services-menu');
+
+  // Desktop gallery dropdown toggle (for aria attributes, actual visibility is CSS driven)
+  const desktopGalleryButton = document.getElementById(
+    'desktop-gallery-button'
+  );
+  const desktopGalleryMenu = document.getElementById('desktop-gallery-menu');
+
+  // Populate gallery dropdowns
+  const { categories } = await galleryDataPromise;
+  if (desktopGalleryMenu) {
+    desktopGalleryMenu.innerHTML = categories
+      .map(
+        (c) =>
+          `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
+      )
+      .join('');
+  }
+  if (mobileGalleryMenu) {
+    mobileGalleryMenu.innerHTML = categories
+      .map(
+        (c) =>
+          `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
+      )
+      .join('');
+  }
 
   if (mobileMenuButton && mobileMenu) {
     mobileMenuButton.addEventListener('click', () => {
@@ -104,6 +144,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             mobileServicesButtonSvg.style.transform = ''; // Reset arrow
         }
       }
+      if (
+        isExpanded &&
+        mobileGalleryMenu &&
+        !mobileGalleryMenu.classList.contains('hidden')
+      ) {
+        mobileGalleryMenu.classList.add('hidden');
+        if (mobileGalleryButton) {
+          mobileGalleryButton.setAttribute('aria-expanded', 'false');
+          if (mobileGalleryButtonSvg)
+            mobileGalleryButtonSvg.style.transform = '';
+        }
+      }
     });
   }
 
@@ -115,6 +167,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (mobileServicesButtonSvg) {
         // Rotate arrow icon
         mobileServicesButtonSvg.style.transform = !isExpanded
+          ? 'rotate(180deg)'
+          : '';
+      }
+    });
+  }
+
+  if (mobileGalleryButton && mobileGalleryMenu) {
+    mobileGalleryButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isExpanded = mobileGalleryMenu.classList.toggle('hidden');
+      mobileGalleryButton.setAttribute('aria-expanded', !isExpanded);
+      if (mobileGalleryButtonSvg) {
+        mobileGalleryButtonSvg.style.transform = !isExpanded
           ? 'rotate(180deg)'
           : '';
       }
@@ -165,6 +230,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  if (desktopGalleryButton && desktopGalleryMenu) {
+    const dropdownParent = desktopGalleryButton.closest('.dropdown');
+
+    if (dropdownParent) {
+      dropdownParent.addEventListener('mouseenter', () => {
+        desktopGalleryButton.setAttribute('aria-expanded', 'true');
+      });
+
+      dropdownParent.addEventListener('mouseleave', () => {
+        desktopGalleryButton.setAttribute('aria-expanded', 'false');
+      });
+
+      desktopGalleryButton.addEventListener('focus', () => {
+        desktopGalleryButton.setAttribute('aria-expanded', 'true');
+      });
+
+      const menuItems =
+        desktopGalleryMenu.querySelectorAll('a[role="menuitem"]');
+      const lastMenuItem = menuItems[menuItems.length - 1];
+
+      if (lastMenuItem) {
+        lastMenuItem.addEventListener('blur', (event) => {
+          if (
+            !desktopGalleryMenu.contains(event.relatedTarget) &&
+            event.relatedTarget !== desktopGalleryButton
+          ) {
+            desktopGalleryButton.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      dropdownParent.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          desktopGalleryButton.setAttribute('aria-expanded', 'false');
+          desktopGalleryButton.focus();
+        }
+      });
+    }
+  }
+
   // Set current year in footer
   const currentYearElement = document.getElementById('currentYear');
   if (currentYearElement) {
@@ -195,14 +300,24 @@ document.addEventListener('DOMContentLoaded', async () => {
               mobileMenuButton.setAttribute('aria-expanded', 'false');
               // Also close product submenu if open
               if (
-        mobileServicesMenu &&
-        !mobileServicesMenu.classList.contains('hidden')
-      ) {
-        mobileServicesMenu.classList.add('hidden');
-        if (mobileServicesButton)
-          mobileServicesButton.setAttribute('aria-expanded', 'false');
-        if (mobileServicesButtonSvg)
-          mobileServicesButtonSvg.style.transform = '';
+                mobileServicesMenu &&
+                !mobileServicesMenu.classList.contains('hidden')
+              ) {
+                mobileServicesMenu.classList.add('hidden');
+                if (mobileServicesButton)
+                  mobileServicesButton.setAttribute('aria-expanded', 'false');
+                if (mobileServicesButtonSvg)
+                  mobileServicesButtonSvg.style.transform = '';
+              }
+              if (
+                mobileGalleryMenu &&
+                !mobileGalleryMenu.classList.contains('hidden')
+              ) {
+                mobileGalleryMenu.classList.add('hidden');
+                if (mobileGalleryButton)
+                  mobileGalleryButton.setAttribute('aria-expanded', 'false');
+                if (mobileGalleryButtonSvg)
+                  mobileGalleryButtonSvg.style.transform = '';
               }
             }
           } else {
@@ -257,31 +372,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       'opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.8s ease-out';
     observer.observe(el);
   });
-
-  // Glass theme enhancements - Dynamic glass effects
-  const addDynamicGlassEffects = () => {
-    // Enhanced hover effects for glass cards
-    document
-      .querySelectorAll('.glass-card, .glass-card-strong')
-      .forEach((card) => {
-        card.addEventListener('mouseenter', () => {
-          card.style.background = 'rgba(255, 255, 255, 0.1)';
-          card.style.borderColor = 'rgba(59, 130, 246, 0.3)';
-        });
-
-        card.addEventListener('mouseleave', () => {
-          // Reset to original glass styling
-          if (card.classList.contains('glass-card-strong')) {
-            card.style.background = 'rgba(255, 255, 255, 0.08)';
-          } else {
-            card.style.background = 'rgba(255, 255, 255, 0.05)';
-          }
-          card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-        });
-      });
-  }; // Added closing brace here
-  // Initialize dynamic glass effects
-  // addDynamicGlassEffects();
 
   // Background shape animation controls
   const controlBackgroundShapes = () => {
@@ -350,12 +440,7 @@ const initGalleryEnhancements = () => {
   });
 
   // Preload critical gallery images
-  const preloadImages = [
-    'assets/gallery/showers_35.jpg',
-    'assets/gallery/shower-2.jpg',
-    'assets/gallery/doors_03.jpg',
-    'assets/gallery/railing_04.jpg',
-  ];
+  const preloadImages = [heroImage1, heroImage2, exterior, dine, dine2];
 
   preloadImages.forEach((src) => {
     const link = document.createElement('link');
@@ -378,80 +463,6 @@ const initGalleryEnhancements = () => {
       item.style.transform = 'scale(1) translateY(0)';
     });
   });
-
-  // Smooth category transitions
-  const categoryFilters = document.querySelectorAll('.gallery-filter');
-
-  categoryFilters.forEach((filter) => {
-    filter.addEventListener('click', () => {
-      // Add loading animation
-      const loader = document.createElement('div');
-      loader.innerHTML =
-        '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto my-4"></div>';
-      loader.className = 'gallery-loader';
-
-      const gallery = document.querySelector('.gallery-grid');
-      if (gallery) {
-        gallery.appendChild(loader);
-
-        // Remove loader after transition
-        setTimeout(() => {
-          if (loader.parentNode) {
-            loader.remove();
-          }
-        }, 600);
-      }
-    });
-  });
-
-  // Keyboard navigation for lightbox
-  let touchStartX = 0;
-  let touchEndX = 0;
-
-  // Touch gestures for mobile lightbox navigation
-  const lightbox = document.getElementById('lightbox');
-  if (lightbox) {
-    lightbox.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-
-    lightbox.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleGesture();
-    });
-
-    function handleGesture() {
-      const swipeThreshold = 100;
-      if (touchEndX < touchStartX - swipeThreshold) {
-        // Swipe left - next image
-        const nextBtn = document.querySelector('.lightbox-next');
-        if (nextBtn) nextBtn.click();
-      }
-
-      if (touchEndX > touchStartX + swipeThreshold) {
-        // Swipe right - previous image
-        const prevBtn = document.querySelector('.lightbox-prev');
-        if (prevBtn) prevBtn.click();
-      }
-    }
-  }
-
-  // Gallery statistics counter
-  const updateGalleryStats = () => {
-    const totalImages = document.querySelectorAll('.gallery-item').length;
-    const categoryStats = {};
-
-    document.querySelectorAll('[data-category]').forEach((section) => {
-      const category = section.getAttribute('data-category');
-      const count = section.querySelectorAll('.gallery-item').length;
-      categoryStats[category] = count;
-    });
-
-    // You can display these stats somewhere if needed
-    console.log('Gallery Stats:', { total: totalImages, ...categoryStats });
-  };
-
-  updateGalleryStats();
 
   // Performance optimization for large galleries
   const optimizeForPerformance = () => {
@@ -479,7 +490,11 @@ const initGalleryEnhancements = () => {
 
 // Setup filtering and lightbox interactions
 const initGalleryUI = () => {
-  const galleryItems = document.querySelectorAll('.gallery-item');
+  let galleryItems = Array.from(
+    document.querySelectorAll('.gallery-grid .gallery-item')
+  );
+  const getGalleryItems = () =>
+    Array.from(document.querySelectorAll('.gallery-grid .gallery-item'));
 
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
@@ -489,27 +504,26 @@ const initGalleryUI = () => {
 
   let currentImageIndex = 0;
 
-    function openLightbox(index) {
-      currentImageIndex = index;
-      const img = galleryItems[currentImageIndex].querySelector('img');
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      if (lightbox.requestFullscreen) {
-        lightbox.requestFullscreen().catch(() => {});
-      }
-    }
+  function openLightbox(index) {
+    galleryItems = getGalleryItems();
+    currentImageIndex = index;
+    const img = galleryItems[currentImageIndex].querySelector('img');
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 
-    function closeLightbox() {
-      lightbox.classList.remove('active');
-      document.body.style.overflow = 'auto';
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen();
     }
+  }
 
   function nextImage() {
+    galleryItems = getGalleryItems();
     currentImageIndex = (currentImageIndex + 1) % galleryItems.length;
     const img = galleryItems[currentImageIndex].querySelector('img');
     lightboxImg.src = img.src;
@@ -517,6 +531,7 @@ const initGalleryUI = () => {
   }
 
   function prevImage() {
+    galleryItems = getGalleryItems();
     currentImageIndex =
       (currentImageIndex - 1 + galleryItems.length) % galleryItems.length;
     const img = galleryItems[currentImageIndex].querySelector('img');
@@ -524,33 +539,64 @@ const initGalleryUI = () => {
     lightboxImg.alt = img.alt;
   }
 
-  galleryItems.forEach((item, index) => {
+  galleryItems.forEach((item) => {
     item.addEventListener('click', () => {
+      const items = getGalleryItems();
+      const index = items.indexOf(item);
       openLightbox(index);
     });
   });
 
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxNext.addEventListener('click', nextImage);
-  lightboxPrev.addEventListener('click', prevImage);
+  if (!lightboxInitialized) {
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxNext.addEventListener('click', nextImage);
+    lightboxPrev.addEventListener('click', prevImage);
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-      closeLightbox();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (lightbox.classList.contains('active')) {
-      if (e.key === 'Escape') {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
         closeLightbox();
-      } else if (e.key === 'ArrowRight') {
-        nextImage();
-      } else if (e.key === 'ArrowLeft') {
-        prevImage();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('active')) {
+        if (e.key === 'Escape') {
+          closeLightbox();
+        } else if (e.key === 'ArrowRight') {
+          nextImage();
+        } else if (e.key === 'ArrowLeft') {
+          prevImage();
+        }
+      }
+    });
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    lightbox.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    lightbox.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleGesture();
+    });
+
+    function handleGesture() {
+      const swipeThreshold = 100;
+      if (touchEndX < touchStartX - swipeThreshold) {
+        const nextBtn = document.querySelector('.lightbox-next');
+        if (nextBtn) nextBtn.click();
+      }
+
+      if (touchEndX > touchStartX + swipeThreshold) {
+        const prevBtn = document.querySelector('.lightbox-prev');
+        if (prevBtn) prevBtn.click();
       }
     }
-  });
+
+    lightboxInitialized = true;
+  }
 
   const observerOptions = {
     threshold: 0.1,
@@ -573,44 +619,39 @@ const initGalleryUI = () => {
 // Initialize gallery enhancements when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.includes('gallery')) {
-    // 1. build the gallery grid
     const grid = document.querySelector('.gallery-grid');
-    const markup = await buildGallery();
-    if (grid) {
-      grid.innerHTML = markup;
+    const select = document.getElementById('gallery-select');
+    const { categories, imagesByCategory } = await galleryDataPromise;
+
+    const renderCategory = (slug) => {
+      if (!grid) return;
+      const images = imagesByCategory[slug] || [];
+      grid.innerHTML = images
+        .map(
+          (url) =>
+            `<div class="gallery-item overflow-hidden fade-in"><img src="${url}" loading="lazy" alt="Gallery image" onerror="this.parentElement.style.display='none'" /></div>`
+        )
+        .join('');
       grid.classList.add('visible');
+      initGalleryEnhancements();
+      initGalleryUI();
+    };
+
+    if (select) {
+      select.innerHTML = categories
+        .map((c) => `<option value="${c.slug}">${c.name}</option>`)
+        .join('');
+      select.addEventListener('change', () => {
+        renderCategory(select.value);
+      });
     }
 
-    // 2. then wire up your enhancements
-    initGalleryEnhancements();
-    initGalleryUI();
+    const params = new URLSearchParams(window.location.search);
+    const initial =
+      params.get('category') || (categories[0] ? categories[0].slug : null);
+    if (initial) {
+      if (select) select.value = initial;
+      renderCategory(initial);
+    }
   }
 });
-
-// Add this CSS for the loading animation (add to your style.css)
-const galleryStyles = `
-.gallery-loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  opacity: 0.7;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-`;
-
-// Inject styles if on gallery page
-if (window.location.pathname.includes('gallery')) {
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = galleryStyles;
-  document.head.appendChild(styleSheet);
-}

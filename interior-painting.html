@@ -34,7 +34,8 @@
           <div class="flex-shrink-0">
             <a href="index.html" class="text-2xl font-bold text-white">
               <div class="glass-card-nav rounded-lg px-4 py-2">
-                <img src="assets/icons/header_logo.png" alt="PK Paints n' Renovations Logo" class="h-14 rounded-md" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <img src="assets/icons/header_logo.png" alt="PK Paints n' Renovations Logo" class="h-14 rounded-md"
+                  onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                 <div class="h-14 w-48 rounded-md items-center justify-center hidden">
                   <span class="gradient-text font-bold text-2xl">PK Renovations</span>
                 </div>
@@ -43,7 +44,8 @@
           </div>
           <div class="hidden md:flex flex-col ml-4 text-xs text-gray-300">
             <a href="tel:2156038009" class="hover:text-white transition-colors duration-200">(215) 603-8009</a>
-            <a href="mailto:peterkpaint@gmail.com" class="hover:text-white transition-colors duration-200">peterkpaint@gmail.com</a>
+            <a href="mailto:peterkpaint@gmail.com"
+              class="hover:text-white transition-colors duration-200">peterkpaint@gmail.com</a>
           </div>
         </div>
 
@@ -80,9 +82,20 @@
                   role="menuitem">Remodeling</a>
               </div>
             </div>
-
-            <a href="gallery.html"
-              class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">Gallery</a>
+            <div class="relative group dropdown">
+              <button id="desktop-gallery-button"
+                class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center"
+                aria-expanded="false">
+                Gallery
+                <svg class="w-4 h-4 ml-1 transition-transform duration-200" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div id="desktop-gallery-menu"
+                class="dropdown-menu absolute left-0 top-full w-56 glass-dropdown rounded-xl shadow-xl z-20 py-2 opacity-0 invisible transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0"
+                role="menu"></div>
+            </div>
             <a href="index.html#contact"
               class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">Contact
               Us</a>
@@ -169,8 +182,18 @@
               class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">Remodeling</a>
           </div>
         </div>
-        <a href="gallery.html"
-          class="block py-3 px-4 text-base text-gray-200 hover:bg-white/10 transition-colors duration-200">Gallery</a>
+        <div class="relative">
+          <button id="mobile-gallery-button"
+            class="w-full text-left block py-3 px-4 text-base text-gray-200 hover:bg-white/10 flex justify-between items-center transition-colors duration-200"
+            aria-expanded="false" aria-controls="mobile-gallery-menu">
+            Gallery
+            <svg class="w-5 h-5 inline transform transition-transform duration-200" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div id="mobile-gallery-menu" class="hidden pl-4 bg-gray-750/50"></div>
+        </div>
         <a href="index.html#contact"
           class="block py-3 px-4 text-base text-gray-200 hover:bg-white/10 transition-colors duration-200">Contact
           Us</a>
@@ -178,18 +201,38 @@
   </header>
 
   <main class="relative z-10">
-    <!-- Service Hero Section -->
-    <section class="service-hero interior-hero text-white"
-      style="background-image: url('src/assets/gallery/painting_176.jpeg');">
+    <!-- Service Hero Section with Slideshow -->
+    <section class="hero-bg service-hero text-white">
+      <div class="hero-slideshow">
+        <div class="hero-slide active"
+          style="background-image: url('src/assets/interior/[97]\ interior_06-2023.jpeg');"></div>
+        <div class="hero-slide"
+          style="background-image: url('src/assets/gallery/Interior Painting/interior_0001.jpeg');"></div>
+        <div class="hero-slide"
+          style="background-image: url('src/assets/gallery/Interior Painting/interior_0034.jpeg');"></div>
+        <div class="hero-slide"
+          style="background-image: url('src/assets/gallery/Interior Painting/interior_0067.jpeg');"></div>
+        <div class="hero-slide"
+          style="background-image: url('src/assets/gallery/Interior Painting/interior_0100.jpeg');"></div>
+      </div>
+
+      <!-- Slideshow indicators -->
+      <div class="slideshow-indicators">
+        <div class="indicator glass-indicator active" data-slide="0"></div>
+        <div class="indicator glass-indicator" data-slide="1"></div>
+        <div class="indicator glass-indicator" data-slide="2"></div>
+        <div class="indicator glass-indicator" data-slide="3"></div>
+        <div class="indicator glass-indicator" data-slide="4"></div>
+      </div>
+
       <div class="service-hero-content">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div class="glass-card-hero rounded-3xl p-12 max-w-4xl mx-auto">
             <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight">
-              Professional <span class="gradient-text">Interior Painting</span>
+              <span class="gradient-text">Interior Painting</span>
             </h1>
             <p class="text-xl sm:text-2xl md:text-3xl mb-12 text-gray-200 max-w-3xl mx-auto leading-relaxed">
-              Refresh your living spaces with crisp lines and vibrant colors
-              delivered by our experienced painting team.
+              Refresh your place with crisp lines and smooth finishes that last.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="index.html#contact"
@@ -248,9 +291,8 @@
           </div>
           <div>
             <div class="gallery-item float-2">
-              <img src="assets/dine.png" alt="Interior painting project"
-                class="rounded-2xl shadow-2xl w-full h-auto object-cover"
-                onerror="this.src='https://images.unsplash.com/photo-1507668077129-56a5b31c7a33?auto=format&fit=crop&w=1000&q=80';" />
+              <img src="src/assets/gallery/Interior Painting/interior_0133.jpeg" alt="Interior painting project"
+                class="rounded-2xl shadow-2xl w-full h-auto object-cover" />
             </div>
           </div>
         </div>

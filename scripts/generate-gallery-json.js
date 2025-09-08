@@ -4,20 +4,30 @@ const path = require('path');
 const galleryDir = path.join(__dirname, '..', 'src', 'assets', 'gallery');
 const outputPath = path.join(__dirname, '..', 'public', 'gallery.json');
 
-function collectImages(dir) {
-  const files = fs.readdirSync(dir);
-  const images = [];
-  for (const file of files) {
-    const ext = path.extname(file).toLowerCase();
-    if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
-      // Use the source path so that the gallery works when serving the raw
-      // files without running a build step.
-      images.push('src/assets/gallery/' + file);
+function collectImagesByCategory(dir) {
+  const entries = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const categories = {};
+  for (const entry of entries) {
+    const category = entry.name;
+    const files = fs
+      .readdirSync(path.join(dir, category))
+      .filter((file) => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(file).toLowerCase()))
+      .sort();
+
+    if (files.length > 0) {
+      categories[category] = files.map((file) => `src/assets/gallery/${category}/${file}`);
     }
   }
-  return images;
+  return categories;
 }
 
-const images = collectImages(galleryDir);
-fs.writeFileSync(outputPath, JSON.stringify(images, null, 2));
-console.log(`Wrote ${images.length} images to ${outputPath}`);
+const imagesByCategory = collectImagesByCategory(galleryDir);
+fs.writeFileSync(outputPath, JSON.stringify(imagesByCategory, null, 2));
+const total = Object.values(imagesByCategory).reduce((sum, arr) => sum + arr.length, 0);
+console.log(
+  `Wrote ${total} images across ${Object.keys(imagesByCategory).length} categories to ${outputPath}`
+);

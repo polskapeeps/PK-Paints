@@ -1,4 +1,4 @@
-// gallery-builder.js - Compile gallery images without categories.
+// gallery-builder.js - Compile gallery images grouped by category folders.
 // Uses Vite's import.meta.glob to gather all images in src/assets/gallery.
 
 // Attempt to eagerly import gallery images via Vite's glob import.
@@ -7,7 +7,7 @@
 let imageModules = {};
 try {
   imageModules = import.meta.glob(
-    './assets/gallery/**/*.{jpg,jpeg,png,webp}',
+    './assets/gallery/*/*.{jpg,jpeg,png,webp}',
     {
       eager: true,
       // `as: 'url'` was deprecated in Vite 5+, use `query` with `import`.
@@ -15,35 +15,57 @@ try {
       import: 'default',
     }
   );
-} catch (_) {
+} catch {
   imageModules = {};
 }
 
 export async function buildGallery() {
-  let images = [];
+  // Collect images keyed by category slug
+  const imagesByCategory = {};
+  const categoriesSet = new Set();
+
   if (Object.keys(imageModules).length > 0) {
     for (const path in imageModules) {
-      images.push(imageModules[path]);
+      const url = imageModules[path];
+      const parts = path.split('/');
+      const fileName = parts[parts.length - 1];
+      // Ignore root level painting_### images
+      if (fileName.startsWith('painting_')) continue;
+
+      const galleryIdx = parts.indexOf('gallery');
+      const categoryName = parts[galleryIdx + 1];
+      if (!categoryName || categoryName.startsWith('painting_')) continue;
+
+      const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
+      categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
+      if (!imagesByCategory[slug]) imagesByCategory[slug] = [];
+      imagesByCategory[slug].push(url);
     }
   } else {
     // Fallback when not running through Vite
     try {
       const res = await fetch('gallery.json');
       if (res.ok) {
-        images = await res.json();
+        const data = await res.json();
+        for (const categoryName in data) {
+          const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
+          categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
+          imagesByCategory[slug] = data[categoryName];
+        }
       }
     } catch (err) {
       console.error('Failed to load gallery.json', err);
     }
   }
 
-  let markup = '';
-  for (const imageUrl of images) {
-    markup += `
-      <div class="gallery-item glass-card rounded-xl overflow-hidden fade-in">
-        <img src="${imageUrl}" loading="lazy" alt="gallery image" onerror="this.parentElement.style.display='none'" />
-      </div>
-    `;
+  // Sort image URLs within each category to ensure predictable ordering
+  for (const slug in imagesByCategory) {
+    imagesByCategory[slug].sort((a, b) => a.localeCompare(b));
   }
-  return markup;
+
+  const categories = Array.from(categoriesSet)
+    .map((c) => JSON.parse(c))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return { categories, imagesByCategory };
 }

@@ -1,5 +1,10 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
+import heroImage1 from './assets/hero/[21] interior_04-2021.jpeg';
+import heroImage2 from './assets/hero/[67] interior_11-2022.jpeg';
+import exterior from './assets/exterior.png';
+import dine from './assets/dine.png';
+import dine2 from './assets/dine2.png';
 
 const galleryDataPromise = buildGallery();
 let lightboxInitialized = false;
@@ -434,12 +439,7 @@ const initGalleryEnhancements = () => {
   });
 
   // Preload critical gallery images
-  const preloadImages = [
-    'assets/gallery/showers_35.jpg',
-    'assets/gallery/shower-2.jpg',
-    'assets/gallery/doors_03.jpg',
-    'assets/gallery/railing_04.jpg',
-  ];
+  const preloadImages = [heroImage1, heroImage2, exterior, dine, dine2];
 
   preloadImages.forEach((src) => {
     const link = document.createElement('link');

@@ -6,7 +6,7 @@ import exterior from './assets/exterior.png';
 import dine from './assets/dine.png';
 import dine2 from './assets/dine2.png';
 
-let galleryDataPromise = null;
+const galleryDataPromise = buildGallery();
 let lightboxInitialized = false;
 
 // Wait for the DOM to be fully loaded before running scripts
@@ -107,38 +107,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   );
   const desktopGalleryMenu = document.getElementById('desktop-gallery-menu');
 
-  // Only build gallery data on pages that need it
-  const servicePages = [
-    'interior-painting',
-    'exterior-painting',
-    'carpentry',
-    'remodeling',
-  ];
-  const isServicePage = servicePages.some((slug) =>
-    window.location.pathname.includes(slug)
-  );
-  const galleryGrid = document.querySelector('.gallery-grid');
-
-  if ((desktopGalleryMenu || mobileGalleryMenu) && (galleryGrid || isServicePage)) {
-    galleryDataPromise = galleryDataPromise || buildGallery();
-    const { categories } = await galleryDataPromise;
-
-    if (desktopGalleryMenu) {
-      desktopGalleryMenu.innerHTML = categories
-        .map(
-          (c) =>
-            `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
-        )
-        .join('');
-    }
-    if (mobileGalleryMenu) {
-      mobileGalleryMenu.innerHTML = categories
-        .map(
-          (c) =>
-            `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
-        )
-        .join('');
-    }
+  // Populate gallery dropdowns
+  const { categories } = await galleryDataPromise;
+  if (desktopGalleryMenu) {
+    desktopGalleryMenu.innerHTML = categories
+      .map(
+        (c) =>
+          `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
+      )
+      .join('');
+  }
+  if (mobileGalleryMenu) {
+    mobileGalleryMenu.innerHTML = categories
+      .map(
+        (c) =>
+          `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
+      )
+      .join('');
   }
 
   if (mobileMenuButton && mobileMenu) {
@@ -629,13 +614,13 @@ const initGalleryUI = () => {
 
 // Initialize gallery enhancements when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  const grid = document.querySelector('.gallery-grid');
-  if (grid) {
-    galleryDataPromise = galleryDataPromise || buildGallery();
+  if (window.location.pathname.includes('gallery')) {
+    const grid = document.querySelector('.gallery-grid');
     const select = document.getElementById('gallery-select');
     const { categories, imagesByCategory } = await galleryDataPromise;
 
     const renderCategory = (slug) => {
+      if (!grid) return;
       const images = imagesByCategory[slug] || [];
       grid.innerHTML = images
         .map(

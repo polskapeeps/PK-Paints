@@ -1,8 +1,25 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
 
-const galleryDataPromise = buildGallery();
+let galleryDataPromise = null;
 let lightboxInitialized = false;
+
+const loadGalleryCategories = async () => {
+  try {
+    const res = await fetch('gallery.json');
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Object.keys(data)
+      .map((name) => ({
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  } catch (err) {
+    console.error('Failed to load gallery categories', err);
+    return [];
+  }
+};
 
 // Wait for the DOM to be fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', async () => {
@@ -102,23 +119,43 @@ document.addEventListener('DOMContentLoaded', async () => {
   );
   const desktopGalleryMenu = document.getElementById('desktop-gallery-menu');
 
-  // Populate gallery dropdowns
-  const { categories } = await galleryDataPromise;
-  if (desktopGalleryMenu) {
-    desktopGalleryMenu.innerHTML = categories
-      .map(
-        (c) =>
-          `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
-      )
-      .join('');
-  }
-  if (mobileGalleryMenu) {
-    mobileGalleryMenu.innerHTML = categories
-      .map(
-        (c) =>
-          `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
-      )
-      .join('');
+  // Only build gallery data on pages that need it
+  const servicePages = [
+    'interior-painting',
+    'exterior-painting',
+    'carpentry',
+    'remodeling',
+  ];
+  const isServicePage = servicePages.some((slug) =>
+    window.location.pathname.includes(slug)
+  );
+  const galleryGrid = document.querySelector('.gallery-grid');
+
+  if (desktopGalleryMenu || mobileGalleryMenu) {
+    let categories = [];
+    if (galleryGrid || isServicePage) {
+      galleryDataPromise = galleryDataPromise || buildGallery();
+      ({ categories } = await galleryDataPromise);
+    } else {
+      categories = await loadGalleryCategories();
+    }
+
+    if (desktopGalleryMenu) {
+      desktopGalleryMenu.innerHTML = categories
+        .map(
+          (c) =>
+            `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
+        )
+        .join('');
+    }
+    if (mobileGalleryMenu) {
+      mobileGalleryMenu.innerHTML = categories
+        .map(
+          (c) =>
+            `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
+        )
+        .join('');
+    }
   }
 
   if (mobileMenuButton && mobileMenu) {
@@ -614,13 +651,13 @@ const initGalleryUI = () => {
 
 // Initialize gallery enhancements when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  if (window.location.pathname.includes('gallery')) {
-    const grid = document.querySelector('.gallery-grid');
+  const grid = document.querySelector('.gallery-grid');
+  if (grid) {
+    galleryDataPromise = galleryDataPromise || buildGallery();
     const select = document.getElementById('gallery-select');
     const { categories, imagesByCategory } = await galleryDataPromise;
 
     const renderCategory = (slug) => {
-      if (!grid) return;
       const images = imagesByCategory[slug] || [];
       grid.innerHTML = images
         .map(

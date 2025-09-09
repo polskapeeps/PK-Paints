@@ -90,6 +90,15 @@ body {
   font-weight: 500 !important;
 }
 
+nav a.active,
+#mobile-menu a.active,
+nav button.active,
+#mobile-menu button.active {
+  font-weight: 700;
+  text-decoration: underline;
+  color: #fbbf24 !important;
+}
+
 /* Style for the mobile products dropdown arrow rotation */
 #mobile-services-button[aria-expanded='true'] svg {
   transform: rotate(180deg);

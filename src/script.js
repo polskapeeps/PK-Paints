@@ -141,6 +141,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // Highlight current navigation link
+  const currentPath =
+    window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('nav a, #mobile-menu a').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (
+      !href ||
+      href.startsWith('#') ||
+      href.startsWith('mailto:') ||
+      href.startsWith('tel:')
+    ) {
+      return;
+    }
+    const linkPath = new URL(href, window.location.origin).pathname
+      .split('/')
+      .pop();
+    if (linkPath === currentPath) {
+      link.classList.add('active');
+    }
+  });
+  if (currentPath === 'gallery.html') {
+    if (desktopGalleryButton) desktopGalleryButton.classList.add('active');
+    if (mobileGalleryButton) mobileGalleryButton.classList.add('active');
+  }
+
   if (mobileMenuButton && mobileMenu) {
     mobileMenuButton.addEventListener('click', () => {
       const isExpanded = mobileMenu.classList.toggle('hidden');

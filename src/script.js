@@ -663,10 +663,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const renderCategory = (slug) => {
       const images = imagesByCategory[slug] || [];
       grid.innerHTML = images
-        .map(
-          (url) =>
-            `<div class="gallery-item overflow-hidden fade-in"><img src="${url}" loading="lazy" alt="Gallery image" onerror="this.parentElement.style.display='none'" /></div>`
-        )
+        .map((url) => {
+          const fileName = url.split('/').pop() || '';
+          const caption = fileName
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+          return `<div class="gallery-item overflow-hidden fade-in"><img src="${url}" loading="lazy" alt="${caption}" onerror="this.parentElement.style.display='none'" /><p class="gallery-caption">${caption}</p></div>`;
+        })
         .join('');
       grid.classList.add('visible');
       initGalleryEnhancements();

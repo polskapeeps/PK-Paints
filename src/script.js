@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.fade-in').forEach((el) => {
     observer.observe(el);
   });
-};
+});
 
 // Initialize gallery enhancements when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {

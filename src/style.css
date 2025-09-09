@@ -90,6 +90,15 @@ body {
   font-weight: 500 !important;
 }
 
+nav a.active,
+#mobile-menu a.active,
+nav button.active,
+#mobile-menu button.active {
+  font-weight: 700;
+  text-decoration: underline;
+  color: #fbbf24 !important;
+}
+
 /* Style for the mobile products dropdown arrow rotation */
 #mobile-services-button[aria-expanded='true'] svg {
   transform: rotate(180deg);
@@ -463,6 +472,25 @@ body {
   object-fit: cover;
   position: relative;
   z-index: 0;
+}
+
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.gallery-item:hover .gallery-caption {
+  opacity: 1;
 }
 
 /* ==================== CONTACT SECTION ==================== */

@@ -22,6 +22,7 @@ try {
 export async function buildGallery() {
   // Collect images keyed by category slug
   const imagesByCategory = {};
+  const coverByCategory = {};
   const categoriesSet = new Set();
 
   if (Object.keys(imageModules).length > 0) {
@@ -40,6 +41,9 @@ export async function buildGallery() {
       categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
       if (!imagesByCategory[slug]) imagesByCategory[slug] = [];
       imagesByCategory[slug].push(url);
+      // Detect a cover image if file named like cover.* exists
+      const isCover = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(fileName);
+      if (isCover) coverByCategory[slug] = url;
     }
   } else {
     // Fallback when not running through Vite
@@ -51,6 +55,11 @@ export async function buildGallery() {
           const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
           categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
           imagesByCategory[slug] = data[categoryName];
+          // If any file name within the list matches cover.* use it as cover
+          const cover = (data[categoryName] || []).find((p) =>
+            /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(p)
+          );
+          if (cover) coverByCategory[slug] = cover;
         }
       }
     } catch (err) {
@@ -67,5 +76,5 @@ export async function buildGallery() {
     .map((c) => JSON.parse(c))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  return { categories, imagesByCategory };
+  return { categories, imagesByCategory, coverByCategory };
 }

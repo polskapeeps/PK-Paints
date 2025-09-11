@@ -199,10 +199,25 @@ const initGalleryUI = () => {
 };
 
 export function initGallery(galleryData) {
-  const { categories = [], imagesByCategory = {} } = galleryData || {};
+  const {
+    categories = [],
+    imagesByCategory = {},
+    coverByCategory = {},
+  } = galleryData || {};
   if (!window.location.pathname.includes('gallery')) return;
   const grid = document.querySelector('.gallery-grid');
   const select = document.getElementById('gallery-select');
+  const heroEl = document.querySelector('.service-hero');
+
+  const setHeroForCategory = (slug) => {
+    if (!heroEl) return;
+    const imgs = imagesByCategory[slug] || [];
+    const cover = coverByCategory[slug];
+    const heroUrl = cover || imgs[0];
+    if (heroUrl) {
+      heroEl.style.backgroundImage = `url('${heroUrl}')`;
+    }
+  };
 
   const renderCategory = (slug) => {
     if (!grid) return;
@@ -216,6 +231,7 @@ export function initGallery(galleryData) {
     grid.classList.add('visible');
     initGalleryEnhancements();
     initGalleryUI();
+    setHeroForCategory(slug);
   };
 
   if (select) {

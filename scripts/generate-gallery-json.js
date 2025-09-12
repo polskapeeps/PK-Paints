@@ -12,14 +12,15 @@ function collectImagesByCategory(dir) {
 
   const categories = {};
   for (const entry of entries) {
-    const category = entry.name;
+    const folderName = entry.name;
+    const category = folderName === 'Carpentry' ? 'Custom Installs' : folderName;
     const files = fs
-      .readdirSync(path.join(dir, category))
+      .readdirSync(path.join(dir, folderName))
       .filter((file) => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(file).toLowerCase()))
       .sort();
 
     if (files.length > 0) {
-      categories[category] = files.map((file) => `src/assets/gallery/${category}/${file}`);
+      categories[category] = files.map((file) => `src/assets/gallery/${folderName}/${file}`);
     }
   }
   return categories;

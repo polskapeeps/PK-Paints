@@ -33,14 +33,15 @@ export async function buildGallery() {
       // Ignore root level painting_### images
       if (fileName.startsWith('painting_')) continue;
 
-      const galleryIdx = parts.indexOf('gallery');
-      const categoryName = parts[galleryIdx + 1];
-      if (!categoryName || categoryName.startsWith('painting_')) continue;
+        const galleryIdx = parts.indexOf('gallery');
+        const categoryName = parts[galleryIdx + 1];
+        if (!categoryName || categoryName.startsWith('painting_')) continue;
 
-      const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
-      categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
-      if (!imagesByCategory[slug]) imagesByCategory[slug] = [];
-      imagesByCategory[slug].push(url);
+        const displayName = categoryName === 'Carpentry' ? 'Custom Installs' : categoryName;
+        const slug = displayName.toLowerCase().replace(/\s+/g, '-');
+        categoriesSet.add(JSON.stringify({ name: displayName, slug }));
+        if (!imagesByCategory[slug]) imagesByCategory[slug] = [];
+        imagesByCategory[slug].push(url);
       // Detect a cover image if file named like cover.* exists
       const isCover = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(fileName);
       if (isCover) coverByCategory[slug] = url;
@@ -51,10 +52,11 @@ export async function buildGallery() {
       const res = await fetch('gallery.json');
       if (res.ok) {
         const data = await res.json();
-        for (const categoryName in data) {
-          const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
-          categoriesSet.add(JSON.stringify({ name: categoryName, slug }));
-          imagesByCategory[slug] = data[categoryName];
+          for (const categoryName in data) {
+            const displayName = categoryName === 'Carpentry' ? 'Custom Installs' : categoryName;
+            const slug = displayName.toLowerCase().replace(/\s+/g, '-');
+            categoriesSet.add(JSON.stringify({ name: displayName, slug }));
+            imagesByCategory[slug] = data[categoryName];
           // If any file name within the list matches cover.* use it as cover
           const cover = (data[categoryName] || []).find((p) =>
             /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(p)

@@ -295,8 +295,8 @@ nav button.active,
 .exterior-hero {
   background-image: url('/assets/exterior.png');
 }
-/* Carpentry specific background */
-.carpentry-hero {
+/* Custom install specific background */
+.custom-installs-hero {
   background-image: url('/assets/stain_door.png');
 }
 /* Remodeling specific background */

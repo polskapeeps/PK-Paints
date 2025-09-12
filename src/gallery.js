@@ -122,11 +122,14 @@ const initGalleryUI = () => {
   }
 
   galleryItems.forEach((item) => {
-    item.addEventListener('click', () => {
+    const openItem = () => {
       const items = getGalleryItems();
       const index = items.indexOf(item);
       openLightbox(index);
-    });
+    };
+
+    item.addEventListener('click', openItem);
+    item.addEventListener('touchend', openItem);
   });
 
   if (!lightboxInitialized) {

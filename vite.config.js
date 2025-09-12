@@ -13,7 +13,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         gallery: resolve(__dirname, 'gallery.html'),
         'exterior-painting': resolve(__dirname, 'exterior-painting.html'),
-        carpentry: resolve(__dirname, 'carpentry.html'),
+        'custom-installs': resolve(__dirname, 'custom-installs.html'),
         remodeling: resolve(__dirname, 'remodeling.html'),
         'interior-painting': resolve(__dirname, 'interior-painting.html'),
       },

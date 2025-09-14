@@ -14,7 +14,7 @@ export default defineConfig({
         gallery: resolve(__dirname, 'gallery.html'),
           'exterior-painting': resolve(__dirname, 'exterior-painting.html'),
           'custom-installs': resolve(__dirname, 'carpentry.html'),
-          remodeling: resolve(__dirname, 'remodeling.html'),
+          refinishing: resolve(__dirname, 'refinishing.html'),
           'interior-painting': resolve(__dirname, 'interior-painting.html'),
       },
       output: {

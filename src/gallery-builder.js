@@ -37,6 +37,9 @@ export async function buildGallery() {
         const categoryName = parts[galleryIdx + 1];
         if (!categoryName || categoryName.startsWith('painting_')) continue;
 
+        // Exclude Commercial category entirely from gallery UI
+        if (categoryName === 'Commercial') continue;
+
         const displayName = categoryName === 'Carpentry' ? 'Custom Installs' : categoryName;
         const slug = displayName.toLowerCase().replace(/\s+/g, '-');
         categoriesSet.add(JSON.stringify({ name: displayName, slug }));
@@ -53,6 +56,7 @@ export async function buildGallery() {
       if (res.ok) {
         const data = await res.json();
           for (const categoryName in data) {
+            if (categoryName === 'Commercial') continue; // Exclude Commercial in fallback
             const displayName = categoryName === 'Carpentry' ? 'Custom Installs' : categoryName;
             const slug = displayName.toLowerCase().replace(/\s+/g, '-');
             categoriesSet.add(JSON.stringify({ name: displayName, slug }));

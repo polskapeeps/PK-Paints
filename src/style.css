@@ -300,9 +300,9 @@ nav button.active,
 .custom-installs-hero {
   background-image: url('assets/stain_door.png');
 }
-/* Remodeling specific background */
-.remodeling-hero {
-  background-image: url('assets/bunk_bed.png');
+/* Refinishing specific background */
+.refinishing-hero {
+  background-image: url('assets/gallery/Kitchen Refinish/[9] kitchen-refinishes_03-2022.jpeg');
 }
 
 /* Dark overlay for text readability */

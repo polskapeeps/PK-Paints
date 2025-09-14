@@ -289,7 +289,8 @@ nav button.active,
 
 /* Interior painting specific background */
 .interior-hero {
-  background-image: url('assets/dine.png');
+  /* Use existing asset; path relative to this CSS file */
+  background-image: url('assets/interior/[58] interior_11-2022.jpeg');
 }
 /* Exterior painting specific background */
 .exterior-hero {

@@ -293,15 +293,15 @@ nav button.active,
 }
 /* Exterior painting specific background */
 .exterior-hero {
-  background-image: url('/assets/exterior.png');
+  background-image: url('src/assets/exterior.png');
 }
 /* Custom installs specific background */
 .custom-installs-hero {
-  background-image: url('/assets/stain_door.png');
+  background-image: url('src/assets/stain_door.png');
 }
 /* Remodeling specific background */
 .remodeling-hero {
-  background-image: url('/assets/bunk_bed.png');
+  background-image: url('src/assets/bunk_bed.png');
 }
 
 /* Dark overlay for text readability */

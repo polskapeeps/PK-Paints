@@ -336,17 +336,11 @@ nav button.active,
 }
 
 .glass-card-hero {
-  background: linear-gradient(
-      155deg,
-      rgba(15, 23, 42, 0.45),
-      rgba(15, 23, 42, 0.2)
-    )
-    !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  backdrop-filter: saturate(135%) blur(30px);
-  -webkit-backdrop-filter: saturate(135%) blur(30px);
-  box-shadow: 0 30px 90px rgba(5, 11, 23, 0.38),
-    0 12px 35px rgba(9, 16, 35, 0.28) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
   padding: clamp(2.5rem, 5vw, 3.5rem) !important;
 }
 
@@ -654,16 +648,11 @@ nav button.active,
 
 /* Glass hero card for service pages */
 .service-hero .glass-card-hero {
-  background: linear-gradient(
-    150deg,
-    rgba(15, 23, 42, 0.42),
-    rgba(15, 23, 42, 0.18)
-  ) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  backdrop-filter: saturate(140%) blur(30px);
-  -webkit-backdrop-filter: saturate(140%) blur(30px);
-  box-shadow: 0 26px 70px rgba(6, 13, 29, 0.36),
-    0 10px 28px rgba(9, 17, 36, 0.24) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 /* Service hero text shadows */
@@ -689,11 +678,7 @@ nav button.active,
   }
 
   .service-hero .glass-card-hero {
-    background: linear-gradient(
-      150deg,
-      rgba(15, 23, 42, 0.52),
-      rgba(15, 23, 42, 0.26)
-    ) !important;
+    background: transparent !important;
   }
 
   .service-hero .glass-card-hero h1,
@@ -1221,7 +1206,7 @@ button:focus {
   }
 
   .glass-card-hero {
-    background: rgba(10, 15, 28, 0.6) !important;
+    background: transparent !important;
   }
 
   .glass-dropdown {

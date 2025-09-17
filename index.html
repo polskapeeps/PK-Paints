@@ -72,23 +72,6 @@
   -->
 
   <link rel="stylesheet" href="src/style.css" />
-  <style>
-    /* Mobile Service Links */
-    .mobile-service-link {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .mobile-service-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(245, 158, 11, 0.4);
-      /* amber-500 with opacity */
-      transform: translateY(-2px);
-    }
-  </style>
 </head>
 
 <body class="bg-gray-950 text-gray-200 antialiased font-inter">
@@ -183,8 +166,7 @@
                 role="menu"></div>
             </div>
             <a href="#contact"
-              class="glass-nav-item hover-glass-nav px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">Contact
-              Us</a>
+              class="nav-cta px-5 py-2 rounded-xl text-sm font-semibold transition-transform duration-200">Get a Quote</a>
           </nav>
 
           <!-- Desktop Social Icons -->
@@ -227,7 +209,7 @@
       <!-- Contact Info Section for Mobile -->
       <div class="border-b border-gray-700/30 py-4 px-4 space-y-2">
         <a href="tel:2156038009"
-          class="flex items-center text-sm text-yellow-400 hover:text-yellow-300 transition-colors duration-200">
+          class="flex items-center text-sm text-amber-200 hover:text-amber-100 transition-colors duration-200 font-medium">
           <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.308 1.154a11.06 11.06 0 006.086 6.086l1.154-2.308a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
@@ -236,7 +218,7 @@
           (215) 603-8009
         </a>
         <a href="mailto:peterkpaint@gmail.com"
-          class="flex items-center text-sm text-yellow-400 hover:text-yellow-300 transition-colors duration-200">
+          class="flex items-center text-sm text-amber-200 hover:text-amber-100 transition-colors duration-200 font-medium">
           <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
@@ -257,7 +239,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
-        <div id="mobile-services-menu" class="hidden pl-4 bg-gray-750/50">
+        <div id="mobile-services-menu" class="hidden pl-4 space-y-1">
           <a href="interior-painting.html"
             class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">Interior
             Painting</a>
@@ -281,10 +263,11 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
-        <div id="mobile-gallery-menu" class="hidden pl-4 bg-gray-750/50"></div>
+        <div id="mobile-gallery-menu" class="hidden pl-4 space-y-1"></div>
       </div>
-      <a href="#contact"
-        class="block py-3 px-4 text-base text-gray-200 hover:bg-white/10 transition-colors duration-200">Contact Us</a>
+      <div class="px-4 pt-3 pb-5">
+        <a href="#contact" class="mobile-cta">Get a Quote</a>
+      </div>
     </div>
   </header>
 
@@ -300,6 +283,8 @@
         <div class="hero-slide"></div>
       </div>
 
+      <div class="hero-overlay"></div>
+
 
       <!-- Slideshow indicators (dots) with glass effect -->
       <div class="slideshow-indicators">
@@ -312,20 +297,74 @@
 
       <!-- Hero Content -->
       <div class="service-hero-content">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <!-- Main hero card -->
-          <div class="glass-card-hero rounded-3xl p-12 max-w-4xl mx-auto">
-            <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight">
-              <span class="gradient-text">PK Paints &amp; Renovations</span>
-            </h1>
-            <p class="text-base sm:text-lg italic mb-12 text-gray-200 max-w-3xl mx-auto leading-relaxed">
-              Custom <span class="gradient-text">trim work</span><br />
-              Premium <span class="gradient-text">spray finishes</span>.
-            </p>
-            <a href="#contact"
-              class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-600">
-              Get Free Quote
-            </a>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="max-w-5xl mx-auto flex flex-col gap-8">
+            <div class="glass-card-hero rounded-[2rem] max-w-4xl mx-auto text-center md:text-left">
+              <div class="flex flex-col gap-6">
+                <span class="hero-eyebrow">Signature finishes &amp; renovations</span>
+                <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight">
+                  <span class="gradient-text">PK Paints &amp; Renovations</span>
+                </h1>
+                <p class="hero-subtitle max-w-3xl mx-auto md:mx-0">
+                  From meticulous prep to flawless finishes, our team delivers elevated interior and exterior painting,
+                  custom installs, and cabinetry refinishing that stand the test of time.
+                </p>
+                <div class="hero-actions">
+                  <a href="#contact" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-2xl">
+                    Get a Free Quote
+                  </a>
+                  <a href="tel:2156038009"
+                    class="btn-secondary inline-flex items-center justify-center px-8 py-4 rounded-2xl">
+                    Call (215) 603-8009
+                  </a>
+                </div>
+                <ul class="hero-badges">
+                  <li>Interior &amp; exterior specialists</li>
+                  <li>Cabinet refinishing &amp; custom trim</li>
+                  <li>Serving the Philadelphia area</li>
+                </ul>
+              </div>
+            </div>
+            <div class="hero-quick-links">
+              <a href="#services" class="hero-quick-link">
+                <span class="hero-quick-icon">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                      d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                  </svg>
+                </span>
+                <div>
+                  <span class="hero-quick-title">Explore Services</span>
+                  <span class="hero-quick-text">Interior, exterior &amp; specialty work</span>
+                </div>
+              </a>
+              <a href="gallery.html" class="hero-quick-link">
+                <span class="hero-quick-icon">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                      d="M4 7a2 2 0 012-2h3l1-2h4l1 2h3a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                    <circle cx="12" cy="13.5" r="2.8" stroke-width="1.6" stroke="currentColor" fill="none" />
+                  </svg>
+                </span>
+                <div>
+                  <span class="hero-quick-title">View Gallery</span>
+                  <span class="hero-quick-text">See finishes &amp; transformations</span>
+                </div>
+              </a>
+              <a href="#contact" class="hero-quick-link">
+                <span class="hero-quick-icon">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                      d="M4 6h16a2 2 0 012 2v7a2 2 0 01-2 2h-6l-4 4v-4H4a2 2 0 01-2-2V8a2 2 0 012-2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M8 11h8M8 14h5" />
+                  </svg>
+                </span>
+                <div>
+                  <span class="hero-quick-title">Schedule a Consultation</span>
+                  <span class="hero-quick-text">Connect with our renovation team</span>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -361,6 +400,11 @@
                 <p>
                   Perfection drives us. Let’s make your home <span class="gradient-text">extraordinary</span>.
                 </p>
+                <ul class="about-highlights">
+                  <li>Detailed prep work &amp; immaculate cleanup on every project</li>
+                  <li>Collaborative partnerships with homeowners, designers &amp; contractors</li>
+                  <li>Trusted service throughout Philadelphia and the surrounding tri-state area</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -383,164 +427,80 @@
             <h2 class="text-4xl lg:text-5xl font-bold text-white">
               <span class="gradient-text">Services</span>
             </h2>
+            <p class="section-intro max-w-2xl mx-auto">
+              Comprehensive painting, refinishing, and renovation expertise tailored to elevate every surface of your
+              home or business.
+            </p>
           </div>
-
-          <!-- Mobile: Simple Links -->
-          <div class="md:hidden space-y-3 mb-6">
-          <a href="interior-painting.html" class="mobile-service-link flex items-center p-4 rounded-xl">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center mr-4">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white">Interior Painting</h3>
-              <p class="text-sm text-gray-400">Walls, ceilings & trim</p>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-
-          <a href="exterior-painting.html" class="mobile-service-link flex items-center p-4 rounded-xl">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center mr-4">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8.25 9V7a3.75 3.75 0 117.5 0v2m-7.5 4v6.75A1.25 1.25 0 009.5 21h5a1.25 1.25 0 001.25-1.25V13M8.25 9h7.5a1.25 1.25 0 011.25 1.25V13">
-                </path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white">Exterior Painting</h3>
-              <p class="text-sm text-gray-400">Siding, decks & more</p>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-
-          <a href="#" class="mobile-service-link flex items-center p-4 rounded-xl">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center mr-4">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
-                </path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white">Trim Work</h3>
-              <p class="text-sm text-gray-400">Custom woodwork & repairs</p>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-
-          <a href="#" class="mobile-service-link flex items-center p-4 rounded-xl">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center mr-4">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white">Remodeling</h3>
-              <p class="text-sm text-gray-400">Kitchens, baths & more</p>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-          </div>
-
-          <!-- Desktop: Compact horizontal row -->
-          <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6">
-          <a href="interior-painting.html" class="desktop-service-link group block h-full">
-            <div
-              class="flex flex-col items-center text-center p-6 rounded-xl glass-card transition-all duration-300 hover:scale-105 hover:shadow-glow h-full">
-              <div
-                class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-6">
+            <a href="interior-painting.html" class="service-card group">
+              <span class="service-card-icon">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                    d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                 </svg>
+              </span>
+              <div class="flex flex-col gap-3">
+                <h3 class="service-card-title">Interior Painting</h3>
+                <p class="service-card-description">Walls, ceilings &amp; trim finished with precision</p>
+                <span class="service-card-link">Learn more
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </div>
-              <h3
-                class="text-xl font-semibold text-white mb-2 group-hover:text-yellow-300 transition-colors duration-300">
-                Interior Painting
-              </h3>
-              <p class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                Full service for your entire home
-              </p>
-            </div>
-          </a>
-
-          <a href="exterior-painting.html" class="desktop-service-link group block h-full">
-            <div
-              class="flex flex-col items-center text-center p-6 rounded-xl glass-card transition-all duration-300 hover:scale-105 hover:shadow-glow h-full">
-              <div
-                class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8.25 9V7a3.75 3.75 0 117.5 0v2m-7.5 4v6.75A1.25 1.25 0 009.5 21h5a1.25 1.25 0 001.25-1.25V13M8.25 9h7.5a1.25 1.25 0 011.25 1.25V13">
-                  </path>
+            </a>
+            <a href="exterior-painting.html" class="service-card group">
+              <span class="service-card-icon">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                    d="M8.25 9V7a3.75 3.75 0 117.5 0v2m-7.5 4v6.75A1.25 1.25 0 009.5 21h5a1.25 1.25 0 001.25-1.25V13M8.25 9h7.5a1.25 1.25 0 011.25 1.25V13" />
                 </svg>
+              </span>
+              <div class="flex flex-col gap-3">
+                <h3 class="service-card-title">Exterior Painting</h3>
+                <p class="service-card-description">Protective coatings for siding, decks &amp; masonry</p>
+                <span class="service-card-link">Learn more
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </div>
-              <h3
-                class="text-xl font-semibold text-white mb-2 group-hover:text-yellow-300 transition-colors duration-300">
-                Exterior Painting
-              </h3>
-              <p class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                Siding, decks & more
-              </p>
-            </div>
-          </a>
-
-          <a href="carpentry.html" class="desktop-service-link group block h-full">
-            <div
-              class="flex flex-col items-center text-center p-6 rounded-xl glass-card transition-all duration-300 hover:scale-105 hover:shadow-glow h-full">
-              <div
-                class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
-                  </path>
+            </a>
+            <a href="carpentry.html" class="service-card group">
+              <span class="service-card-icon">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
+              </span>
+              <div class="flex flex-col gap-3">
+                <h3 class="service-card-title">Custom Installs</h3>
+                <p class="service-card-description">Built-ins, trim upgrades &amp; tailored carpentry</p>
+                <span class="service-card-link">Learn more
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </div>
-              <h3
-                class="text-xl font-semibold text-white mb-2 group-hover:text-yellow-300 transition-colors duration-300">
-                Custom Installs
-              </h3>
-              <p class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                Custom installs & repairs
-              </p>
-            </div>
-          </a>
-
-          <a href="remodeling.html" class="desktop-service-link group block h-full">
-            <div
-              class="flex flex-col items-center text-center p-6 rounded-xl glass-card transition-all duration-300 hover:scale-105 hover:shadow-glow h-full">
-              <div
-                class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18"></path>
+            </a>
+            <a href="remodeling.html" class="service-card group">
+              <span class="service-card-icon">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"
+                    d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18" />
                 </svg>
+              </span>
+              <div class="flex flex-col gap-3">
+                <h3 class="service-card-title">Refinishing &amp; Remodeling</h3>
+                <p class="service-card-description">Cabinetry, kitchens, baths &amp; full-room refreshes</p>
+                <span class="service-card-link">Learn more
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </div>
-              <h3
-                class="text-xl font-semibold text-white mb-2 group-hover:text-yellow-300 transition-colors duration-300">
-                Refinishing
-              </h3>
-              <p class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                Kitchen cabinets, built-ins & more
-              </p>
-            </div>
-          </a>
+            </a>
           </div>
         </div>
       </div>

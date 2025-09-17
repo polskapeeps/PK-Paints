@@ -1,9 +1,110 @@
 /* ==================== BASE STYLES ==================== */
 
 /* Base body styles */
+:root {
+  --brand-bg: #050b1b;
+  --brand-bg-secondary: #0f172a;
+  --brand-card: rgba(15, 23, 42, 0.72);
+  --brand-card-strong: rgba(15, 23, 42, 0.88);
+  --brand-border: rgba(148, 163, 184, 0.18);
+  --brand-border-strong: rgba(148, 163, 184, 0.28);
+  --brand-accent: #facc15;
+  --brand-accent-strong: #f59e0b;
+  --brand-accent-soft: rgba(250, 204, 21, 0.18);
+  --brand-text: #f8fafc;
+  --brand-muted: rgba(203, 213, 225, 0.78);
+}
+
 body {
   font-family: 'Inter', sans-serif; /* Ensure Inter font is primary */
   scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+  background-color: var(--brand-bg);
+  background-image: radial-gradient(
+      circle at 12% 18%,
+      rgba(148, 163, 184, 0.16),
+      transparent 58%
+    ),
+    radial-gradient(
+      circle at 84% 8%,
+      rgba(250, 204, 21, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 50% 105%,
+      rgba(56, 189, 248, 0.12),
+      transparent 65%
+    );
+  color: var(--brand-text);
+  min-height: 100vh;
+}
+
+.bg-shapes {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+.bg-shape {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.32;
+  transform: translate3d(0, 0, 0);
+  animation: shapeFloat 18s ease-in-out infinite alternate;
+}
+
+.bg-shape-1 {
+  width: 42vw;
+  height: 42vw;
+  top: -12vw;
+  left: -14vw;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(56, 189, 248, 0.4),
+    rgba(15, 23, 42, 0)
+  );
+}
+
+.bg-shape-2 {
+  width: 38vw;
+  height: 38vw;
+  bottom: -16vw;
+  left: 18vw;
+  background: radial-gradient(
+    circle at 70% 70%,
+    var(--brand-accent-soft),
+    rgba(15, 23, 42, 0)
+  );
+}
+
+.bg-shape-3 {
+  width: 46vw;
+  height: 46vw;
+  top: 18%;
+  right: -18vw;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(99, 102, 241, 0.24),
+    rgba(15, 23, 42, 0)
+  );
+}
+
+@keyframes shapeFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(0, -20px, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-shape {
+    animation: none;
+  }
 }
 
 /* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
@@ -28,28 +129,53 @@ body {
 
 /* ==================== HEADER & NAVIGATION ==================== */
 
-/* Improved header with better contrast */
+/* Elevated glass header with gentle contrast */
 .glass-header {
-  background: rgba(
-    0,
-    0,
-    0,
-    0.8
-  ) !important; /* Darker background for better contrast */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: linear-gradient(
+      120deg,
+      rgba(7, 11, 23, 0.95),
+      rgba(7, 18, 34, 0.82)
+    )
+    !important;
+  border-bottom: 1px solid var(--brand-border);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow: 0 18px 45px rgba(6, 11, 25, 0.45);
 }
 
-/* Make navigation text more legible */
 .glass-nav-item {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: rgba(255, 255, 255, 0.95) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow for better readability */
+  background: rgba(148, 163, 184, 0.12) !important;
+  border: 1px solid transparent;
+  color: var(--brand-text) !important;
+  font-weight: 500;
+  text-shadow: none;
 }
 
-.hover-glass-nav:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
+.hover-glass-nav:hover,
+.glass-nav-item:focus-visible {
+  background: rgba(148, 163, 184, 0.22) !important;
+  border-color: rgba(148, 163, 184, 0.35);
+  color: #ffffff !important;
+  box-shadow: 0 16px 35px rgba(8, 47, 73, 0.35);
+}
+
+.nav-cta {
+  background: linear-gradient(
+      135deg,
+      var(--brand-accent),
+      var(--brand-accent-strong)
+    )
+    !important;
+  color: #0f172a !important;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 18px 35px rgba(250, 204, 21, 0.28);
+}
+
+.nav-cta:hover,
+.nav-cta:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 45px rgba(250, 204, 21, 0.36);
 }
 
 /* Desktop dropdown menu visibility on hover */
@@ -70,24 +196,68 @@ body {
 
 /* Improve dropdown menu legibility */
 .glass-dropdown {
-  background: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: linear-gradient(
+      145deg,
+      rgba(15, 23, 42, 0.92),
+      rgba(15, 23, 42, 0.75)
+    )
+    !important;
+  border: 1px solid var(--brand-border);
+  box-shadow: 0 28px 60px rgba(6, 11, 25, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 /* Mobile menu improvements */
 #mobile-menu {
-  background: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: linear-gradient(
+      150deg,
+      rgba(15, 23, 42, 0.94),
+      rgba(15, 23, 42, 0.8)
+    )
+    !important;
+  border: 1px solid var(--brand-border);
+  border-top: none;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 25px 55px rgba(6, 11, 25, 0.5);
 }
 
-#mobile-menu a {
-  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.9), -1px -1px 0px rgba(0, 0, 0, 0.9),
-    1px -1px 0px rgba(0, 0, 0, 0.9), -1px 1px 0px rgba(0, 0, 0, 0.9),
-    3px 3px 6px rgba(0, 0, 0, 0.8) !important;
-  color: rgba(255, 255, 255, 0.95) !important;
+#mobile-menu a,
+#mobile-menu button {
+  color: rgba(226, 232, 240, 0.92) !important;
   font-weight: 500 !important;
+  text-shadow: none !important;
+  border-radius: 0.75rem;
+}
+
+#mobile-menu a:hover,
+#mobile-menu button:hover {
+  background: rgba(148, 163, 184, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.mobile-cta {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  background: linear-gradient(
+      135deg,
+      var(--brand-accent),
+      var(--brand-accent-strong)
+    );
+  color: #0f172a !important;
+  box-shadow: 0 18px 38px rgba(250, 204, 21, 0.28);
+}
+
+.mobile-cta:hover,
+.mobile-cta:focus-visible {
+  box-shadow: 0 24px 48px rgba(250, 204, 21, 0.34);
+  transform: translateY(-1px);
 }
 
 nav a.active,
@@ -154,64 +324,223 @@ nav button.active,
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+  background: linear-gradient(
+    160deg,
+    rgba(7, 15, 32, 0.26) 0%,
+    rgba(11, 21, 44, 0.06) 45%,
+    rgba(7, 15, 32, 0.22) 100%
+  );
+  backdrop-filter: saturate(120%) blur(1.5px);
+  -webkit-backdrop-filter: saturate(120%) blur(1.5px);
   z-index: -1; /* Above slides, below content */
 }
 
-/* Improve hero text legibility */
-.hero-glass-overlay {
-  background: rgba(
-    0,
-    0,
-    0,
-    0.2
-  ) !important; /* Darker overlay for better text contrast */
-  backdrop-filter: blur(1px);
+.glass-card-hero {
+  background: linear-gradient(
+      155deg,
+      rgba(15, 23, 42, 0.22),
+      rgba(15, 23, 42, 0.08)
+    )
+    !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: saturate(150%) blur(24px);
+  -webkit-backdrop-filter: saturate(150%) blur(24px);
+  box-shadow: 0 18px 55px rgba(5, 11, 23, 0.26),
+    0 6px 18px rgba(9, 16, 35, 0.18) !important;
+  padding: clamp(2.5rem, 5vw, 3.5rem) !important;
 }
 
-/* Add text shadows to hero text for better readability */
 .glass-card-hero h1,
 .glass-card-hero p {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
+  color: var(--brand-text) !important;
+  text-shadow: 0 12px 32px rgba(4, 10, 24, 0.45),
+    0 3px 14px rgba(4, 10, 24, 0.35);
 }
 
-/* Specifically target the main hero heading */
 .glass-card-hero h1 {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
+  letter-spacing: -0.02em;
 }
 
-.glass-card-hero h1 .gradient-text {
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
-    -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
-}
-.glass-card-hero p .gradient-text {
-  /* Add custom text-shadow properties here if desired */
-  /* For example, to give it a subtle glow similar to the h1, but perhaps less intense: */
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.195),
-    -1px -1px 0px rgba(200, 161, 72, 0.7), 1px -1px 0px rgba(79, 50, 8, 0.7),
-    -1px 1px 0px rgba(0, 0, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(212, 175, 55, 0.4) !important;
+.glass-card-hero p {
+  color: rgba(226, 232, 240, 0.95) !important;
 }
 
-/* Make the hero card background more refined */
-.glass-card-hero {
-  background: none !important; /* Remove the big dark block */
-  backdrop-filter: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 2rem !important; /* Reduce padding so it's not so massive */
+.hero-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  font-size: 0.75rem;
+  color: rgba(226, 232, 240, 0.6);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2.6vw, 1.3rem);
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .hero-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-actions {
+    justify-content: flex-start;
+  }
+}
+
+.btn-primary {
+  background: linear-gradient(
+      135deg,
+      var(--brand-accent),
+      var(--brand-accent-strong)
+    )
+    !important;
+  box-shadow: 0 20px 45px rgba(250, 204, 21, 0.35);
+  text-shadow: none;
+  border: none;
+  color: #0f172a !important;
+  font-weight: 600;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  box-shadow: 0 28px 55px rgba(250, 204, 21, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--brand-text) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  font-weight: 600;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  background: rgba(148, 163, 184, 0.22);
+  border-color: rgba(148, 163, 184, 0.45);
+  transform: translateY(-2px);
+}
+
+.hero-badges {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.hero-badges li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 9999px;
+  background: linear-gradient(
+    145deg,
+    rgba(15, 23, 42, 0.26),
+    rgba(15, 23, 42, 0.12)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: saturate(130%) blur(16px);
+  -webkit-backdrop-filter: saturate(130%) blur(16px);
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 0.85rem;
+}
+
+.hero-badges li::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: linear-gradient(
+    120deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  );
+}
+
+.hero-quick-links {
+  margin-top: clamp(2rem, 5vw, 3rem);
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .hero-quick-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.hero-quick-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1.5rem;
+  text-decoration: none;
+  background: linear-gradient(
+    150deg,
+    rgba(15, 23, 42, 0.26),
+    rgba(15, 23, 42, 0.12)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: saturate(130%) blur(18px);
+  -webkit-backdrop-filter: saturate(130%) blur(18px);
+  box-shadow: 0 18px 45px rgba(5, 11, 23, 0.24),
+    0 6px 18px rgba(8, 16, 35, 0.18);
+  transition: transform 0.35s ease, box-shadow 0.35s ease,
+    border-color 0.35s ease, background 0.35s ease;
+}
+
+.hero-quick-link:hover,
+.hero-quick-link:focus-visible {
+  transform: translateY(-6px);
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: 0 28px 58px rgba(5, 11, 23, 0.32),
+    0 0 30px rgba(250, 204, 21, 0.22);
+  background: linear-gradient(
+    150deg,
+    rgba(15, 23, 42, 0.36),
+    rgba(15, 23, 42, 0.16)
+  );
+}
+
+.hero-quick-icon {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 204, 21, 0.18);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  box-shadow: 0 8px 18px rgba(250, 204, 21, 0.22);
+  color: var(--brand-accent);
+}
+
+.hero-quick-title {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-text);
+}
+
+.hero-quick-text {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.72);
 }
 
 /* Add your slide images here - easily customizable */
@@ -326,28 +655,31 @@ nav button.active,
 
 /* Glass hero card for service pages */
 .service-hero .glass-card-hero {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(
+    150deg,
+    rgba(15, 23, 42, 0.24),
+    rgba(15, 23, 42, 0.1)
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: saturate(145%) blur(22px);
+  -webkit-backdrop-filter: saturate(145%) blur(22px);
+  box-shadow: 0 20px 50px rgba(6, 13, 29, 0.26),
+    0 8px 20px rgba(9, 17, 36, 0.18) !important;
 }
 
 /* Service hero text shadows */
 .service-hero .glass-card-hero h1,
 .service-hero .glass-card-hero p {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 10px 28px rgba(7, 14, 30, 0.45) !important;
 }
 
 .service-hero .glass-card-hero h1 {
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 14px 36px rgba(7, 14, 30, 0.5) !important;
 }
 
 .service-hero .glass-card-hero h1 .gradient-text {
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
-    -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.35),
+    0 10px 26px rgba(7, 14, 30, 0.45) !important;
 }
 
 /* Mobile optimization */
@@ -358,17 +690,17 @@ nav button.active,
   }
 
   .service-hero .glass-card-hero {
-    background: rgba(255, 255, 255, 0.12) !important;
+    background: linear-gradient(
+      150deg,
+      rgba(15, 23, 42, 0.32),
+      rgba(15, 23, 42, 0.16)
+    ) !important;
   }
 
   .service-hero .glass-card-hero h1,
   .service-hero .glass-card-hero p {
-    text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-      -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-      1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-      0 0 10px rgba(255, 255, 255, 0.5) !important;
-    color: white !important;
-    font-weight: 700 !important;
+    text-shadow: 0 12px 28px rgba(8, 15, 32, 0.48) !important;
+    color: rgba(226, 232, 240, 0.96) !important;
   }
 }
 
@@ -376,11 +708,16 @@ nav button.active,
 
 /* Floating info cards - make text more legible */
 .glass-card {
-  background: rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(
+      150deg,
+      rgba(15, 23, 42, 0.78),
+      rgba(15, 23, 42, 0.56)
+    )
+    !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--brand-border);
+  box-shadow: 0 22px 55px rgba(5, 11, 23, 0.4);
 }
 
 .glass-card .gradient-text {
@@ -388,44 +725,148 @@ nav button.active,
 }
 
 .glass-card-strong {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(
+      160deg,
+      rgba(15, 23, 42, 0.88),
+      rgba(15, 23, 42, 0.64)
+    )
+    !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--brand-border-strong);
+  box-shadow: 0 28px 70px rgba(5, 11, 23, 0.5);
 }
 
 /* ==================== SERVICES SECTION ==================== */
 
-/* Service Cards - Enhanced glass effect */
 .service-card {
-  background: rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(
+      155deg,
+      rgba(15, 23, 42, 0.82),
+      rgba(15, 23, 42, 0.68)
+    )
+    !important;
+  border: 1px solid var(--brand-border) !important;
+  border-radius: 1.25rem;
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 22px 55px rgba(5, 11, 23, 0.45) !important;
+  transition: transform 0.35s ease, box-shadow 0.35s ease,
+    border-color 0.35s ease, background 0.35s ease;
 }
 
 .service-card:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(212, 175, 55, 0.3) !important;
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.2) !important;
+  transform: translateY(-6px);
+  border-color: rgba(250, 204, 21, 0.45) !important;
+  box-shadow: 0 32px 65px rgba(5, 11, 23, 0.55),
+    0 0 35px rgba(250, 204, 21, 0.2) !important;
+  background: linear-gradient(
+      155deg,
+      rgba(15, 23, 42, 0.9),
+      rgba(15, 23, 42, 0.72)
+    )
+    !important;
 }
 
-/* Make service icons more premium */
-.service-card .bg-gradient-to-br {
-  background: linear-gradient(135deg, #c8a148, #4f3208) !important;
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  transition: all 0.3s ease;
+.service-card-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 204, 21, 0.14);
+  border: 1px solid rgba(250, 204, 21, 0.32);
+  color: var(--brand-accent);
+  transition: transform 0.35s ease;
 }
 
-.service-card:hover .bg-gradient-to-br {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+.service-card:hover .service-card-icon {
+  transform: scale(1.05) translateY(-2px);
+}
+
+.service-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--brand-text);
+}
+
+.service-card-description {
+  font-size: 0.95rem;
+  color: rgba(226, 232, 240, 0.8);
+  line-height: 1.6;
+}
+
+.service-card-link {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: rgba(250, 204, 21, 0.85);
+  transition: gap 0.3s ease, color 0.3s ease;
+}
+
+.service-card-link svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-card-link {
+  color: var(--brand-accent);
+  gap: 0.45rem;
+}
+
+.service-card:hover .service-card-link svg {
+  transform: translateX(4px);
+}
+
+.section-intro {
+  margin-top: 0.75rem;
+  color: rgba(226, 232, 240, 0.75);
+  line-height: 1.7;
+}
+
+.about-highlights {
+  margin-top: 1.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .about-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.about-highlights li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--brand-border);
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.about-highlights li::before {
+  content: '';
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  );
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
 }
 
 /* ==================== GALLERY SECTION ==================== */
@@ -498,41 +939,56 @@ nav button.active,
 
 /* Contact Section - Premium glass card */
 .contact-card {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4) !important;
+  background: linear-gradient(
+      150deg,
+      rgba(15, 23, 42, 0.9),
+      rgba(15, 23, 42, 0.65)
+    )
+    !important;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--brand-border-strong) !important;
+  box-shadow: 0 32px 80px rgba(5, 11, 23, 0.55) !important;
 }
 
 /* Contact icons - glass treatment */
 .contact-card .glass-card {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(212, 175, 55, 0.2) !important;
+  background: rgba(148, 163, 184, 0.12) !important;
+  border: 1px solid rgba(250, 204, 21, 0.28) !important;
   transition: all 0.3s ease;
 }
 
 .contact-card .glass-card:hover {
-  background: rgba(212, 175, 55, 0.1) !important;
-  border-color: rgba(212, 175, 55, 0.4) !important;
-  transform: scale(1.05);
+  background: rgba(250, 204, 21, 0.16) !important;
+  border-color: rgba(250, 204, 21, 0.45) !important;
+  transform: translateY(-2px);
 }
 
 /* ==================== FOOTER ==================== */
 
 /* Footer - Glass treatment */
 footer {
-  background: rgba(255, 255, 255, 0.03) !important;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.85),
+      rgba(15, 23, 42, 0.6)
+    )
+    !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--brand-border);
 }
 
 /* ==================== VISUAL ENHANCEMENTS ==================== */
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #c8a148, #4f3208);
+  background: linear-gradient(
+    135deg,
+    var(--brand-accent),
+    #f97316 55%,
+    var(--brand-accent-strong)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -540,12 +996,17 @@ footer {
 
 /* Gradient button matching logo colors */
 .btn-gold {
-  background: linear-gradient(135deg, #c8a148, #4f3208);
-  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  );
+  color: #0f172a;
 }
 
 .btn-gold:hover {
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(250, 204, 21, 0.22);
 }
 
 /* Floating animation for CTA button */
@@ -566,7 +1027,7 @@ footer {
 /* Enhanced contact section */
 .contact-card {
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--brand-border);
 }
 
 /* Enhanced transitions for better UX */
@@ -578,7 +1039,7 @@ button {
 /* Focus states for accessibility */
 a:focus,
 button:focus {
-  outline: 2px solid #c8a148;
+  outline: 2px solid var(--brand-accent);
   outline-offset: 2px;
 }
 
@@ -597,24 +1058,28 @@ button:focus {
 
 /* Enhanced shadow system */
 .shadow-glow {
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.28);
 }
 
 .shadow-glow-hover:hover {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 30px rgba(250, 204, 21, 0.32);
 }
 
 /* Improve button visibility */
 .btn-primary {
-  background: linear-gradient(135deg, #c8a148, #4f3208) !important;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-  text-shadow: none; /* Buttons don't need text shadow */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(
+      135deg,
+      var(--brand-accent),
+      var(--brand-accent-strong)
+    )
+    !important;
+  box-shadow: 0 20px 45px rgba(250, 204, 21, 0.32);
+  border: none;
+  color: #0f172a !important;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
-  transform: translateY(-2px);
+  box-shadow: 0 26px 55px rgba(250, 204, 21, 0.4);
 }
 
 /* ==================== VISUAL CONSISTENCY UPGRADES ==================== */
@@ -757,7 +1222,7 @@ button:focus {
   }
 
   .glass-card-hero {
-    background: rgba(0, 0, 0, 0.7) !important;
+    background: rgba(10, 15, 28, 0.35) !important;
   }
 
   .glass-dropdown {

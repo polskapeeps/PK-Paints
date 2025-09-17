@@ -235,6 +235,83 @@ export function initNavMenu(galleryData) {
     });
   });
 
+  const header = document.querySelector('header');
+  const headerAnchors = header
+    ? header.querySelectorAll('a[href^="#"], a[href="#"]')
+    : [];
+
+  const anchorGroups = new Map();
+
+  headerAnchors.forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    const key = href === '#' ? 'home' : href.slice(1);
+    const existing = anchorGroups.get(key) || [];
+    existing.push(link);
+    anchorGroups.set(key, existing);
+  });
+
+  const clearActiveLinks = () => {
+    anchorGroups.forEach((links) => {
+      links.forEach((link) => {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+      });
+    });
+  };
+
+  const setActiveLinks = (key) => {
+    if (!anchorGroups.size) return;
+    clearActiveLinks();
+    const targetLinks = anchorGroups.get(key);
+    if (targetLinks) {
+      targetLinks.forEach((link) => {
+        link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
+      });
+    }
+  };
+
+  if (anchorGroups.size) {
+    let currentKey = 'home';
+    setActiveLinks(currentKey);
+
+    const observedSections = Array.from(
+      document.querySelectorAll('main section[id]')
+    ).filter((section) => anchorGroups.has(section.id));
+
+    if (observedSections.length) {
+      const sectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              currentKey = entry.target.id;
+              setActiveLinks(currentKey);
+            }
+          });
+        },
+        {
+          threshold: 0.2,
+          rootMargin: '-45% 0px -45% 0px',
+        }
+      );
+
+      observedSections.forEach((section) => sectionObserver.observe(section));
+    }
+
+    const handleScrollTopState = () => {
+      if (window.scrollY < 120 && currentKey !== 'home') {
+        currentKey = 'home';
+        setActiveLinks(currentKey);
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollTopState, {
+      passive: true,
+    });
+    handleScrollTopState();
+  }
+
   // Enhanced intersection observer for glass theme animations
   const observerOptions = {
     threshold: 0.1,

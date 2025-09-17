@@ -1,9 +1,48 @@
 /* ==================== BASE STYLES ==================== */
 
 /* Base body styles */
+:root {
+  --color-bg: #060a15;
+  --color-surface: rgba(15, 23, 42, 0.72);
+  --color-surface-strong: rgba(15, 23, 42, 0.85);
+  --color-surface-soft: rgba(30, 41, 59, 0.55);
+  --color-border: rgba(148, 163, 184, 0.25);
+  --color-border-strong: rgba(226, 232, 240, 0.22);
+  --color-accent: #fbbf24;
+  --color-accent-strong: #d97706;
+  --color-text: #e2e8f0;
+  --color-text-muted: rgba(226, 232, 240, 0.75);
+  --shadow-elevated: 0 40px 80px rgba(2, 6, 23, 0.45);
+  --shadow-soft: 0 24px 60px rgba(2, 6, 23, 0.35);
+  --radius-xl: 1.75rem;
+}
+
 body {
   font-family: 'Inter', sans-serif; /* Ensure Inter font is primary */
   scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+  background-color: var(--color-bg);
+  background-image: radial-gradient(
+      circle at 12% 18%,
+      rgba(212, 175, 55, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 82% 12%,
+      rgba(79, 50, 8, 0.12),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 82%,
+      rgba(2, 132, 199, 0.08),
+      transparent 60%
+    );
+  color: var(--color-text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+section[id] {
+  scroll-margin-top: clamp(5rem, 8vw, 7.5rem);
 }
 
 /* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
@@ -172,46 +211,136 @@ nav button.active,
 /* Add text shadows to hero text for better readability */
 .glass-card-hero h1,
 .glass-card-hero p {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
+  text-shadow: 0 18px 45px rgba(2, 6, 23, 0.55),
+    0 3px 12px rgba(15, 23, 42, 0.55);
+  color: rgba(248, 250, 252, 0.96) !important;
 }
 
 /* Specifically target the main hero heading */
 .glass-card-hero h1 {
-  text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-    -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-    1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-    0 0 10px rgba(255, 255, 255, 0.5) !important;
-  color: white !important;
-  font-weight: 700 !important;
+  text-shadow: 0 22px 55px rgba(2, 6, 23, 0.6),
+    0 8px 20px rgba(15, 23, 42, 0.55);
+  color: rgba(248, 250, 252, 0.98) !important;
+  letter-spacing: -0.01em;
 }
 
 .glass-card-hero h1 .gradient-text {
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
-    -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
+  filter: drop-shadow(0 14px 28px rgba(2, 6, 23, 0.6));
 }
 .glass-card-hero p .gradient-text {
-  /* Add custom text-shadow properties here if desired */
-  /* For example, to give it a subtle glow similar to the h1, but perhaps less intense: */
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.195),
-    -1px -1px 0px rgba(200, 161, 72, 0.7), 1px -1px 0px rgba(79, 50, 8, 0.7),
-    -1px 1px 0px rgba(0, 0, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(212, 175, 55, 0.4) !important;
+  filter: drop-shadow(0 8px 22px rgba(2, 6, 23, 0.45));
 }
 
 /* Make the hero card background more refined */
 .glass-card-hero {
-  background: none !important; /* Remove the big dark block */
-  backdrop-filter: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 2rem !important; /* Reduce padding so it's not so massive */
+  background: linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.88),
+      rgba(15, 23, 42, 0.62)
+    )
+    !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-elevated) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: clamp(2.5rem, 6vw, 4rem) !important;
+}
+
+.hero-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(251, 191, 36, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 12px 25px rgba(212, 175, 55, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-pill svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.hero-cta-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-cta svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+@media (max-width: 480px) {
+  .hero-pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+  }
+
+  .hero-cta {
+    width: 100%;
+  }
+}
+
+.btn-outline {
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(226, 232, 240, 0.25);
+  color: rgba(248, 250, 252, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.btn-outline:hover {
+  color: #fef3c7;
+  border-color: rgba(251, 191, 36, 0.65);
+  box-shadow: 0 18px 40px rgba(251, 191, 36, 0.25);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 999px;
 }
 
 /* Add your slide images here - easily customizable */
@@ -326,28 +455,30 @@ nav button.active,
 
 /* Glass hero card for service pages */
 .service-hero .glass-card-hero {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(
+      135deg,
+      var(--color-surface-strong),
+      rgba(15, 23, 42, 0.62)
+    )
+    !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Service hero text shadows */
 .service-hero .glass-card-hero h1,
 .service-hero .glass-card-hero p {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 18px 45px rgba(2, 6, 23, 0.5) !important;
 }
 
 .service-hero .glass-card-hero h1 {
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 22px 55px rgba(2, 6, 23, 0.58) !important;
 }
 
 .service-hero .glass-card-hero h1 .gradient-text {
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3),
-    -1px -1px 0px rgba(200, 161, 72, 0.9), 1px -1px 0px rgba(79, 50, 8, 0.9),
-    -1px 1px 0px rgba(0, 0, 0, 0.9), 4px 4px 8px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(212, 175, 55, 0.6) !important;
+  filter: drop-shadow(0 14px 28px rgba(2, 6, 23, 0.55));
 }
 
 /* Mobile optimization */
@@ -358,17 +489,18 @@ nav button.active,
   }
 
   .service-hero .glass-card-hero {
-    background: rgba(255, 255, 255, 0.12) !important;
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.88),
+        rgba(15, 23, 42, 0.72)
+      )
+      !important;
   }
 
   .service-hero .glass-card-hero h1,
   .service-hero .glass-card-hero p {
-    text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black,
-      -2px 2px 0px black, 1px 1px 0px black, -1px -1px 0px black,
-      1px -1px 0px black, -1px 1px 0px black, 4px 4px 8px black,
-      0 0 10px rgba(255, 255, 255, 0.5) !important;
-    color: white !important;
-    font-weight: 700 !important;
+    text-shadow: 0 16px 36px rgba(2, 6, 23, 0.6) !important;
+    color: rgba(248, 250, 252, 0.96) !important;
   }
 }
 
@@ -606,15 +738,135 @@ button:focus {
 
 /* Improve button visibility */
 .btn-primary {
-  background: linear-gradient(135deg, #c8a148, #4f3208) !important;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  background: linear-gradient(
+      135deg,
+      var(--color-accent),
+      var(--color-accent-strong)
+    )
+    !important;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35);
   text-shadow: none; /* Buttons don't need text shadow */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  color: #f8fafc;
 }
 
 .btn-primary:hover {
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
   transform: translateY(-2px);
+}
+
+/* ==================== QUICK CONTACT PANEL ==================== */
+
+.quick-contact {
+  position: fixed;
+  right: 2.5rem;
+  bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 60;
+}
+
+.quick-contact__link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 1.25rem;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  color: rgba(248, 250, 252, 0.96);
+  text-decoration: none;
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.quick-contact__link:hover {
+  transform: translateY(-3px);
+  border-color: rgba(251, 191, 36, 0.55);
+  box-shadow: 0 32px 70px rgba(251, 191, 36, 0.28);
+}
+
+.quick-contact__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 999px;
+  color: #0f172a;
+  box-shadow: 0 14px 32px rgba(251, 191, 36, 0.28);
+  flex-shrink: 0;
+}
+
+.quick-contact__link--call .quick-contact__icon {
+  background: linear-gradient(135deg, #facc15, #d97706);
+}
+
+.quick-contact__link--email .quick-contact__icon {
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  color: #e0f2fe;
+  box-shadow: 0 14px 32px rgba(96, 165, 250, 0.28);
+}
+
+.quick-contact__link--quote .quick-contact__icon {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+.quick-contact__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.quick-contact__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.quick-contact__detail {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1024px) {
+  .quick-contact {
+    right: 1.75rem;
+    bottom: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .quick-contact {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    left: 1.1rem;
+    right: 1.1rem;
+    bottom: 1.5rem;
+  }
+
+  .quick-contact__link {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 0.85rem 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .quick-contact {
+    flex-direction: column;
+    left: auto;
+    right: 1rem;
+  }
+
+  .quick-contact__detail {
+    display: none;
+  }
 }
 
 /* ==================== VISUAL CONSISTENCY UPGRADES ==================== */

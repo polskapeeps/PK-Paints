@@ -7,13 +7,15 @@ import exterior from './assets/exterior.png';
 import dine from './assets/dine.png';
 import dine2 from './assets/dine2.png';
 
-// Preload hero imagery to reduce perceived loading time while ensuring the
-// assets remain referenced for the bundler.
-const heroAssets = [heroImage1, heroImage2, exterior, dine, dine2];
-heroAssets.forEach((src) => {
-  const img = new Image();
-  img.src = src;
-});
+// Preload hero and gallery images to ensure they are bundled and ready
+const preloadedImages = [heroImage1, heroImage2, exterior, dine, dine2];
+if (typeof window !== 'undefined') {
+  preloadedImages.forEach((src) => {
+    if (!src) return;
+    const img = new Image();
+    img.src = src;
+  });
+}
 
 // Initialize site features when the DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
@@ -64,4 +66,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 });
-

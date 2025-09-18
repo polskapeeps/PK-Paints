@@ -19,35 +19,74 @@ try {
   imageModules = {};
 }
 
+const normalizeCategoryName = (name) => {
+  if (typeof name !== 'string') return '';
+  const trimmed = name.trim();
+  return trimmed === 'Carpentry' ? 'Custom Installs' : trimmed;
+};
+
+const slugifyCategory = (name) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const isCoverImage = (fileName) =>
+  /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(fileName || '');
+
 export async function buildGallery() {
-  // Collect images keyed by category slug
   const imagesByCategory = {};
   const coverByCategory = {};
-  const categoriesSet = new Set();
+  const categoriesBySlug = new Map();
+
+  const ensureCategory = (categoryName) => {
+    if (!categoryName || categoryName === 'Commercial') {
+      return null;
+    }
+
+    const displayName = normalizeCategoryName(categoryName);
+    if (!displayName) {
+      return null;
+    }
+
+    const slug = slugifyCategory(displayName);
+    if (!slug) {
+      return null;
+    }
+
+    if (!imagesByCategory[slug]) {
+      imagesByCategory[slug] = [];
+    }
+
+    categoriesBySlug.set(slug, displayName);
+    return { slug, displayName };
+  };
+
+  const registerImage = (categoryName, url, fileName) => {
+    const category = ensureCategory(categoryName);
+    if (!category || typeof url !== 'string' || url.length === 0) {
+      return;
+    }
+
+    imagesByCategory[category.slug].push(url);
+    if (!coverByCategory[category.slug] && isCoverImage(fileName)) {
+      coverByCategory[category.slug] = url;
+    }
+  };
 
   if (Object.keys(imageModules).length > 0) {
-    for (const path in imageModules) {
-      const url = imageModules[path];
+    for (const [path, url] of Object.entries(imageModules)) {
       const parts = path.split('/');
       const fileName = parts[parts.length - 1];
-      // Ignore root level painting_### images
-      if (fileName.startsWith('painting_')) continue;
+      if (!fileName || fileName.startsWith('painting_')) continue;
 
-        const galleryIdx = parts.indexOf('gallery');
-        const categoryName = parts[galleryIdx + 1];
-        if (!categoryName || categoryName.startsWith('painting_')) continue;
+      const galleryIdx = parts.indexOf('gallery');
+      if (galleryIdx === -1) continue;
 
-        // Exclude Commercial category entirely from gallery UI
-        if (categoryName === 'Commercial') continue;
+      const categoryName = parts[galleryIdx + 1];
+      if (!categoryName || categoryName.startsWith('painting_')) continue;
 
-        const displayName = categoryName === 'Carpentry' ? 'Custom Installs' : categoryName;
-        const slug = displayName.toLowerCase().replace(/\s+/g, '-');
-        categoriesSet.add(JSON.stringify({ name: displayName, slug }));
-        if (!imagesByCategory[slug]) imagesByCategory[slug] = [];
-        imagesByCategory[slug].push(url);
-      // Detect a cover image if file named like cover.* exists
-      const isCover = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(fileName);
-      if (isCover) coverByCategory[slug] = url;
+      registerImage(categoryName, url, fileName);
     }
   } else {
     // Fallback when not running through Vite
@@ -55,17 +94,20 @@ export async function buildGallery() {
       const res = await fetch('gallery.json');
       if (res.ok) {
         const data = await res.json();
-          for (const categoryName in data) {
-            if (categoryName === 'Commercial') continue; // Exclude Commercial in fallback
-            const displayName = categoryName === 'Carpentry' ? 'Custom Installs' : categoryName;
-            const slug = displayName.toLowerCase().replace(/\s+/g, '-');
-            categoriesSet.add(JSON.stringify({ name: displayName, slug }));
-            imagesByCategory[slug] = data[categoryName];
-          // If any file name within the list matches cover.* use it as cover
-          const cover = (data[categoryName] || []).find((p) =>
-            /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(p)
-          );
-          if (cover) coverByCategory[slug] = cover;
+        if (data && typeof data === 'object') {
+          for (const [categoryName, urls] of Object.entries(data)) {
+            const category = ensureCategory(categoryName);
+            if (!category) continue;
+
+            const validUrls = Array.isArray(urls)
+              ? urls.filter((value) => typeof value === 'string' && value.length > 0)
+              : [];
+
+            for (const value of validUrls) {
+              const fileName = value.split('/').pop();
+              registerImage(categoryName, value, fileName);
+            }
+          }
         }
       }
     } catch (err) {
@@ -73,13 +115,15 @@ export async function buildGallery() {
     }
   }
 
-  // Sort image URLs within each category to ensure predictable ordering
-  for (const slug in imagesByCategory) {
-    imagesByCategory[slug].sort((a, b) => a.localeCompare(b));
+  // Sort and deduplicate image URLs within each category to ensure predictable ordering
+  for (const slug of Object.keys(imagesByCategory)) {
+    const uniqueUrls = Array.from(new Set(imagesByCategory[slug]));
+    uniqueUrls.sort((a, b) => a.localeCompare(b));
+    imagesByCategory[slug] = uniqueUrls;
   }
 
-  const categories = Array.from(categoriesSet)
-    .map((c) => JSON.parse(c))
+  const categories = Array.from(categoriesBySlug.entries())
+    .map(([slug, name]) => ({ name, slug }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return { categories, imagesByCategory, coverByCategory };

@@ -1,6 +1,3 @@
-const PLACEHOLDER_IMAGE =
-  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-
 let lightboxInitialized = false;
 let reducedMotionStylesApplied = false;
 let reducedMotionListenerRegistered = false;
@@ -223,8 +220,7 @@ const initGalleryUI = (gridElement) => {
         openLightbox(index);
       }
     });
-    gridListenerBound = true;
-  }
+  });
 
   if (!lightboxInitialized) {
     lightboxClose.addEventListener('click', closeLightbox);
@@ -259,7 +255,7 @@ const initGalleryUI = (gridElement) => {
 
     lightbox.addEventListener('touchend', (event) => {
       if (event.changedTouches.length > 0) {
-        touchEndX = event.changedTouches[0].screenX;
+        const touchEndX = event.changedTouches[0].screenX;
         const swipeThreshold = 100;
         if (touchEndX < touchStartX - swipeThreshold) {
           nextImage();

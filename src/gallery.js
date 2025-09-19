@@ -1,7 +1,5 @@
-const PLACEHOLDER_IMAGE =
-  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-
 let lightboxInitialized = false;
+let gridListenerBound = false;
 let reducedMotionStylesApplied = false;
 let reducedMotionListenerRegistered = false;
 
@@ -215,14 +213,18 @@ const initGalleryUI = (gridElement) => {
   const prevImage = () => updateImageFromIndex(currentImageIndex - 1);
 
   const galleryItems = getGalleryItems();
-  galleryItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      const items = getGalleryItems();
-      const index = items.indexOf(item);
-      if (index !== -1) {
-        openLightbox(index);
-      }
+
+  if (!gridListenerBound) {
+    galleryItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const items = getGalleryItems();
+        const index = items.indexOf(item);
+        if (index !== -1) {
+          openLightbox(index);
+        }
+      });
     });
+
     gridListenerBound = true;
   }
 
@@ -250,6 +252,7 @@ const initGalleryUI = (gridElement) => {
     });
 
     let touchStartX = 0;
+    let touchEndX = 0;
 
     lightbox.addEventListener('touchstart', (event) => {
       if (event.changedTouches.length > 0) {

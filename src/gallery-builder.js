@@ -5,11 +5,30 @@
 const COVER_IMAGE_REGEX = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i;
 const ROOT_IMAGE_PREFIX = 'painting_';
 const EXCLUDED_CATEGORY = 'Commercial';
+const FALLBACK_GALLERY_JSON = 'gallery.json';
 
-const renameCategory = (name) =>
-  name === 'Carpentry' ? 'Custom Installs' : name;
+const CATEGORY_RENAMES = new Map([
+  ['Carpentry', 'Custom Installs'],
+]);
 
-const slugify = (name) => name.toLowerCase().replace(/\s+/g, '-');
+const createEmptyResult = () => ({
+  categories: [],
+  imagesByCategory: {},
+  coverByCategory: {},
+});
+
+const normalizeCategoryName = (name) => {
+  if (typeof name !== 'string') return '';
+  const trimmed = name.trim();
+  if (!trimmed || trimmed === EXCLUDED_CATEGORY) return '';
+  return CATEGORY_RENAMES.get(trimmed) || trimmed;
+};
+
+const slugifyCategory = (name) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
 let imageModules = {};
 try {
@@ -22,119 +41,71 @@ try {
   imageModules = {};
 }
 
-<<<<<<< ours
-const createEmptyResult = () => ({
-  categories: [],
-  imagesByCategory: {},
-  coverByCategory: {},
-});
-
-=======
->>>>>>> theirs
-const normalizeCategoryName = (name) => {
-  if (typeof name !== 'string') return '';
-  const trimmed = name.trim();
-  return trimmed === 'Carpentry' ? 'Custom Installs' : trimmed;
-};
-
-const slugifyCategory = (name) =>
-  name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-
-const isCoverImage = (fileName) =>
-  /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i.test(fileName || '');
-
 export async function buildGallery() {
-  const imagesByCategory = {};
-  const coverByCategory = {};
-  const categoriesBySlug = new Map();
+  const categories = new Map();
+  const coverCandidates = {};
 
   const ensureCategory = (categoryName) => {
-    if (!categoryName || categoryName === 'Commercial') {
-      return null;
-    }
-
     const displayName = normalizeCategoryName(categoryName);
-    if (!displayName) {
-      return null;
-    }
+    if (!displayName) return null;
 
     const slug = slugifyCategory(displayName);
-    if (!slug) {
-      return null;
+    if (!slug) return null;
+
+    if (!categories.has(slug)) {
+      categories.set(slug, { slug, name: displayName, images: [] });
     }
 
-    if (!imagesByCategory[slug]) {
-      imagesByCategory[slug] = [];
-    }
-
-    categoriesBySlug.set(slug, displayName);
-    return { slug, displayName };
+    return categories.get(slug);
   };
 
-  const registerImage = (categoryName, url, fileName) => {
+  const registerImage = (categoryName, url, fileName = '') => {
     const category = ensureCategory(categoryName);
-    if (!category || typeof url !== 'string' || url.length === 0) {
-      return;
-    }
+    if (!category) return;
 
-    imagesByCategory[category.slug].push(url);
-    if (!coverByCategory[category.slug] && isCoverImage(fileName)) {
-      coverByCategory[category.slug] = url;
+    const normalizedUrl = typeof url === 'string' ? url.trim() : '';
+    if (!normalizedUrl) return;
+
+    category.images.push(normalizedUrl);
+
+    if (
+      !coverCandidates[category.slug] &&
+      COVER_IMAGE_REGEX.test(typeof fileName === 'string' ? fileName : '')
+    ) {
+      coverCandidates[category.slug] = normalizedUrl;
     }
   };
 
   if (Object.keys(imageModules).length > 0) {
     for (const [path, url] of Object.entries(imageModules)) {
       const parts = path.split('/');
-      const fileName = parts[parts.length - 1];
-<<<<<<< ours
-
-      if (fileName.startsWith(ROOT_IMAGE_PREFIX)) continue;
-=======
->>>>>>> theirs
-      if (!fileName || fileName.startsWith('painting_')) continue;
+      const fileName = parts.pop();
+      if (!fileName || fileName.startsWith(ROOT_IMAGE_PREFIX)) continue;
 
       const galleryIdx = parts.indexOf('gallery');
       if (galleryIdx === -1) continue;
 
       const categoryName = parts[galleryIdx + 1];
-      if (!categoryName || categoryName.startsWith('painting_')) continue;
+      if (!categoryName || categoryName.startsWith(ROOT_IMAGE_PREFIX)) continue;
 
       registerImage(categoryName, url, fileName);
     }
   } else {
     try {
-      const res = await fetch('gallery.json');
+      const res = await fetch(FALLBACK_GALLERY_JSON);
       if (res.ok) {
         const data = await res.json();
-<<<<<<< ours
-        Object.entries(data).forEach(([categoryName, urls]) => {
-          if (!Array.isArray(urls)) return;
-          urls.forEach((url) => registerImage(categoryName, url));
-        });
-=======
->>>>>>> theirs
         if (data && typeof data === 'object') {
           for (const [categoryName, urls] of Object.entries(data)) {
-            const category = ensureCategory(categoryName);
-            if (!category) continue;
+            if (!Array.isArray(urls)) continue;
 
-            const validUrls = Array.isArray(urls)
-<<<<<<< ours
-              ? urls.filter(
-                  (value) => typeof value === 'string' && value.length > 0
-                )
-=======
-              ? urls.filter((value) => typeof value === 'string' && value.length > 0)
->>>>>>> theirs
-              : [];
+            for (const value of urls) {
+              if (typeof value !== 'string') continue;
+              const normalizedUrl = value.trim();
+              if (!normalizedUrl) continue;
 
-            for (const value of validUrls) {
-              const fileName = value.split('/').pop();
-              registerImage(categoryName, value, fileName);
+              const fileName = normalizedUrl.split('/').pop();
+              registerImage(categoryName, normalizedUrl, fileName);
             }
           }
         }
@@ -144,43 +115,39 @@ export async function buildGallery() {
     }
   }
 
-<<<<<<< ours
   if (categories.size === 0) {
     return createEmptyResult();
   }
 
-  const imagesByCategory = {};
   const sortedCategories = Array.from(categories.values()).sort((a, b) =>
     a.name.localeCompare(b.name)
   );
-=======
->>>>>>> theirs
-  // Sort and deduplicate image URLs within each category to ensure predictable ordering
-  for (const slug of Object.keys(imagesByCategory)) {
-    const uniqueUrls = Array.from(new Set(imagesByCategory[slug]));
+
+  const imagesByCategory = {};
+  const coverByCategory = {};
+
+  sortedCategories.forEach(({ slug, images }) => {
+    const uniqueUrls = Array.from(
+      new Set(
+        images
+          .map((imageUrl) =>
+            typeof imageUrl === 'string' ? imageUrl.trim() : ''
+          )
+          .filter(Boolean)
+      )
+    );
+
     uniqueUrls.sort((a, b) => a.localeCompare(b));
     imagesByCategory[slug] = uniqueUrls;
-  }
 
-<<<<<<< ours
-  sortedCategories.forEach(({ slug, images }) => {
-    images.sort((a, b) => a.localeCompare(b));
-    imagesByCategory[slug] = images;
+    if (coverCandidates[slug]) {
+      coverByCategory[slug] = coverCandidates[slug];
+    }
   });
-
-  const coverResult = {};
-  coverByCategory.forEach((url, slug) => {
-    coverResult[slug] = url;
-  });
-=======
->>>>>>> theirs
-  const categories = Array.from(categoriesBySlug.entries())
-    .map(([slug, name]) => ({ name, slug }))
-    .sort((a, b) => a.name.localeCompare(b.name));
 
   return {
-    categories: sortedCategories.map(({ name, slug }) => ({ name, slug })),
+    categories: sortedCategories.map(({ slug, name }) => ({ name, slug })),
     imagesByCategory,
-    coverByCategory: coverResult,
+    coverByCategory,
   };
 }

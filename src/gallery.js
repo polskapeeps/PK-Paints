@@ -1,5 +1,4 @@
 let lightboxInitialized = false;
-let gridListenerBound = false;
 let reducedMotionStylesApplied = false;
 let reducedMotionListenerRegistered = false;
 
@@ -214,19 +213,15 @@ const initGalleryUI = (gridElement) => {
 
   const galleryItems = getGalleryItems();
 
-  if (!gridListenerBound) {
-    galleryItems.forEach((item) => {
-      item.addEventListener('click', () => {
-        const items = getGalleryItems();
-        const index = items.indexOf(item);
-        if (index !== -1) {
-          openLightbox(index);
-        }
-      });
+  galleryItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      const items = getGalleryItems();
+      const index = items.indexOf(item);
+      if (index !== -1) {
+        openLightbox(index);
+      }
     });
-
-    gridListenerBound = true;
-  }
+  });
 
   if (!lightboxInitialized) {
     lightboxClose.addEventListener('click', closeLightbox);
@@ -356,3 +351,4 @@ export function initGallery(galleryData) {
     hydrateGalleryGrid(grid, []);
   }
 }
+

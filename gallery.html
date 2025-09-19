@@ -142,6 +142,88 @@
       border-color: rgba(59, 130, 246, 0.3);
     }
 
+    .gallery-select-wrapper {
+      position: fixed;
+      top: clamp(5.5rem, 5vw + 3rem, 7rem);
+      right: clamp(1rem, 4vw, 3rem);
+      z-index: 60;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .gallery-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.88));
+      color: rgba(226, 232, 240, 0.96);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 9999px;
+      padding: 0.75rem 3.25rem 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 18px 42px rgba(2, 6, 23, 0.45);
+      width: clamp(14rem, 40vw, 24rem);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    }
+
+    .gallery-select:hover,
+    .gallery-select:focus {
+      border-color: rgba(250, 204, 21, 0.6);
+      box-shadow: 0 22px 54px rgba(5, 11, 23, 0.58);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .gallery-select option {
+      background: rgba(15, 23, 42, 0.96);
+      color: rgba(226, 232, 240, 0.96);
+    }
+
+    .gallery-select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 1.35rem;
+      width: 0.6rem;
+      height: 0.6rem;
+      border-right: 2px solid rgba(226, 232, 240, 0.75);
+      border-bottom: 2px solid rgba(226, 232, 240, 0.75);
+      transform: rotate(45deg);
+      pointer-events: none;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .gallery-select-wrapper:focus-within::after {
+      transform: translateY(-2px) rotate(45deg);
+      border-color: rgba(250, 204, 21, 0.75);
+    }
+
+    @media (max-width: 1024px) {
+      .gallery-select-wrapper {
+        top: clamp(5rem, 4vw + 3rem, 6.5rem);
+        right: clamp(1rem, 5vw, 2rem);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .gallery-select-wrapper {
+        top: auto;
+        bottom: 1.5rem;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 18rem);
+      }
+
+      .gallery-select {
+        width: 100%;
+        padding-right: 2.75rem;
+      }
+    }
+
     /* Responsive gallery grid showing multiple columns on desktop */
     .gallery-grid {
       display: grid;
@@ -442,9 +524,10 @@
     <!-- Gallery Grid -->
     <section class="pb-20 md:pb-32 relative">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex justify-center">
-          <select id="gallery-select"
-            class="gallery-select px-5 py-2 rounded-full text-sm font-medium text-gray-200 bg-white/10 border border-white/20 backdrop-blur-md"></select>
+        <div class="mt-12 mb-12 flex justify-center">
+          <div class="gallery-select-wrapper">
+            <select id="gallery-select" class="gallery-select"></select>
+          </div>
         </div>
         <div class="gallery-grid fade-in"></div>
       </div>

@@ -7,9 +7,15 @@ import exterior from './assets/exterior.png';
 import dine from './assets/dine.png';
 import dine2 from './assets/dine2.png';
 
-// Preload hero and gallery images to ensure they are bundled
+// Preload hero and gallery images to ensure they are bundled and ready
 const preloadedImages = [heroImage1, heroImage2, exterior, dine, dine2];
-preloadedImages.forEach(() => {});
+if (typeof window !== 'undefined') {
+  preloadedImages.forEach((src) => {
+    if (!src) return;
+    const img = new Image();
+    img.src = src;
+  });
+}
 
 // Initialize site features when the DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
@@ -22,9 +28,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.pathname.includes('gallery') ||
     document.querySelector('.gallery-grid');
 
-  let galleryData;
+  let galleryData = {
+    categories: [],
+    imagesByCategory: {},
+    coverByCategory: {},
+  };
   if (navExists || galleryPage) {
-    galleryData = await buildGallery();
+    try {
+      galleryData = await buildGallery();
+    } catch (error) {
+      console.error('Failed to load gallery data', error);
+    }
   }
 
   if (heroExists) {
@@ -52,4 +66,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 });
-

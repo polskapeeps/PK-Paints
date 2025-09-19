@@ -143,9 +143,13 @@
     }
 
     .gallery-select-wrapper {
-      position: relative;
+      position: fixed;
+      top: clamp(5.5rem, 5vw + 3rem, 7rem);
+      right: clamp(1rem, 4vw, 3rem);
+      z-index: 60;
       display: inline-flex;
       align-items: center;
+      gap: 0.35rem;
     }
 
     .gallery-select {
@@ -197,9 +201,26 @@
       border-color: rgba(250, 204, 21, 0.75);
     }
 
+    @media (max-width: 1024px) {
+      .gallery-select-wrapper {
+        top: clamp(5rem, 4vw + 3rem, 6.5rem);
+        right: clamp(1rem, 5vw, 2rem);
+      }
+    }
+
     @media (max-width: 640px) {
+      .gallery-select-wrapper {
+        top: auto;
+        bottom: 1.5rem;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 18rem);
+      }
+
       .gallery-select {
-        width: min(100%, 20rem);
+        width: 100%;
+        padding-right: 2.75rem;
       }
     }
 

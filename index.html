@@ -578,6 +578,14 @@
   </footer>
 
   <script type=module src='src/script.js'></script>
+
+  <script type="module">
+    if (import.meta.env.MODE === "production") {
+      import("https://cdn.jsdelivr.net/npm/@vercel/analytics@1/dist/index.mjs").then(({ inject }) => {
+        inject();
+      });
+    }
+  </script>
 </body>
 
 </html>

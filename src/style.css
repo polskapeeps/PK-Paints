@@ -16,7 +16,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif; /* Ensure Inter font is primary */
+  font-family: "Inter", sans-serif; /* Ensure Inter font is primary */
   scroll-behavior: smooth; /* Smooth scrolling for anchor links */
   background-color: var(--brand-bg);
   background-image: radial-gradient(
@@ -24,11 +24,7 @@ body {
       rgba(148, 163, 184, 0.16),
       transparent 58%
     ),
-    radial-gradient(
-      circle at 84% 8%,
-      rgba(250, 204, 21, 0.12),
-      transparent 55%
-    ),
+    radial-gradient(circle at 84% 8%, rgba(250, 204, 21, 0.12), transparent 55%),
     radial-gradient(
       circle at 50% 105%,
       rgba(56, 189, 248, 0.12),
@@ -132,11 +128,10 @@ body {
 /* Elevated glass header with gentle contrast */
 .glass-header {
   background: linear-gradient(
-      120deg,
-      rgba(7, 11, 23, 0.95),
-      rgba(7, 18, 34, 0.82)
-    )
-    !important;
+    120deg,
+    rgba(7, 11, 23, 0.95),
+    rgba(7, 18, 34, 0.82)
+  ) !important;
   border-bottom: 1px solid var(--brand-border);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
@@ -161,11 +156,10 @@ body {
 
 .nav-cta {
   background: linear-gradient(
-      135deg,
-      var(--brand-accent),
-      var(--brand-accent-strong)
-    )
-    !important;
+    135deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  ) !important;
   color: #0f172a !important;
   font-weight: 600;
   border: none;
@@ -197,11 +191,10 @@ body {
 /* Improve dropdown menu legibility */
 .glass-dropdown {
   background: linear-gradient(
-      145deg,
-      rgba(15, 23, 42, 0.92),
-      rgba(15, 23, 42, 0.75)
-    )
-    !important;
+    145deg,
+    rgba(15, 23, 42, 0.92),
+    rgba(15, 23, 42, 0.75)
+  ) !important;
   border: 1px solid var(--brand-border);
   box-shadow: 0 28px 60px rgba(6, 11, 25, 0.55);
   backdrop-filter: blur(18px);
@@ -211,11 +204,10 @@ body {
 /* Mobile menu improvements */
 #mobile-menu {
   background: linear-gradient(
-      150deg,
-      rgba(15, 23, 42, 0.94),
-      rgba(15, 23, 42, 0.8)
-    )
-    !important;
+    150deg,
+    rgba(15, 23, 42, 0.94),
+    rgba(15, 23, 42, 0.8)
+  ) !important;
   border: 1px solid var(--brand-border);
   border-top: none;
   backdrop-filter: blur(18px);
@@ -246,10 +238,10 @@ body {
   border-radius: 1rem;
   font-weight: 600;
   background: linear-gradient(
-      135deg,
-      var(--brand-accent),
-      var(--brand-accent-strong)
-    );
+    135deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  );
   color: #0f172a !important;
   box-shadow: 0 18px 38px rgba(250, 204, 21, 0.28);
 }
@@ -270,7 +262,7 @@ nav button.active,
 }
 
 /* Style for the mobile products dropdown arrow rotation */
-#mobile-services-button[aria-expanded='true'] svg {
+#mobile-services-button[aria-expanded="true"] svg {
   transform: rotate(180deg);
 }
 
@@ -340,7 +332,8 @@ nav button.active,
   border: 1px solid rgba(250, 204, 21, 0.45) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: 0 20px 55px rgba(5, 11, 23, 0.42), 0 0 0 1px rgba(250, 204, 21, 0.16) !important;
+  box-shadow: 0 20px 55px rgba(5, 11, 23, 0.42),
+    0 0 0 1px rgba(250, 204, 21, 0.16) !important;
   padding: clamp(2.5rem, 5vw, 3.5rem) !important;
 }
 
@@ -391,11 +384,10 @@ nav button.active,
 
 .btn-primary {
   background: linear-gradient(
-      135deg,
-      var(--brand-accent),
-      var(--brand-accent-strong)
-    )
-    !important;
+    135deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  ) !important;
   box-shadow: 0 20px 45px rgba(250, 204, 21, 0.35);
   text-shadow: none;
   border: none;
@@ -452,7 +444,7 @@ nav button.active,
 }
 
 .hero-badges li::before {
-  content: '';
+  content: "";
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 50%;
@@ -538,19 +530,19 @@ nav button.active,
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url('assets/hero/[21] interior_04-2021.jpeg');
+  background-image: url("assets/hero/[21] interior_04-2021.jpeg");
 }
 .hero-slide:nth-child(2) {
-  background-image: url('assets/hero/[67] interior_11-2022.jpeg');
+  background-image: url("assets/hero/[67] interior_11-2022.jpeg");
 }
 .hero-slide:nth-child(3) {
-  background-image: url('assets/exterior.png');
+  background-image: url("assets/exterior.png");
 }
 .hero-slide:nth-child(4) {
-  background-image: url('assets/dine.png');
+  background-image: url("assets/dine.png");
 }
 .hero-slide:nth-child(5) {
-  background-image: url('assets/dine2.png');
+  background-image: url("assets/dine2.png");
 }
 /* Slideshow indicators (dots) with improved visibility */
 .slideshow-indicators {
@@ -612,24 +604,25 @@ nav button.active,
 /* Interior painting specific background */
 .interior-hero {
   /* Use existing asset; path relative to this CSS file */
-  background-image: url('assets/wainscotwall.jpeg');
+  background-image: url("assets/wainscotwall.jpeg");
 }
 /* Exterior painting specific background */
 .exterior-hero {
-  background-image: url('assets/exterior.png');
-}C:\Users\habad\Documents\Codeing\My Projects\PK-Paints\dist\assets\_8_exterior_01-2023-GUC6PebP.jpeg
+  background-image: url("assets/exterior.png");
+}
+
 /* Custom installs specific background */
 .custom-installs-hero {
-  background-image: url('assets/stain_door.png');
+  background-image: url("assets/stain_door.png");
 }
 /* Remodeling specific background */
 .remodeling-hero {
-  background-image: url('assets/bunk_bed.png');
+  background-image: url("assets/bunk_bed.png");
 }
 
 /* Dark overlay for text readability */
 .service-hero::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -652,7 +645,8 @@ nav button.active,
   border: 1px solid rgba(250, 204, 21, 0.45) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: 0 18px 50px rgba(5, 11, 23, 0.4), 0 0 0 1px rgba(250, 204, 21, 0.14) !important;
+  box-shadow: 0 18px 50px rgba(5, 11, 23, 0.4),
+    0 0 0 1px rgba(250, 204, 21, 0.14) !important;
 }
 
 /* Service hero text shadows */
@@ -694,11 +688,10 @@ nav button.active,
 /* Floating info cards - make text more legible */
 .glass-card {
   background: linear-gradient(
-      150deg,
-      rgba(15, 23, 42, 0.78),
-      rgba(15, 23, 42, 0.56)
-    )
-    !important;
+    150deg,
+    rgba(15, 23, 42, 0.78),
+    rgba(15, 23, 42, 0.56)
+  ) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--brand-border);
@@ -711,11 +704,10 @@ nav button.active,
 
 .glass-card-strong {
   background: linear-gradient(
-      160deg,
-      rgba(15, 23, 42, 0.88),
-      rgba(15, 23, 42, 0.64)
-    )
-    !important;
+    160deg,
+    rgba(15, 23, 42, 0.88),
+    rgba(15, 23, 42, 0.64)
+  ) !important;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--brand-border-strong);
@@ -726,11 +718,10 @@ nav button.active,
 
 .service-card {
   background: linear-gradient(
-      155deg,
-      rgba(15, 23, 42, 0.82),
-      rgba(15, 23, 42, 0.68)
-    )
-    !important;
+    155deg,
+    rgba(15, 23, 42, 0.82),
+    rgba(15, 23, 42, 0.68)
+  ) !important;
   border: 1px solid var(--brand-border) !important;
   border-radius: 1.25rem;
   padding: 1.8rem;
@@ -750,11 +741,10 @@ nav button.active,
   box-shadow: 0 32px 65px rgba(5, 11, 23, 0.55),
     0 0 35px rgba(250, 204, 21, 0.2) !important;
   background: linear-gradient(
-      155deg,
-      rgba(15, 23, 42, 0.9),
-      rgba(15, 23, 42, 0.72)
-    )
-    !important;
+    155deg,
+    rgba(15, 23, 42, 0.9),
+    rgba(15, 23, 42, 0.72)
+  ) !important;
 }
 
 .service-card-icon {
@@ -842,7 +832,7 @@ nav button.active,
 }
 
 .about-highlights li::before {
-  content: '';
+  content: "";
   width: 0.65rem;
   height: 0.65rem;
   border-radius: 50%;
@@ -866,7 +856,7 @@ nav button.active,
 
 /* This ::after pseudo-element will act as our hover overlay */
 .gallery-item::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -925,11 +915,10 @@ nav button.active,
 /* Contact Section - Premium glass card */
 .contact-card {
   background: linear-gradient(
-      150deg,
-      rgba(15, 23, 42, 0.9),
-      rgba(15, 23, 42, 0.65)
-    )
-    !important;
+    150deg,
+    rgba(15, 23, 42, 0.9),
+    rgba(15, 23, 42, 0.65)
+  ) !important;
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border: 1px solid var(--brand-border-strong) !important;
@@ -954,11 +943,10 @@ nav button.active,
 /* Footer - Glass treatment */
 footer {
   background: linear-gradient(
-      180deg,
-      rgba(15, 23, 42, 0.85),
-      rgba(15, 23, 42, 0.6)
-    )
-    !important;
+    180deg,
+    rgba(15, 23, 42, 0.85),
+    rgba(15, 23, 42, 0.6)
+  ) !important;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-top: 1px solid var(--brand-border);
@@ -990,8 +978,7 @@ footer {
 }
 
 .btn-gold:hover {
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(250, 204, 21, 0.22);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(250, 204, 21, 0.22);
 }
 
 /* Floating animation for CTA button */
@@ -1053,11 +1040,10 @@ button:focus {
 /* Improve button visibility */
 .btn-primary {
   background: linear-gradient(
-      135deg,
-      var(--brand-accent),
-      var(--brand-accent-strong)
-    )
-    !important;
+    135deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  ) !important;
   box-shadow: 0 20px 45px rgba(250, 204, 21, 0.32);
   border: none;
   color: #0f172a !important;
@@ -1082,7 +1068,7 @@ button:focus {
 #services::before,
 #gallery::before,
 #contact::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 10%;
   right: 10%;

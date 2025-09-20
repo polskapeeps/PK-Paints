@@ -1,85 +1,52 @@
 # docs/AGENT.md
 
-# Agent Operating Guide (Codex-compatible)
+# Agent Operating Guide
 
-Purpose: implement features, critique specs, and prevent dysfunctional changes. Prefer boring reliability. If user edits conflict with security or this guide, surface the conflict, propose a safe path, and document the deviation.
+Purpose: support PK-Paints maintainers by delivering reliable changes while protecting repo health. If user requests appear risky or conflict with this guide or higher-priority instructions, surface the concern and align on a safe path before proceeding.
 
-## 0) Contract (non-negotiable)
-Return a single response with:
-1) **Plan**: problem restatement, assumptions, unknowns, acceptance criteria.
-2) **Design**: data shapes, function signatures, error model, complexity.
-3) **Patch**: minimal working change with tests.
-4) **Verification**: exact commands, expected outputs, observed outputs.
-5) **Notes**: risks, limits, next steps, TODOs with owner+date.
+## 1. Operating principles
+- Read the task carefully, note assumptions, and confirm unknowns early.
+- Prefer small, reversible changes; document risk when work goes beyond that.
+- Keep edits minimal and consistent with the surrounding style.
 
-If info is missing: list unknowns, pick safe defaults, proceed. No background tasks. No “later.”
+## 2. Workflow
+1. Inspect the environment (sandbox mode, approval rules, active files).
+2. Review any relevant material in `/docs` or the repo before editing.
+3. Use the planning tool for multi-step or non-trivial work; skip it only for the simplest tasks.
+4. Run commands with an explicit `workdir` and avoid touching unrelated files.
+5. Validate work with focused tests, builds, or linters whenever practical.
+6. Summarize results, risks, and natural next steps in the final message.
 
-## 1) Acceptance criteria (tight)
-Each task must define:
-- Inputs, outputs, and error codes/messages.
-- Performance budget (at least a latency or memory note).
-- Observability: at minimum one structured log on success and error.
-- Security: input validation and “no secrets in logs” check.
+## 3. Response format
+- Follow the Codex CLI house style: concise plain text, short bullets when useful, and file:line references for code changes.
+- Explain what changed, why it changed, and how to verify it.
+- Highlight command results instead of pasting raw output.
+- Ask for clarification when blockers or ambiguities appear.
 
-If missing, you must define provisional criteria and mark them in the Plan.
+## 4. Implementation guidelines
+- Default to ASCII; match existing encoding when a file already uses Unicode.
+- Only add comments when the code would otherwise be difficult to follow.
+- Prefer the standard library and existing dependencies; justify any additions.
+- Validate inputs, handle errors deliberately, and never log secrets or sensitive data.
+- Keep frontend updates accessible (labels, focus order, contrast).
+- Document feature flags, migrations, and other risky operations.
 
-## 2) Output format (strict)
-Return these sections in this order: Plan, Design, File tree, Patch blocks, Tests, Run & verify, Design notes. Missing sections = failed task.
+## 5. Testing and verification
+- Run the smallest meaningful set of commands that prove correctness.
+- When tests are skipped or unavailable, state the gap and suggest how to fill it.
+- Record the commands executed and summarize observed outcomes.
 
-**Patch blocks**: one fenced block per file with a filename header; self-contained; no dead code; no unused deps.
+## 6. Stop-the-line triggers
+Escalate immediately when:
+- Required secrets or configuration are missing.
+- A data migration is unsafe or irreversible.
+- Tests in the affected area are flaky or consistently failing.
+- Performance budgets are exceeded without mitigation.
 
-**Tests**:
-- ≥ 80% coverage on new/changed lines.
-- Happy path + at least 3 edge cases (empty, large, unicode/timezone).
-- Deterministic: fixed seeds; no real network; no time-of-day flakiness.
+## 7. Security basics
+- Store secrets in environment variables only; never commit them.
+- Sanitize and validate input at all external boundaries.
+- Audit new dependencies and call out unresolved CVEs or high-risk packages.
 
-## 3) Behavior rules
-- Prefer standard library; add deps only with justification (benefit, size, maintenance, security).
-- Never guess APIs. If unknown, create a typed stub and mark `TODO(owner/date)`.
-- Validate & sanitize inputs. Parameterize queries. Never log secrets.
-- Version any public API or CLI; don’t break clients silently.
-- Accessibility first on frontend (labels, focus, contrast).
-- No “vibe shipping.” If acceptance criteria are mushy, harden them before coding.
-
-## 4) Stop-the-line triggers
-You must halt and surface a hard error when:
-- Required secrets/config are missing.
-- Data migration is unsafe or irreversible.
-- Test is flaky locally (intermittent failure).
-- Performance exceeds budget by ≥ 2x on the happy path.
-
-Provide a minimal repro and a smallest viable fix or rollback.
-
-## 5) User overrides & risky requests
-User edits override defaults, but you must:
-1) Explain the risk plainly (1–2 sentences).
-2) Offer the safe variant and cost tradeoff.
-3) If user insists, implement under a feature flag and document rollback.
-
-## 6) Error model & logging
-- Typed errors with stable codes: `E_VALIDATION`, `E_CONFIG_MISSING`, `E_IO_TIMEOUT`, `E_RATE_LIMIT`, `E_DEP_INCOMPAT`.
-- Error messages: short, actionable, non-leaky, include correlation ID if available.
-- Log schema: `level`, `ts`, `event`, `correlation_id`, `meta`.
-
-## 7) Observability (minimum)
-- Metrics: `req_count`, `req_latency_ms_p95`, `error_rate`.
-- Trace spans around hot paths or outbound calls (stub if tracing infra is absent).
-- Provide one example log/metric line in **Run & verify**.
-
-## 8) Self-critique checklist
-- [ ] Criteria concrete and testable
-- [ ] Types strict; no implicit any
-- [ ] Lint/format/typecheck pass (show commands)
-- [ ] Tests deterministic; ≥ 80% on new lines
-- [ ] Performance within budget or measured and justified
-- [ ] Inputs validated; outputs typed
-- [ ] Logs structured; secrets absent
-- [ ] Rollback steps clear; feature flag if risky
-- [ ] Docs updated (README/CHANGELOG/ADR if needed)
-
-If any box is unchecked, state why and the follow-up.
-
-## 9) Message skeleton for Codex
-SYSTEM: “Follow AGENT.md strictly. Produce: Plan, Design, File tree, Patch blocks, Tests, Run & verify, Design notes.”
-USER: <Task + edits + budgets>
-ASSISTANT: <All sections, in order>
+## 8. Follow-up tracking
+When work remains, note TODOs with owner and context or mention them explicitly so the user can decide next steps.

@@ -1,3 +1,5 @@
+import { SERVICE_GALLERY_NAV_LINKS } from './gallery-manifest.js';
+
 export function initNavMenu(galleryData) {
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -25,19 +27,34 @@ export function initNavMenu(galleryData) {
   const desktopGalleryMenu = document.getElementById('desktop-gallery-menu');
 
   const { categories = [] } = galleryData || {};
+
+  const navLinks = (Array.isArray(SERVICE_GALLERY_NAV_LINKS) && SERVICE_GALLERY_NAV_LINKS.length
+    ? SERVICE_GALLERY_NAV_LINKS.map((link) => ({
+        slug: link.slug,
+        label: link.label,
+        href:
+          typeof link.href === 'string' && link.href.trim()
+            ? link.href.trim()
+            : `gallery.html?category=${link.slug}`,
+      }))
+    : categories.map((c) => ({
+        slug: c.slug,
+        label: c.name,
+        href: `gallery.html?category=${c.slug}`,
+      })));
+
   if (desktopGalleryMenu) {
-    desktopGalleryMenu.innerHTML = categories
-      .map(
-        (c) =>
-          `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
+    desktopGalleryMenu.innerHTML = navLinks
+      .map((link) =>
+        `<a href="${link.href}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${link.label}</a>`
       )
       .join('');
   }
+
   if (mobileGalleryMenu) {
-    mobileGalleryMenu.innerHTML = categories
-      .map(
-        (c) =>
-          `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
+    mobileGalleryMenu.innerHTML = navLinks
+      .map((link) =>
+        `<a href="${link.href}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${link.label}</a>`
       )
       .join('');
   }

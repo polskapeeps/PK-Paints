@@ -1,3 +1,5 @@
+import { SERVICE_GALLERY_CATEGORIES } from './gallery-manifest.js';
+
 // gallery-builder.js - Compile gallery images grouped by category folders.
 // Uses Vite's import.meta.glob to gather all images in src/assets/gallery and
 // falls back to public/gallery.json when not running through the Vite server.
@@ -29,6 +31,13 @@ const slugifyCategory = (name) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+const toFileName = (url) => {
+  if (typeof url !== 'string') return '';
+  const [base] = url.split('?');
+  const segments = base ? base.split('/') : [];
+  return segments.pop() || '';
+};
 
 let imageModules = {};
 try {
@@ -145,9 +154,115 @@ export async function buildGallery() {
     }
   });
 
-  return {
-    categories: sortedCategories.map(({ slug, name }) => ({ name, slug })),
+  const defaultCategories = sortedCategories.map(({ slug, name }) => ({ name, slug }));
+  const defaultResult = {
+    categories: defaultCategories,
     imagesByCategory,
     coverByCategory,
   };
+
+  if (Array.isArray(SERVICE_GALLERY_CATEGORIES) && SERVICE_GALLERY_CATEGORIES.length > 0) {
+    const urlLookupBySlug = new Map(
+      Object.entries(imagesByCategory).map(([slug, urls]) => [
+        slug,
+        new Map(
+          urls
+            .map((url) => [toFileName(url), url])
+            .filter(([fileName]) => Boolean(fileName))
+        ),
+      ])
+    );
+
+    const curatedCategories = [];
+    const curatedImagesByCategory = {};
+    const curatedCoverByCategory = {};
+
+    const findDisplayName = (slug) => {
+      const match = defaultCategories.find((category) => category.slug === slug);
+      return match ? match.name : '';
+    };
+
+    SERVICE_GALLERY_CATEGORIES.forEach((entry) => {
+      if (!entry) return;
+
+      const sourceKey =
+        typeof entry.sourceCategory === 'string' && entry.sourceCategory.trim()
+          ? entry.sourceCategory.trim()
+          : entry.name || entry.slug;
+
+      if (!sourceKey) return;
+
+      const normalizedSource = normalizeCategoryName(sourceKey) || sourceKey;
+      const sourceSlug = slugifyCategory(normalizedSource);
+      const targetSlug = entry.slug ? slugifyCategory(entry.slug) : sourceSlug;
+
+      const availableUrls =
+        imagesByCategory[targetSlug] || imagesByCategory[sourceSlug] || [];
+
+      if (!availableUrls.length) return;
+
+      const displayName =
+        (typeof entry.name === 'string' && entry.name.trim()) ||
+        findDisplayName(targetSlug) ||
+        findDisplayName(sourceSlug) ||
+        normalizedSource;
+
+      if (!displayName) return;
+
+      const fileMap =
+        urlLookupBySlug.get(targetSlug) ||
+        urlLookupBySlug.get(sourceSlug) ||
+        new Map(
+          availableUrls
+            .map((url) => [toFileName(url), url])
+            .filter(([fileName]) => Boolean(fileName))
+        );
+
+      let selectedUrls = availableUrls;
+
+      if (Array.isArray(entry.images) && entry.images.length > 0) {
+        selectedUrls = entry.images
+          .map((file) => (typeof file === 'string' ? file.trim() : ''))
+          .map((file) => fileMap.get(file))
+          .filter(Boolean);
+      } else if (typeof entry.limit === 'number') {
+        const limit = Math.max(entry.limit, 0);
+        selectedUrls = availableUrls.slice(0, limit);
+      }
+
+      const uniqueSelected = Array.from(new Set(selectedUrls.filter(Boolean)));
+      if (!uniqueSelected.length) return;
+
+      curatedCategories.push({ slug: targetSlug, name: displayName });
+      curatedImagesByCategory[targetSlug] = uniqueSelected;
+
+      const coverFile =
+        typeof entry.cover === 'string' && entry.cover.trim()
+          ? entry.cover.trim()
+          : '';
+
+      let coverUrl = coverFile ? fileMap.get(coverFile) : undefined;
+
+      if (!coverUrl) {
+        coverUrl =
+          coverByCategory[targetSlug] ||
+          coverByCategory[sourceSlug] ||
+          uniqueSelected[0];
+      }
+
+      if (coverUrl) {
+        curatedCoverByCategory[targetSlug] = coverUrl;
+      }
+    });
+
+    if (curatedCategories.length > 0) {
+      return {
+        categories: curatedCategories,
+        imagesByCategory: curatedImagesByCategory,
+        coverByCategory: curatedCoverByCategory,
+      };
+    }
+  }
+
+  return defaultResult;
 }

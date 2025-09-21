@@ -335,14 +335,18 @@ export function initGallery(galleryData) {
     });
   }
 
-  const params = new URLSearchParams(window.location.search);
-  const requestedSlug = params.get('category');
-  const fallbackSlug = categories[0] ? categories[0].slug : null;
-
   const getValidSlug = (slug) =>
     typeof slug === 'string' && slug in imagesByCategory ? slug : null;
 
-  const initialSlug = getValidSlug(requestedSlug) || getValidSlug(fallbackSlug);
+  const params = new URLSearchParams(window.location.search);
+  const requestedSlug = getValidSlug(params.get('category'));
+
+  const preferredSlugs = ['interior-painting', 'exterior-painting', 'custom-trim'];
+  const fallbackSlug =
+    preferredSlugs.map((slug) => getValidSlug(slug)).find(Boolean) ||
+    (categories[0] ? getValidSlug(categories[0].slug) : null);
+
+  const initialSlug = requestedSlug || fallbackSlug;
 
   if (initialSlug) {
     if (select) select.value = initialSlug;

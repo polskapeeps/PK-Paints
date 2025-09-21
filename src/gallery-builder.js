@@ -8,7 +8,7 @@ const EXCLUDED_CATEGORY = 'Commercial';
 const FALLBACK_GALLERY_JSON = 'gallery.json';
 
 const CATEGORY_RENAMES = new Map([
-  ['Carpentry', 'Custom Installs'],
+  ['Carpentry', 'Custom Trim'],
 ]);
 
 const createEmptyResult = () => ({

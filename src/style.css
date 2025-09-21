@@ -611,13 +611,9 @@ nav button.active,
   background-image: url("assets/exterior.png");
 }
 
-/* Custom installs specific background */
-.custom-installs-hero {
+/* Custom trim specific background */
+.custom-trim-hero {
   background-image: url("assets/stain_door.png");
-}
-/* Remodeling specific background */
-.remodeling-hero {
-  background-image: url("assets/bunk_bed.png");
 }
 
 /* Dark overlay for text readability */

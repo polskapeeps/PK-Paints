@@ -1,4 +1,4 @@
-﻿import { SERVICE_GALLERY_PAGE_SECTIONS } from './gallery-manifest.js';
+﻿import { SERVICE_GALLERY_CATEGORIES, SERVICE_GALLERY_PAGE_SECTIONS } from './gallery-manifest.js';
 
 const LIGHTBOX_ID = 'service-lightbox';
 const LIGHTBOX_ACTIVE_CLASS = 'service-lightbox--active';
@@ -22,6 +22,37 @@ const serviceLightboxState = {
 
 let lightboxKeyListenerAttached = false;
 
+const stripFingerprint = (value) => {
+  if (typeof value !== 'string') return '';
+  return value.replace(/(?:-|\.)[a-f0-9]{8,}(?=\.[^.]+$)/gi, '');
+};
+
+const getFileNameFromUrl = (url) => {
+  if (typeof url !== 'string') return '';
+  const [base] = url.split('?');
+  if (!base) return '';
+  const segments = base.split('/');
+  const fileName = segments.pop() || '';
+  return stripFingerprint(fileName);
+};
+
+const findManifestEntry = (slug) => {
+  if (!slug) return null;
+  return (SERVICE_GALLERY_CATEGORIES || []).find((entry) => {
+    if (!entry) return false;
+    if (entry.slug && entry.slug === slug) return true;
+    if (entry.sourceCategory) {
+      const normalized = stripFingerprint(entry.sourceCategory)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      if (normalized === slug) return true;
+    }
+    return false;
+  });
+};
+
 const getPageSlug = () => {
   if (typeof window === 'undefined') return '';
   const path = window.location.pathname || '';
@@ -31,6 +62,30 @@ const getPageSlug = () => {
 };
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
+
+const resolveServiceUrls = (manifestEntry, urls) => {
+  const availableUrls = Array.isArray(urls) ? urls : [];
+  if (!manifestEntry) return availableUrls;
+
+  const fileMap = new Map(
+    availableUrls
+      .map((url) => [getFileNameFromUrl(url), url])
+      .filter(([fileName]) => Boolean(fileName))
+  );
+
+  const curated = Array.isArray(manifestEntry.images)
+    ? manifestEntry.images
+        .map((file) => (typeof file === 'string' ? file.trim() : ''))
+        .map((file) => fileMap.get(file))
+        .filter(Boolean)
+    : [];
+
+  if (curated.length) {
+    return curated;
+  }
+
+  return availableUrls;
+};
 
 const buildAltText = (config, index) => {
   if (
@@ -344,8 +399,10 @@ export function initServiceGalleries(galleryData) {
 
     const gridSlug = grid.getAttribute('data-gallery-slug') || slug;
     const urls = asArray(imagesByCategory[gridSlug] || imagesByCategory[slug]);
+    const manifestEntry = findManifestEntry(slug);
+    const resolvedUrls = resolveServiceUrls(manifestEntry, urls);
 
-    if (!urls.length) {
+    if (!resolvedUrls.length) {
       grid.innerHTML =
         '<p class="text-sm text-gray-400">Gallery coming soon.</p>';
       container.classList.add('service-gallery-empty');
@@ -354,14 +411,14 @@ export function initServiceGalleries(galleryData) {
 
     const maxItems =
       typeof config.limit === 'number' && config.limit > 0
-        ? config.limit
-        : urls.length;
+        ? Math.min(config.limit, resolvedUrls.length)
+        : resolvedUrls.length;
 
     const fragment = document.createDocumentFragment();
     const displayedUrls = [];
     const displayedAlts = [];
 
-    urls.slice(0, maxItems).forEach((url, index) => {
+    resolvedUrls.slice(0, maxItems).forEach((url, index) => {
       if (typeof url !== 'string' || !url.trim()) return;
 
       const normalizedUrl = url.trim();

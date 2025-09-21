@@ -32,11 +32,17 @@ const slugifyCategory = (name) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
+const stripFingerprint = (fileName) => {
+  if (typeof fileName !== 'string') return '';
+  return fileName.replace(/(?:-|\.)[a-f0-9]{8,}(?=\.[^.]+$)/gi, '');
+};
+
 const toFileName = (url) => {
   if (typeof url !== 'string') return '';
   const [base] = url.split('?');
   const segments = base ? base.split('/') : [];
-  return segments.pop() || '';
+  const fileName = segments.pop() || '';
+  return stripFingerprint(fileName);
 };
 
 let imageModules = {};

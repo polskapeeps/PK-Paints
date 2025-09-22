@@ -57,20 +57,13 @@
 export const SERVICE_GALLERY_PAGE_SECTIONS = {
   'interior-painting': [
     {
-      slug: 'interior-painting',
-      anchor: 'gallery-interior',
-      heading: 'Interior transformations',
-      altPrefix: 'Interior painting project',
+      slug: 'painting-trim',
+      anchor: 'gallery-painting-trim',
+      heading: 'Paint & trim highlights',
+      altPrefix: 'Project finish',
       copy:
-        'A curated look at freshly painted interiors, from kitchens and living spaces to stairwells and trim accents.'
-    },
-    {
-      slug: 'exterior-painting',
-      anchor: 'gallery-exterior',
-      heading: 'Exterior curb appeal',
-      altPrefix: 'Exterior painting project',
-      copy:
-        'Weather-tight coatings, careful prep, and crisp details that boost curb appeal across siding, doors, and trim.'
+        'Walls, exteriors, and custom millwork finished with consistent prep, coatings, and detailing.',
+      sources: ['interior-painting', 'exterior-painting', 'custom-trim']
     }
   ],
   carpentry: [

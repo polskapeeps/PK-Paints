@@ -63,6 +63,57 @@ const getPageSlug = () => {
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
 
+const parseSlugList = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) =>
+        typeof item === 'string' ? item.trim() : String(item || '').trim()
+      )
+      .filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
+const mergeSlugSources = (...values) => {
+  const seen = new Set();
+  const slugs = [];
+
+  values.forEach((value) => {
+    parseSlugList(value).forEach((slug) => {
+      if (!slug || seen.has(slug)) return;
+      seen.add(slug);
+      slugs.push(slug);
+    });
+  });
+
+  return slugs;
+};
+
+const gatherUrlsForSlugs = (slugs, imagesByCategory) => {
+  const unique = new Set();
+  const urls = [];
+
+  slugs.forEach((slug) => {
+    asArray(imagesByCategory[slug]).forEach((url) => {
+      if (typeof url !== 'string') return;
+      const normalized = url.trim();
+      if (!normalized || unique.has(normalized)) return;
+      unique.add(normalized);
+      urls.push(normalized);
+    });
+  });
+
+  return urls;
+};
+
 const resolveServiceUrls = (manifestEntry, urls) => {
   const availableUrls = Array.isArray(urls) ? urls : [];
   if (!manifestEntry) return availableUrls;
@@ -397,9 +448,22 @@ export function initServiceGalleries(galleryData) {
     const grid = container.querySelector('[data-gallery-slug]');
     if (!grid) return;
 
-    const gridSlug = grid.getAttribute('data-gallery-slug') || slug;
-    const urls = asArray(imagesByCategory[gridSlug] || imagesByCategory[slug]);
-    const manifestEntry = findManifestEntry(slug);
+    const rawGridSlug = grid.getAttribute('data-gallery-slug');
+    const gridSlug = rawGridSlug ? rawGridSlug.trim() : slug;
+    const sourceAttr = grid.getAttribute('data-gallery-sources');
+    const sourceSlugs = mergeSlugSources(
+      config && config.sources,
+      sourceAttr,
+      gridSlug,
+      slug
+    );
+    const urls = gatherUrlsForSlugs(sourceSlugs, imagesByCategory);
+
+    let manifestEntry = findManifestEntry(slug);
+    if (!manifestEntry && gridSlug && gridSlug !== slug) {
+      manifestEntry = findManifestEntry(gridSlug);
+    }
+
     const resolvedUrls = resolveServiceUrls(manifestEntry, urls);
 
     if (!resolvedUrls.length) {

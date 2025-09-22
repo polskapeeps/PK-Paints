@@ -1,6 +1,7 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
 import { initGallery } from './gallery.js';
+import { initServiceGalleries } from './service-galleries.js';
 import heroImage1 from './assets/hero/[21] interior_04-2021.jpeg';
 import heroImage2 from './assets/hero/[67] interior_11-2022.jpeg';
 import exterior from './assets/exterior.png';
@@ -54,6 +55,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (galleryPage) {
     initGallery(galleryData);
   }
+
+  initServiceGalleries(galleryData);
 
   // Reorder homepage sections: place Services above About (neatly)
   const aboutSection = document.getElementById('about');

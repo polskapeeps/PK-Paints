@@ -13,7 +13,7 @@ function collectImagesByCategory(dir) {
   const categories = {};
   for (const entry of entries) {
     const folderName = entry.name;
-    const category = folderName === 'Carpentry' ? 'Custom Installs' : folderName;
+    const category = folderName === 'Carpentry' ? 'Custom Trim' : folderName;
     const files = fs
       .readdirSync(path.join(dir, folderName))
       .filter((file) => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(file).toLowerCase()))

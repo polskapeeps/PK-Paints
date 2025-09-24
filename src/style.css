@@ -378,7 +378,7 @@ nav button.active,
 
 @media (min-width: 768px) {
   .hero-actions {
-    justify-content: flex-start;
+    justify-content: center;
   }
 }
 
@@ -1263,3 +1263,4 @@ button:focus {
 .mobile-contact-item:hover {
   color: rgba(255, 255, 255, 0.9);
 }
+

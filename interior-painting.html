@@ -350,6 +350,30 @@
       </div>
     </section>
 
+    <!-- Painting Project Gallery -->
+    <section class="py-20 relative" data-gallery-section>
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glass-card-strong rounded-2xl p-8 lg:p-12 space-y-8 text-center">
+          <div class="space-y-3">
+            <span class="uppercase tracking-[0.4em] text-yellow-300/70 text-xs">Recent Work</span>
+            <h2 class="text-4xl lg:text-5xl font-bold text-white">Painting Project Highlights</h2>
+            <p class="text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
+              Crisp interiors, refreshed exteriors, and cabinetry refinished with durable coatings.
+            </p>
+          </div>
+          <div class="gallery-grid sm:grid-cols-2 lg:grid-cols-3" data-gallery-slug="interior-painting" data-gallery-limit="9"></div>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="gallery.html?category=interior-painting" class="btn-primary inline-flex items-center justify-center px-6 py-3 rounded-2xl font-semibold">
+              View Full Painting Gallery
+            </a>
+            <a href="#contact" class="btn-secondary inline-flex items-center justify-center px-6 py-3 rounded-2xl font-semibold">
+              Schedule a Walkthrough
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Process and CTA -->
     <section class="pb-20 relative">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -397,6 +421,14 @@
       </div>
     </section>
   </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <span class="lightbox-close">&times;</span>
+    <span class="lightbox-nav lightbox-prev">&#10094;</span>
+    <span class="lightbox-nav lightbox-next">&#10095;</span>
+    <img class="lightbox-content" id="lightbox-img">
+  </div>
 
   <!-- Footer -->
   <footer class="glass-card border-t border-gray-700/30 py-12 relative">

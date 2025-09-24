@@ -139,6 +139,55 @@ const hydrateGalleryGrid = (gridElement, urls = []) => {
   return normalizedUrls;
 };
 
+
+const toggleSectionVisibility = (element, shouldShow) => {
+  if (!element) return;
+
+  if (shouldShow) {
+    element.classList.remove('hidden');
+    element.removeAttribute('hidden');
+  } else {
+    element.classList.add('hidden');
+    element.setAttribute('hidden', '');
+  }
+};
+
+const renderInlineGalleries = (imagesByCategory = {}) => {
+  if (typeof document === 'undefined') return;
+
+  const inlineGalleries = document.querySelectorAll('[data-gallery-slug]');
+
+  inlineGalleries.forEach((gridElement) => {
+    const slug = gridElement.getAttribute('data-gallery-slug');
+    const parentSection = gridElement.closest('[data-gallery-section]');
+
+    if (!slug || !(slug in imagesByCategory)) {
+      gridElement.replaceChildren();
+      toggleSectionVisibility(parentSection, false);
+      return;
+    }
+
+    const limitAttr = Number.parseInt(
+      gridElement.getAttribute('data-gallery-limit'),
+      10,
+    );
+    const limit = Number.isFinite(limitAttr) && limitAttr > 0 ? limitAttr : null;
+
+    const urls = imagesByCategory[slug] || [];
+    const limitedUrls = limit ? urls.slice(0, limit) : urls;
+    const normalized = hydrateGalleryGrid(gridElement, limitedUrls);
+
+    if (normalized.length === 0) {
+      toggleSectionVisibility(parentSection, false);
+      return;
+    }
+
+    toggleSectionVisibility(parentSection, true);
+    initGalleryUI(gridElement);
+  });
+};
+
+
 const initGalleryUI = (gridElement) => {
   if (!gridElement) return;
 
@@ -296,6 +345,7 @@ export function initGallery(galleryData) {
   } = galleryData || {};
 
   if (typeof window === 'undefined') return;
+  renderInlineGalleries(imagesByCategory);
   if (!window.location.pathname.includes('gallery')) return;
 
   const grid = document.querySelector('.gallery-grid');

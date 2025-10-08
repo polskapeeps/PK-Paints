@@ -407,7 +407,7 @@ export function initGallery(galleryData) {
   const params = new URLSearchParams(window.location.search);
   const requestedSlug = getValidSlug(params.get('category'));
 
-  const preferredSlugs = ['interior-painting', 'exterior-painting', 'custom-trim'];
+  const preferredSlugs = ['painting', 'custom-trim', 'stain'];
   const fallbackSlug =
     preferredSlugs.map((slug) => getValidSlug(slug)).find(Boolean) ||
     (categories[0] ? getValidSlug(categories[0].slug) : null);

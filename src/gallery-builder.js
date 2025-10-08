@@ -9,6 +9,9 @@ const FALLBACK_GALLERY_JSON = 'gallery.json';
 
 const CATEGORY_RENAMES = new Map([
   ['Carpentry', 'Custom Trim'],
+  ['Interior Painting', 'Painting'],
+  ['Exterior Painting', 'Painting'],
+  ['Kitchen Refinish', 'Painting'],
 ]);
 
 const createEmptyResult = () => ({

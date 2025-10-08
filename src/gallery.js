@@ -155,13 +155,29 @@ const toggleSectionVisibility = (element, shouldShow) => {
 const renderInlineGalleries = (imagesByCategory = {}) => {
   if (typeof document === 'undefined') return;
 
-  const inlineGalleries = document.querySelectorAll('[data-gallery-slug]');
+  const inlineGalleries = document.querySelectorAll(
+    '[data-gallery-slug], [data-gallery-slugs]',
+  );
 
   inlineGalleries.forEach((gridElement) => {
-    const slug = gridElement.getAttribute('data-gallery-slug');
+    const singleSlug = gridElement.getAttribute('data-gallery-slug');
+    const multiSlugAttr = gridElement.getAttribute('data-gallery-slugs');
     const parentSection = gridElement.closest('[data-gallery-section]');
 
-    if (!slug || !(slug in imagesByCategory)) {
+    const slugList = multiSlugAttr
+      ? multiSlugAttr
+          .split(',')
+          .map((value) => value.trim())
+          .filter(Boolean)
+      : singleSlug
+      ? [singleSlug.trim()]
+      : [];
+
+    const availableSlugs = slugList.filter(
+      (slug) => slug && slug in imagesByCategory,
+    );
+
+    if (availableSlugs.length === 0) {
       gridElement.replaceChildren();
       toggleSectionVisibility(parentSection, false);
       return;
@@ -173,7 +189,7 @@ const renderInlineGalleries = (imagesByCategory = {}) => {
     );
     const limit = Number.isFinite(limitAttr) && limitAttr > 0 ? limitAttr : null;
 
-    const urls = imagesByCategory[slug] || [];
+    const urls = availableSlugs.flatMap((slug) => imagesByCategory[slug] || []);
     const limitedUrls = limit ? urls.slice(0, limit) : urls;
     const normalized = hydrateGalleryGrid(gridElement, limitedUrls);
 

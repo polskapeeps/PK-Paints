@@ -4,7 +4,7 @@
 
 const COVER_IMAGE_REGEX = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i;
 const ROOT_IMAGE_PREFIX = 'painting_';
-const EXCLUDED_CATEGORY = 'Commercial';
+const EXCLUDED_CATEGORIES = new Set(['Commercial', 'Remodeling']);
 const FALLBACK_GALLERY_JSON = 'gallery.json';
 
 const CATEGORY_RENAMES = new Map([
@@ -20,7 +20,7 @@ const createEmptyResult = () => ({
 const normalizeCategoryName = (name) => {
   if (typeof name !== 'string') return '';
   const trimmed = name.trim();
-  if (!trimmed || trimmed === EXCLUDED_CATEGORY) return '';
+  if (!trimmed || EXCLUDED_CATEGORIES.has(trimmed)) return '';
   return CATEGORY_RENAMES.get(trimmed) || trimmed;
 };
 

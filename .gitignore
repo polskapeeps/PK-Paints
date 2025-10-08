@@ -8,6 +8,9 @@ og.*
 node_modules/
 dist/
 
+# Gallery folders to leave untracked
+src/assets/gallery/Remodeling/
+
 # Build artifacts
 .vite/
 coverage/

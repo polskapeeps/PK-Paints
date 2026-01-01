@@ -1,3 +1,27 @@
+// Configuration constants
+const SLIDESHOW_INTERVAL_MS = 8000;
+const SLIDESHOW_RESUME_DELAY_MS = 8000;
+const PARALLAX_RATE = -0.2;
+const PARALLAX_MIN_WIDTH = 768;
+const PARALLAX_THROTTLE_MS = 16; // ~60fps
+
+// Throttle utility to limit function execution frequency
+const throttle = (func, limit) => {
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
+
+/**
+ * Initializes the hero slideshow with automatic rotation and user controls.
+ * Handles slide transitions, indicator clicks, visibility changes, and parallax effects.
+ * @returns {void}
+ */
 export function initHeroSlideshow() {
   const slides = document.querySelectorAll('.hero-slide');
   const indicators = document.querySelectorAll('.indicator');
@@ -6,6 +30,7 @@ export function initHeroSlideshow() {
   }
   let currentSlide = 0;
   let slideInterval;
+  let resumeTimeout;
 
   // Function to show a specific slide
   const showSlide = (index) => {
@@ -28,7 +53,7 @@ export function initHeroSlideshow() {
 
   // Function to start automatic slideshow
   const startSlideshow = () => {
-    slideInterval = setInterval(nextSlide, 8000); // Change slide every 8 seconds
+    slideInterval = setInterval(nextSlide, SLIDESHOW_INTERVAL_MS);
   };
 
   // Function to stop automatic slideshow
@@ -36,12 +61,28 @@ export function initHeroSlideshow() {
     clearInterval(slideInterval);
   };
 
-  // Add click listeners to indicators
+  // Add click and keyboard listeners to indicators
   indicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
+    // Make indicators keyboard-focusable and accessible
+    indicator.setAttribute('tabindex', '0');
+    indicator.setAttribute('role', 'button');
+    indicator.setAttribute('aria-label', `Go to slide ${index + 1}`);
+
+    const handleIndicatorActivation = () => {
       showSlide(index);
       stopSlideshow(); // Stop auto-play when user manually selects
-      setTimeout(startSlideshow, 8000); // Resume auto-play after 8 seconds
+      clearTimeout(resumeTimeout); // Clear any pending resume
+      resumeTimeout = setTimeout(startSlideshow, SLIDESHOW_RESUME_DELAY_MS);
+    };
+
+    indicator.addEventListener('click', handleIndicatorActivation);
+
+    // Add keyboard support
+    indicator.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleIndicatorActivation();
+      }
     });
   });
 
@@ -60,14 +101,16 @@ export function initHeroSlideshow() {
   // Enhanced parallax effect for glass theme
   const heroSection = document.querySelector('.hero-bg');
   if (heroSection) {
-    window.addEventListener('scroll', () => {
+    const handleParallax = throttle(() => {
       const scrolled = window.pageYOffset;
-      const rate = scrolled * -0.2; // Reduced rate for subtlety
+      const rate = scrolled * PARALLAX_RATE;
 
       // Only apply on larger screens to avoid performance issues on mobile
-      if (window.innerWidth > 768) {
+      if (window.innerWidth > PARALLAX_MIN_WIDTH) {
         heroSection.style.transform = `translateY(${rate}px)`;
       }
-    });
+    }, PARALLAX_THROTTLE_MS);
+
+    window.addEventListener('scroll', handleParallax);
   }
 }

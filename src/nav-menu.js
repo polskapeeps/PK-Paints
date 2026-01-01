@@ -1,3 +1,67 @@
+// Configuration constants
+const OBSERVER_THRESHOLD = 0.1;
+const OBSERVER_ROOT_MARGIN = '0px 0px -50px 0px';
+
+// Module-level shared observer
+let sharedServiceCardObserver = null;
+
+// HTML escape utility to prevent XSS attacks
+const escapeHtml = (str) => {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+};
+
+// Reusable function to initialize desktop dropdown menus with ARIA support
+const initDesktopDropdown = (buttonElement, menuElement) => {
+  if (!buttonElement || !menuElement) return;
+
+  const dropdownParent = buttonElement.closest('.dropdown');
+  if (!dropdownParent) return;
+
+  dropdownParent.addEventListener('mouseenter', () => {
+    buttonElement.setAttribute('aria-expanded', 'true');
+  });
+
+  dropdownParent.addEventListener('mouseleave', () => {
+    buttonElement.setAttribute('aria-expanded', 'false');
+  });
+
+  buttonElement.addEventListener('focus', () => {
+    buttonElement.setAttribute('aria-expanded', 'true');
+  });
+
+  const menuItems = menuElement.querySelectorAll('a[role="menuitem"]');
+  const lastMenuItem = menuItems[menuItems.length - 1];
+
+  if (lastMenuItem) {
+    lastMenuItem.addEventListener('blur', (event) => {
+      if (
+        !menuElement.contains(event.relatedTarget) &&
+        event.relatedTarget !== buttonElement
+      ) {
+        buttonElement.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  dropdownParent.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      buttonElement.setAttribute('aria-expanded', 'false');
+      buttonElement.focus();
+    }
+  });
+};
+
+/**
+ * Initializes the navigation menu with mobile/desktop dropdowns and gallery categories.
+ * Sets up event listeners, ARIA attributes, and intersection observers for animations.
+ * @param {Object} galleryData - Gallery data containing categories, images, and covers
+ * @param {Array} galleryData.categories - Array of category objects with name and slug
+ * @param {Object} galleryData.imagesByCategory - Map of category slugs to image arrays
+ * @param {Object} galleryData.coverByCategory - Map of category slugs to cover images
+ * @returns {void}
+ */
 export function initNavMenu(galleryData) {
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -29,7 +93,7 @@ export function initNavMenu(galleryData) {
     desktopGalleryMenu.innerHTML = categories
       .map(
         (c) =>
-          `<a href="gallery.html?category=${c.slug}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${c.name}</a>`
+          `<a href="gallery.html?category=${encodeURIComponent(c.slug)}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${escapeHtml(c.name)}</a>`
       )
       .join('');
   }
@@ -37,7 +101,7 @@ export function initNavMenu(galleryData) {
     mobileGalleryMenu.innerHTML = categories
       .map(
         (c) =>
-          `<a href="gallery.html?category=${c.slug}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${c.name}</a>`
+          `<a href="gallery.html?category=${encodeURIComponent(c.slug)}" class="block py-3 px-4 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200">${escapeHtml(c.name)}</a>`
       )
       .join('');
   }
@@ -100,83 +164,9 @@ export function initNavMenu(galleryData) {
     });
   }
 
-  // Handle ARIA for desktop dropdown (visibility is CSS driven by :hover)
-  if (desktopServicesButton && desktopServicesMenu) {
-    const dropdownParent = desktopServicesButton.closest('.dropdown');
-
-    if (dropdownParent) {
-      dropdownParent.addEventListener('mouseenter', () => {
-        desktopServicesButton.setAttribute('aria-expanded', 'true');
-      });
-
-      dropdownParent.addEventListener('mouseleave', () => {
-        desktopServicesButton.setAttribute('aria-expanded', 'false');
-      });
-
-      desktopServicesButton.addEventListener('focus', () => {
-        desktopServicesButton.setAttribute('aria-expanded', 'true');
-      });
-
-      const menuItems = desktopServicesMenu.querySelectorAll('a[role="menuitem"]');
-      const lastMenuItem = menuItems[menuItems.length - 1];
-
-      if (lastMenuItem) {
-        lastMenuItem.addEventListener('blur', (event) => {
-          if (
-            !desktopServicesMenu.contains(event.relatedTarget) &&
-            event.relatedTarget !== desktopServicesButton
-          ) {
-            desktopServicesButton.setAttribute('aria-expanded', 'false');
-          }
-        });
-      }
-      dropdownParent.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-          desktopServicesButton.setAttribute('aria-expanded', 'false');
-          desktopServicesButton.focus();
-        }
-      });
-    }
-  }
-
-  if (desktopGalleryButton && desktopGalleryMenu) {
-    const dropdownParent = desktopGalleryButton.closest('.dropdown');
-
-    if (dropdownParent) {
-      dropdownParent.addEventListener('mouseenter', () => {
-        desktopGalleryButton.setAttribute('aria-expanded', 'true');
-      });
-
-      dropdownParent.addEventListener('mouseleave', () => {
-        desktopGalleryButton.setAttribute('aria-expanded', 'false');
-      });
-
-      desktopGalleryButton.addEventListener('focus', () => {
-        desktopGalleryButton.setAttribute('aria-expanded', 'true');
-      });
-
-      const menuItems = desktopGalleryMenu.querySelectorAll('a[role="menuitem"]');
-      const lastMenuItem = menuItems[menuItems.length - 1];
-
-      if (lastMenuItem) {
-        lastMenuItem.addEventListener('blur', (event) => {
-          if (
-            !desktopGalleryMenu.contains(event.relatedTarget) &&
-            event.relatedTarget !== desktopGalleryButton
-          ) {
-            desktopGalleryButton.setAttribute('aria-expanded', 'false');
-          }
-        });
-      }
-
-      dropdownParent.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-          desktopGalleryButton.setAttribute('aria-expanded', 'false');
-          desktopGalleryButton.focus();
-        }
-      });
-    }
-  }
+  // Initialize desktop dropdown menus with ARIA support
+  initDesktopDropdown(desktopServicesButton, desktopServicesMenu);
+  initDesktopDropdown(desktopGalleryButton, desktopGalleryMenu);
 
   // Set current year in footer
   const currentYearElement = document.getElementById('currentYear');
@@ -235,32 +225,34 @@ export function initNavMenu(galleryData) {
     });
   });
 
-  // Enhanced intersection observer for glass theme animations
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px',
-  };
+  // Get or create shared IntersectionObserver for service card animations
+  if (!sharedServiceCardObserver) {
+    const observerOptions = {
+      threshold: OBSERVER_THRESHOLD,
+      rootMargin: OBSERVER_ROOT_MARGIN,
+    };
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
+    sharedServiceCardObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
 
-        if (entry.target.classList.contains('service-card')) {
-          entry.target.style.boxShadow =
-            '0 16px 48px rgba(59, 130, 246, 0.15)';
+          if (entry.target.classList.contains('service-card')) {
+            entry.target.style.boxShadow =
+              '0 16px 48px rgba(59, 130, 246, 0.15)';
+          }
         }
-      }
-    });
-  }, observerOptions);
+      });
+    }, observerOptions);
+  }
 
   document.querySelectorAll('.service-card, .gallery-item').forEach((el) => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
     el.style.transition =
       'opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.8s ease-out';
-    observer.observe(el);
+    sharedServiceCardObserver.observe(el);
   });
 
   // Background shape animation controls

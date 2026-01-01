@@ -41,6 +41,14 @@ try {
   imageModules = {};
 }
 
+/**
+ * Builds gallery data by scanning image files or loading from gallery.json fallback.
+ * Uses Vite's import.meta.glob in development, falls back to JSON in production.
+ * @returns {Promise<Object>} Gallery data with categories, imagesByCategory, and coverByCategory
+ * @returns {Promise<Array>} returns.categories - Sorted array of {name, slug} category objects
+ * @returns {Promise<Object>} returns.imagesByCategory - Map of slug to image URL arrays
+ * @returns {Promise<Object>} returns.coverByCategory - Map of slug to cover image URLs
+ */
 export async function buildGallery() {
   const categories = new Map();
   const coverCandidates = {};

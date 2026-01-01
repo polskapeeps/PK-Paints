@@ -1,8 +1,15 @@
+// Configuration constants
+const GALLERY_PRELOAD_ATTRIBUTE = 'data-gallery-preload';
+const SWIPE_THRESHOLD_PX = 100;
+const OBSERVER_THRESHOLD = 0.1;
+const OBSERVER_ROOT_MARGIN = '0px 0px -50px 0px';
+const MAX_PRELOAD_IMAGES = 4;
+
+// Module-level state
 let lightboxInitialized = false;
 let reducedMotionStylesApplied = false;
 let reducedMotionListenerRegistered = false;
-
-const GALLERY_PRELOAD_ATTRIBUTE = 'data-gallery-preload';
+let sharedGalleryObserver = null;
 
 const normalizeImageUrl = (url) => (typeof url === 'string' ? url.trim() : '');
 
@@ -30,7 +37,7 @@ const updatePreloadLinks = (urls = []) => {
   const selector = `link[${GALLERY_PRELOAD_ATTRIBUTE}]`;
   head.querySelectorAll(selector).forEach((link) => link.remove());
 
-  urls.slice(0, 4).forEach((src) => {
+  urls.slice(0, MAX_PRELOAD_IMAGES).forEach((src) => {
     const href = normalizeImageUrl(src);
     if (!href) return;
     const link = document.createElement('link');
@@ -68,9 +75,17 @@ const applyReducedMotionPreferences = () => {
   if (mediaQuery.matches) {
     applyStyles();
   } else if (!reducedMotionListenerRegistered) {
+    reducedMotionListenerRegistered = true;
     if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener('change', applyStyles, { once: true });
+      mediaQuery.addEventListener(
+        'change',
+        (event) => {
+          if (event.matches) applyStyles();
+        },
+        { once: true }
+      );
     } else if (typeof mediaQuery.addListener === 'function') {
+      // Legacy Safari fallback
       const legacyListener = (event) => {
         if (event.matches) {
           applyStyles();
@@ -79,13 +94,30 @@ const applyReducedMotionPreferences = () => {
       };
       mediaQuery.addListener(legacyListener);
     }
-    reducedMotionListenerRegistered = true;
   }
 };
 
 const shouldEnableHoverEffects = () => {
   if (typeof window === 'undefined') return true;
   return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+};
+
+// Get or create a shared IntersectionObserver for gallery animations
+const getGalleryObserver = () => {
+  if (!sharedGalleryObserver) {
+    const observerOptions = {
+      threshold: OBSERVER_THRESHOLD,
+      rootMargin: OBSERVER_ROOT_MARGIN,
+    };
+    sharedGalleryObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+  }
+  return sharedGalleryObserver;
 };
 
 const createGalleryItem = (url, gridElement) => {
@@ -221,7 +253,17 @@ const initGalleryUI = (gridElement) => {
     if (!src) return;
 
     lightboxImg.src = src;
-    lightboxImg.alt = img.alt || '';
+    lightboxImg.alt = img.alt || 'Gallery image';
+
+    // Add ARIA attributes for accessibility
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.setAttribute('aria-label', 'Image viewer');
+    lightboxImg.setAttribute(
+      'aria-label',
+      `Image ${boundedIndex + 1} of ${items.length}`
+    );
+
     lightbox.classList.add('active');
 
     if (document.body) {
@@ -229,6 +271,9 @@ const initGalleryUI = (gridElement) => {
     }
 
     currentImageIndex = boundedIndex;
+
+    // Focus the close button for keyboard users
+    setTimeout(() => lightboxClose.focus(), 100);
   };
 
   const closeLightbox = () => {
@@ -263,11 +308,26 @@ const initGalleryUI = (gridElement) => {
   const galleryItems = getGalleryItems();
 
   galleryItems.forEach((item) => {
-    item.addEventListener('click', () => {
+    // Make gallery items keyboard-accessible
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('role', 'button');
+    item.setAttribute('aria-label', 'View image in lightbox');
+
+    const handleItemActivation = () => {
       const items = getGalleryItems();
       const index = items.indexOf(item);
       if (index !== -1) {
         openLightbox(index);
+      }
+    };
+
+    item.addEventListener('click', handleItemActivation);
+
+    // Add keyboard support
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleItemActivation();
       }
     });
   });
@@ -307,10 +367,9 @@ const initGalleryUI = (gridElement) => {
     lightbox.addEventListener('touchend', (event) => {
       if (event.changedTouches.length > 0) {
         touchEndX = event.changedTouches[0].screenX;
-        const swipeThreshold = 100;
-        if (touchEndX < touchStartX - swipeThreshold) {
+        if (touchEndX < touchStartX - SWIPE_THRESHOLD_PX) {
           nextImage();
-        } else if (touchEndX > touchStartX + swipeThreshold) {
+        } else if (touchEndX > touchStartX + SWIPE_THRESHOLD_PX) {
           prevImage();
         }
       }
@@ -319,24 +378,22 @@ const initGalleryUI = (gridElement) => {
     lightboxInitialized = true;
   }
 
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px',
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, observerOptions);
-
+  // Use shared observer for better performance
+  const observer = getGalleryObserver();
   gridElement.querySelectorAll('.fade-in').forEach((el) => {
     observer.observe(el);
   });
 };
 
+/**
+ * Initializes the gallery UI with category filtering and lightbox functionality.
+ * Renders inline galleries on service pages and main gallery page with category dropdown.
+ * @param {Object} galleryData - Gallery data containing categories, images, and covers
+ * @param {Array} galleryData.categories - Array of category objects with name and slug
+ * @param {Object} galleryData.imagesByCategory - Map of category slugs to image URL arrays
+ * @param {Object} galleryData.coverByCategory - Map of category slugs to cover image URLs
+ * @returns {void}
+ */
 export function initGallery(galleryData) {
   const {
     categories = [],
@@ -381,7 +438,14 @@ export function initGallery(galleryData) {
       .join('');
 
     select.addEventListener('change', () => {
-      renderCategory(select.value);
+      try {
+        renderCategory(select.value);
+      } catch (error) {
+        console.error('Failed to render gallery category:', error);
+        if (grid) {
+          grid.innerHTML = '<div class="text-center text-gray-400 p-8">Unable to load gallery. Please refresh the page.</div>';
+        }
+      }
     });
   }
 
@@ -400,7 +464,12 @@ export function initGallery(galleryData) {
 
   if (initialSlug) {
     if (select) select.value = initialSlug;
-    renderCategory(initialSlug);
+    try {
+      renderCategory(initialSlug);
+    } catch (error) {
+      console.error('Failed to render initial gallery category:', error);
+      hydrateGalleryGrid(grid, []);
+    }
   } else {
     hydrateGalleryGrid(grid, []);
   }

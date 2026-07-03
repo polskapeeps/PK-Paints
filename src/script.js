@@ -54,15 +54,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (galleryPage) {
     initGallery(galleryData);
   }
-
-  // Reorder homepage sections: place Services above About (neatly)
-  const aboutSection = document.getElementById('about');
-  const servicesSection = document.getElementById('services');
-  if (aboutSection && servicesSection) {
-    const parent = aboutSection.parentNode;
-    if (parent) {
-      // Always ensure Services appears before About
-      parent.insertBefore(servicesSection, aboutSection);
-    }
-  }
 });

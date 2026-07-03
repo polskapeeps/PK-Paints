@@ -215,7 +215,7 @@ body {
   box-shadow: 0 25px 55px rgba(6, 11, 25, 0.5);
 }
 
-#mobile-menu a,
+#mobile-menu a:not(.mobile-cta),
 #mobile-menu button {
   color: rgba(226, 232, 240, 0.92) !important;
   font-weight: 500 !important;
@@ -223,7 +223,7 @@ body {
   border-radius: 0.75rem;
 }
 
-#mobile-menu a:hover,
+#mobile-menu a:not(.mobile-cta):hover,
 #mobile-menu button:hover {
   background: rgba(148, 163, 184, 0.12) !important;
   color: #ffffff !important;
@@ -1306,6 +1306,18 @@ button:focus {
   position: relative;
 }
 
+/* Keep anchored sections clear of the fixed header when jumping to #links */
+#about,
+#services,
+#gallery,
+#contact,
+#interior,
+#exterior,
+#repairs,
+#service-packages {
+  scroll-margin-top: 7rem;
+}
+
 /* Add subtle floating shapes to other sections too */
 #about::before,
 #services::before,
@@ -1471,8 +1483,8 @@ button:focus {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
 }
 
-/* Mobile menu items - clean and clear */
-#mobile-menu a,
+/* Mobile menu items - clean and clear (keep the gold CTA styled) */
+#mobile-menu a:not(.mobile-cta),
 #mobile-menu button {
   background: transparent !important;
   border: none !important;
@@ -1481,7 +1493,7 @@ button:focus {
 }
 
 /* Subtle hover effect - same as desktop */
-#mobile-menu a:hover,
+#mobile-menu a:not(.mobile-cta):hover,
 #mobile-menu button:hover {
   background: rgba(255, 255, 255, 0.1) !important;
   border-radius: 8px;

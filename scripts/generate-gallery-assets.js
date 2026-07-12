@@ -101,8 +101,15 @@ async function createFeaturedImages() {
     sources.map(([source, output]) =>
       sharp(path.join(rootDir, source))
         .rotate()
-        .resize({ width: 1600, height: 1000, fit: 'cover', position: 'attention' })
-        .webp({ quality: 78, effort: 5 })
+        // Preserve the original composition. CSS performs the single viewport crop;
+        // baking a second 16:10 crop here makes portrait project photos feel zoomed in.
+        .resize({
+          width: 2048,
+          height: 2048,
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 80, effort: 5 })
         .toFile(path.join(featuredDir, output)),
     ),
   );

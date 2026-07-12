@@ -19,19 +19,28 @@ const initDesktopDropdown = (buttonElement, menuElement) => {
   const dropdownParent = buttonElement.closest('.dropdown');
   if (!dropdownParent) return;
 
+  const setOpen = (isOpen) => {
+    dropdownParent.classList.toggle('is-open', isOpen);
+    buttonElement.setAttribute('aria-expanded', String(isOpen));
+  };
+
   dropdownParent.addEventListener('mouseenter', () => {
-    buttonElement.setAttribute('aria-expanded', 'true');
+    setOpen(true);
   });
 
   dropdownParent.addEventListener('mouseleave', () => {
-    buttonElement.setAttribute('aria-expanded', 'false');
+    if (!dropdownParent.contains(document.activeElement)) setOpen(false);
   });
 
   buttonElement.addEventListener('focus', () => {
-    buttonElement.setAttribute('aria-expanded', 'true');
+    setOpen(true);
   });
 
-  const menuItems = menuElement.querySelectorAll('a[role="menuitem"]');
+  buttonElement.addEventListener('click', () => {
+    setOpen(buttonElement.getAttribute('aria-expanded') !== 'true');
+  });
+
+  const menuItems = menuElement.querySelectorAll('a');
   const lastMenuItem = menuItems[menuItems.length - 1];
 
   if (lastMenuItem) {
@@ -40,16 +49,20 @@ const initDesktopDropdown = (buttonElement, menuElement) => {
         !menuElement.contains(event.relatedTarget) &&
         event.relatedTarget !== buttonElement
       ) {
-        buttonElement.setAttribute('aria-expanded', 'false');
+        setOpen(false);
       }
     });
   }
 
   dropdownParent.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      buttonElement.setAttribute('aria-expanded', 'false');
+      setOpen(false);
       buttonElement.focus();
     }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!dropdownParent.contains(event.target)) setOpen(false);
   });
 };
 
@@ -88,12 +101,37 @@ export function initNavMenu(galleryData) {
   const desktopGalleryButton = document.getElementById('desktop-gallery-button');
   const desktopGalleryMenu = document.getElementById('desktop-gallery-menu');
 
+  const setMobileSubmenusClosed = () => {
+    if (mobileServicesMenu) mobileServicesMenu.classList.add('hidden');
+    if (mobileServicesButton) {
+      mobileServicesButton.setAttribute('aria-expanded', 'false');
+    }
+    if (mobileServicesButtonSvg) mobileServicesButtonSvg.style.transform = '';
+
+    if (mobileGalleryMenu) mobileGalleryMenu.classList.add('hidden');
+    if (mobileGalleryButton) {
+      mobileGalleryButton.setAttribute('aria-expanded', 'false');
+    }
+    if (mobileGalleryButtonSvg) mobileGalleryButtonSvg.style.transform = '';
+  };
+
+  const setMobileMenuOpen = (isOpen) => {
+    if (!mobileMenuButton || !mobileMenu) return;
+    mobileMenu.classList.toggle('hidden', !isOpen);
+    mobileMenuButton.setAttribute('aria-expanded', String(isOpen));
+    const accessibleLabel = mobileMenuButton.querySelector('.sr-only');
+    if (accessibleLabel) {
+      accessibleLabel.textContent = isOpen ? 'Close main menu' : 'Open main menu';
+    }
+    if (!isOpen) setMobileSubmenusClosed();
+  };
+
   const { categories = [] } = galleryData || {};
   if (desktopGalleryMenu) {
     desktopGalleryMenu.innerHTML = categories
       .map(
         (c) =>
-          `<a href="gallery.html?category=${encodeURIComponent(c.slug)}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2" role="menuitem">${escapeHtml(c.name)}</a>`
+          `<a href="gallery.html?category=${encodeURIComponent(c.slug)}" class="block px-4 py-3 text-sm text-gray-200 hover:bg-white/10 transition-colors duration-200 rounded-lg mx-2">${escapeHtml(c.name)}</a>`
       )
       .join('');
   }
@@ -108,32 +146,13 @@ export function initNavMenu(galleryData) {
 
   if (mobileMenuButton && mobileMenu) {
     mobileMenuButton.addEventListener('click', () => {
-      const isExpanded = mobileMenu.classList.toggle('hidden');
-      mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+      setMobileMenuOpen(mobileMenu.classList.contains('hidden'));
+    });
 
-      if (
-        isExpanded &&
-        mobileServicesMenu &&
-        !mobileServicesMenu.classList.contains('hidden')
-      ) {
-        mobileServicesMenu.classList.add('hidden');
-        if (mobileServicesButton) {
-          mobileServicesButton.setAttribute('aria-expanded', 'false');
-          if (mobileServicesButtonSvg)
-            mobileServicesButtonSvg.style.transform = '';
-        }
-      }
-      if (
-        isExpanded &&
-        mobileGalleryMenu &&
-        !mobileGalleryMenu.classList.contains('hidden')
-      ) {
-        mobileGalleryMenu.classList.add('hidden');
-        if (mobileGalleryButton) {
-          mobileGalleryButton.setAttribute('aria-expanded', 'false');
-          if (mobileGalleryButtonSvg)
-            mobileGalleryButtonSvg.style.transform = '';
-        }
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+        setMobileMenuOpen(false);
+        mobileMenuButton.focus();
       }
     });
   }
@@ -192,28 +211,7 @@ export function initNavMenu(galleryData) {
               !mobileMenu.classList.contains('hidden') &&
               mobileMenu.contains(this)
             ) {
-              mobileMenu.classList.add('hidden');
-              mobileMenuButton.setAttribute('aria-expanded', 'false');
-              if (
-                mobileServicesMenu &&
-                !mobileServicesMenu.classList.contains('hidden')
-              ) {
-                mobileServicesMenu.classList.add('hidden');
-                if (mobileServicesButton)
-                  mobileServicesButton.setAttribute('aria-expanded', 'false');
-                if (mobileServicesButtonSvg)
-                  mobileServicesButtonSvg.style.transform = '';
-              }
-              if (
-                mobileGalleryMenu &&
-                !mobileGalleryMenu.classList.contains('hidden')
-              ) {
-                mobileGalleryMenu.classList.add('hidden');
-                if (mobileGalleryButton)
-                  mobileGalleryButton.setAttribute('aria-expanded', 'false');
-                if (mobileGalleryButtonSvg)
-                  mobileGalleryButtonSvg.style.transform = '';
-              }
+              setMobileMenuOpen(false);
             }
           } else {
             console.warn(`Smooth scroll target not found: ${href}`);

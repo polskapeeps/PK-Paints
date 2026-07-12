@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ==================== BASE STYLES ==================== */
 
 /* Base body styles */
@@ -98,6 +102,15 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
   .bg-shape {
     animation: none;
   }
@@ -173,7 +186,9 @@ body {
 }
 
 /* Desktop dropdown menu visibility on hover */
-.dropdown:hover .dropdown-menu {
+.dropdown:hover .dropdown-menu,
+.dropdown:focus-within .dropdown-menu,
+.dropdown.is-open .dropdown-menu {
   display: block;
   opacity: 1;
   visibility: visible;
@@ -530,19 +545,19 @@ nav button.active,
 
 /* Add your slide images here - easily customizable */
 .hero-slide:nth-child(1) {
-  background-image: url("assets/exterior.png");
+  background-image: url("/assets/featured/home-exterior.webp");
 }
 .hero-slide:nth-child(2) {
-  background-image: url("assets/hero/[67] interior_11-2022.jpeg");
+  background-image: url("/assets/featured/home-interior-1.webp");
 }
 .hero-slide:nth-child(3) {
-  background-image: url("assets/hero/[21] interior_04-2021.jpeg");
+  background-image: url("/assets/featured/home-interior-2.webp");
 }
 .hero-slide:nth-child(4) {
-  background-image: url("assets/dine.png");
+  background-image: url("/assets/featured/home-detail-1.webp");
 }
 .hero-slide:nth-child(5) {
-  background-image: url("assets/dine2.png");
+  background-image: url("/assets/featured/home-detail-2.webp");
 }
 /* Slideshow indicators (dots) with improved visibility */
 .slideshow-indicators {
@@ -603,17 +618,20 @@ nav button.active,
 
 /* Interior painting specific background */
 .interior-hero {
-  /* Use existing asset; path relative to this CSS file */
-  background-image: url("assets/wainscotwall.jpeg");
+  background-image: url("/assets/featured/painting-hero.webp");
 }
 /* Exterior painting specific background */
 .exterior-hero {
-  background-image: url("assets/exterior.png");
+  background-image: url("/assets/featured/home-exterior.webp");
 }
 
 /* Custom trim specific background */
 .custom-trim-hero {
-  background-image: url("assets/stain_door.png");
+  background-image: url("/assets/featured/trim-hero.webp");
+}
+
+.gallery-hero {
+  background-image: url("/assets/featured/gallery-hero.webp");
 }
 
 /* Dark overlay for text readability */
@@ -878,6 +896,11 @@ nav button.active,
   cursor: pointer;
   aspect-ratio: 4 / 3;
   transition: transform 0.4s ease;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
 }
 
 /* This ::after pseudo-element will act as our hover overlay */
@@ -932,12 +955,13 @@ nav button.active,
   font-size: 0.875rem;
   padding: 0.25rem 0.5rem;
   text-align: center;
-  opacity: 0;
+  opacity: 0.92;
   transition: opacity 0.3s ease;
   z-index: 2;
 }
 
-.gallery-item:hover .gallery-caption {
+.gallery-item:hover .gallery-caption,
+.gallery-item:focus-visible .gallery-caption {
   opacity: 1;
 }
 
@@ -999,7 +1023,8 @@ nav button.active,
   border-color: rgba(250, 204, 21, 0.6);
   box-shadow: 0 22px 54px rgba(5, 11, 23, 0.58);
   transform: translateY(-1px);
-  outline: none;
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 3px;
 }
 
 .gallery-select option {
@@ -1034,11 +1059,9 @@ nav button.active,
 
 @media (max-width: 640px) {
   .gallery-select-wrapper {
-    top: auto;
-    bottom: 1.5rem;
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    inset: auto;
+    transform: none;
     width: min(92vw, 18rem);
   }
 
@@ -1116,6 +1139,7 @@ nav button.active,
   justify-content: center;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .lightbox-close:hover {
@@ -1138,6 +1162,7 @@ nav button.active,
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .lightbox-nav:hover {
@@ -1195,6 +1220,239 @@ nav button.active,
   background: rgba(250, 204, 21, 0.16) !important;
   border-color: rgba(250, 204, 21, 0.45) !important;
   transform: translateY(-2px);
+}
+
+/* ==================== LEAD CAPTURE & TRUST ==================== */
+
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.trust-item {
+  padding: 1.35rem;
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+}
+
+.trust-item strong {
+  display: block;
+  color: #fef3c7;
+  margin-bottom: 0.35rem;
+}
+
+.estimate-page-main {
+  padding: 9rem 1rem 5rem;
+}
+
+.estimate-shell,
+.privacy-shell {
+  width: min(100%, 72rem);
+  margin: 0 auto;
+}
+
+.estimate-intro {
+  max-width: 48rem;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.estimate-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.38fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.estimate-form,
+.estimate-aside,
+.privacy-card {
+  border: 1px solid var(--brand-border-strong);
+  border-radius: 1.5rem;
+  background: linear-gradient(150deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.76));
+  box-shadow: 0 30px 75px rgba(2, 6, 23, 0.52);
+}
+
+.estimate-form {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.estimate-aside {
+  padding: 1.5rem;
+  position: sticky;
+  top: 7rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.form-field {
+  min-width: 0;
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+.form-field label,
+.form-field legend {
+  display: block;
+  color: #f8fafc;
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-height: 3rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  background: rgba(2, 6, 23, 0.68);
+  color: #f8fafc;
+  padding: 0.75rem 0.9rem;
+}
+
+.form-field textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.form-field input:focus-visible,
+.form-field select:focus-visible,
+.form-field textarea:focus-visible {
+  outline: 3px solid rgba(250, 204, 21, 0.5);
+  outline-offset: 2px;
+  border-color: var(--brand-accent);
+}
+
+.form-field [aria-invalid="true"] {
+  border-color: #fca5a5;
+}
+
+.field-help,
+.privacy-note {
+  color: rgba(203, 213, 225, 0.78);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin-top: 0.4rem;
+}
+
+.field-error {
+  color: #fecaca;
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+  min-height: 1.25rem;
+}
+
+.contact-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.contact-choice label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.7);
+  cursor: pointer;
+}
+
+.contact-choice input {
+  width: 1rem;
+  min-height: auto;
+  padding: 0;
+}
+
+.form-submit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-status {
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+.form-status[data-state="success"] {
+  color: #d1fae5;
+  background: rgba(6, 78, 59, 0.5);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.form-status[data-state="error"] {
+  color: #fee2e2;
+  background: rgba(127, 29, 29, 0.45);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.honeypot-field {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+}
+
+.privacy-card {
+  padding: clamp(1.35rem, 4vw, 2.75rem);
+}
+
+.privacy-card h2 {
+  color: #fef3c7;
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin: 2rem 0 0.65rem;
+}
+
+.privacy-card p,
+.privacy-card li {
+  color: rgba(226, 232, 240, 0.86);
+  line-height: 1.75;
+}
+
+.privacy-card ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.mobile-action-bar {
+  display: none;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10000;
+  transform: translateY(-150%);
+  background: #facc15;
+  color: #0f172a;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 /* ==================== FOOTER ==================== */
@@ -1390,6 +1648,55 @@ button:focus {
 
 /* Mobile adjustments */
 @media (max-width: 767px) {
+  body {
+    padding-bottom: calc(4.7rem + env(safe-area-inset-bottom));
+  }
+
+  .mobile-action-bar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 80;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(250, 204, 21, 0.35);
+    border-top: 1px solid rgba(250, 204, 21, 0.45);
+    box-shadow: 0 -16px 35px rgba(2, 6, 23, 0.48);
+  }
+
+  .mobile-action-bar a {
+    min-height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 0.35rem;
+    background: rgba(5, 11, 27, 0.97);
+    color: #fef3c7;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .mobile-action-bar a:last-child {
+    background: linear-gradient(135deg, var(--brand-accent), var(--brand-accent-strong));
+    color: #0f172a;
+  }
+
+  .trust-strip,
+  .estimate-layout,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .estimate-aside {
+    position: static;
+  }
+
+  .form-field-full {
+    grid-column: auto;
+  }
+
   /* Hero section mobile fixes */
   .hero-bg {
     background-attachment: scroll; /* Better mobile performance */
@@ -1515,4 +1822,3 @@ button:focus {
 .mobile-contact-item:hover {
   color: rgba(255, 255, 255, 0.9);
 }
-

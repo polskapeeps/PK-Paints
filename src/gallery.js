@@ -3,7 +3,7 @@ const GALLERY_PRELOAD_ATTRIBUTE = 'data-gallery-preload';
 const SWIPE_THRESHOLD_PX = 100;
 const OBSERVER_THRESHOLD = 0.1;
 const OBSERVER_ROOT_MARGIN = '0px 0px -50px 0px';
-const MAX_PRELOAD_IMAGES = 4;
+const MAX_PRELOAD_IMAGES = 1;
 
 // Module-level state
 let lightboxInitialized = false;
@@ -13,17 +13,35 @@ let sharedGalleryObserver = null;
 
 const normalizeImageUrl = (url) => (typeof url === 'string' ? url.trim() : '');
 
+const normalizeImageEntry = (value) => {
+  if (typeof value === 'string') {
+    const full = normalizeImageUrl(value);
+    return full ? { full, thumbnail: full, alt: 'Project photo', caption: '' } : null;
+  }
+
+  if (!value || typeof value !== 'object') return null;
+  const full = normalizeImageUrl(value.full);
+  if (!full) return null;
+
+  return {
+    full,
+    thumbnail: normalizeImageUrl(value.thumbnail) || full,
+    alt: typeof value.alt === 'string' && value.alt.trim() ? value.alt.trim() : 'Project photo',
+    caption: typeof value.caption === 'string' ? value.caption.trim() : '',
+  };
+};
+
 const normalizeImageList = (urls) => {
   if (!Array.isArray(urls)) return [];
 
   const seen = new Set();
   const normalized = [];
 
-  for (const url of urls) {
-    const trimmed = normalizeImageUrl(url);
-    if (!trimmed || seen.has(trimmed)) continue;
-    seen.add(trimmed);
-    normalized.push(trimmed);
+  for (const value of urls) {
+    const entry = normalizeImageEntry(value);
+    if (!entry || seen.has(entry.full)) continue;
+    seen.add(entry.full);
+    normalized.push(entry);
   }
 
   return normalized;
@@ -37,8 +55,8 @@ const updatePreloadLinks = (urls = []) => {
   const selector = `link[${GALLERY_PRELOAD_ATTRIBUTE}]`;
   head.querySelectorAll(selector).forEach((link) => link.remove());
 
-  urls.slice(0, MAX_PRELOAD_IMAGES).forEach((src) => {
-    const href = normalizeImageUrl(src);
+  urls.slice(0, MAX_PRELOAD_IMAGES).forEach((entry) => {
+    const href = normalizeImageUrl(entry.thumbnail);
     if (!href) return;
     const link = document.createElement('link');
     link.rel = 'preload';
@@ -120,16 +138,21 @@ const getGalleryObserver = () => {
   return sharedGalleryObserver;
 };
 
-const createGalleryItem = (url, gridElement) => {
-  const wrapper = document.createElement('div');
+const createGalleryItem = (entry, gridElement) => {
+  const wrapper = document.createElement('button');
+  wrapper.type = 'button';
   wrapper.className = 'gallery-item overflow-hidden fade-in';
   wrapper.style.transition = 'transform 0.3s ease';
+  wrapper.dataset.fullSrc = entry.full;
+  wrapper.setAttribute('aria-label', `Open ${entry.alt} in the image viewer`);
 
   const img = document.createElement('img');
-  img.alt = 'Gallery image';
+  img.alt = entry.alt;
   img.loading = 'lazy';
   img.decoding = 'async';
-  img.src = url;
+  img.width = 720;
+  img.height = 540;
+  img.src = entry.thumbnail;
 
   img.addEventListener('error', () => {
     wrapper.remove();
@@ -149,6 +172,12 @@ const createGalleryItem = (url, gridElement) => {
   }
 
   wrapper.appendChild(img);
+  if (entry.caption) {
+    const caption = document.createElement('span');
+    caption.className = 'gallery-caption';
+    caption.textContent = entry.caption;
+    wrapper.appendChild(caption);
+  }
   return wrapper;
 };
 
@@ -158,8 +187,8 @@ const hydrateGalleryGrid = (gridElement, urls = []) => {
   const normalizedUrls = normalizeImageList(urls);
   const fragment = document.createDocumentFragment();
 
-  normalizedUrls.forEach((url) => {
-    fragment.appendChild(createGalleryItem(url, gridElement));
+  normalizedUrls.forEach((entry) => {
+    fragment.appendChild(createGalleryItem(entry, gridElement));
   });
 
   gridElement.replaceChildren(fragment);
@@ -228,6 +257,7 @@ const initGalleryUI = (gridElement) => {
   const lightboxClose = document.querySelector('.lightbox-close');
   const lightboxPrev = document.querySelector('.lightbox-prev');
   const lightboxNext = document.querySelector('.lightbox-next');
+  const lightboxStatus = document.getElementById('lightbox-status');
 
   if (!lightbox || !lightboxImg || !lightboxClose || !lightboxPrev || !lightboxNext) {
     return;
@@ -237,8 +267,22 @@ const initGalleryUI = (gridElement) => {
     Array.from(gridElement.querySelectorAll('.gallery-item'));
 
   let currentImageIndex = 0;
+  let lastFocusedElement = null;
 
-  const openLightbox = (index) => {
+  const updateLightboxImage = (item, index, total) => {
+    const img = item.querySelector('img');
+    const src = item.dataset.fullSrc || img?.currentSrc || img?.src;
+    if (!img || !src) return false;
+
+    lightboxImg.src = src;
+    lightboxImg.alt = img.alt || 'Project photo';
+    const announcement = `${lightboxImg.alt}. Image ${index + 1} of ${total}.`;
+    lightboxImg.setAttribute('aria-label', announcement);
+    if (lightboxStatus) lightboxStatus.textContent = announcement;
+    return true;
+  };
+
+  const openLightbox = (index, triggerElement = null) => {
     const items = getGalleryItems();
     if (items.length === 0) return;
 
@@ -246,25 +290,16 @@ const initGalleryUI = (gridElement) => {
     const item = items[boundedIndex];
     if (!item) return;
 
-    const img = item.querySelector('img');
-    if (!img) return;
-
-    const src = img.currentSrc || img.src;
-    if (!src) return;
-
-    lightboxImg.src = src;
-    lightboxImg.alt = img.alt || 'Gallery image';
+    if (!updateLightboxImage(item, boundedIndex, items.length)) return;
 
     // Add ARIA attributes for accessibility
     lightbox.setAttribute('role', 'dialog');
     lightbox.setAttribute('aria-modal', 'true');
     lightbox.setAttribute('aria-label', 'Image viewer');
-    lightboxImg.setAttribute(
-      'aria-label',
-      `Image ${boundedIndex + 1} of ${items.length}`
-    );
-
+    lastFocusedElement =
+      triggerElement instanceof HTMLElement ? triggerElement : document.activeElement;
     lightbox.classList.add('active');
+    lightbox.setAttribute('aria-hidden', 'false');
 
     if (document.body) {
       document.body.style.overflow = 'hidden';
@@ -278,9 +313,11 @@ const initGalleryUI = (gridElement) => {
 
   const closeLightbox = () => {
     lightbox.classList.remove('active');
+    lightbox.setAttribute('aria-hidden', 'true');
     if (document.body) {
       document.body.style.overflow = 'auto';
     }
+    if (lastFocusedElement instanceof HTMLElement) lastFocusedElement.focus();
   };
 
   const updateImageFromIndex = (index) => {
@@ -291,14 +328,7 @@ const initGalleryUI = (gridElement) => {
     const item = items[normalizedIndex];
     if (!item) return;
 
-    const img = item.querySelector('img');
-    if (!img) return;
-
-    const src = img.currentSrc || img.src;
-    if (!src) return;
-
-    lightboxImg.src = src;
-    lightboxImg.alt = img.alt || '';
+    if (!updateLightboxImage(item, normalizedIndex, items.length)) return;
     currentImageIndex = normalizedIndex;
   };
 
@@ -308,28 +338,15 @@ const initGalleryUI = (gridElement) => {
   const galleryItems = getGalleryItems();
 
   galleryItems.forEach((item) => {
-    // Make gallery items keyboard-accessible
-    item.setAttribute('tabindex', '0');
-    item.setAttribute('role', 'button');
-    item.setAttribute('aria-label', 'View image in lightbox');
-
     const handleItemActivation = () => {
       const items = getGalleryItems();
       const index = items.indexOf(item);
       if (index !== -1) {
-        openLightbox(index);
+        openLightbox(index, item);
       }
     };
 
     item.addEventListener('click', handleItemActivation);
-
-    // Add keyboard support
-    item.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleItemActivation();
-      }
-    });
   });
 
   if (!lightboxInitialized) {
@@ -352,6 +369,18 @@ const initGalleryUI = (gridElement) => {
         nextImage();
       } else if (event.key === 'ArrowLeft') {
         prevImage();
+      } else if (event.key === 'Tab') {
+        const controls = [lightboxClose, lightboxPrev, lightboxNext].filter(
+          (control) => !control.disabled,
+        );
+        const currentIndex = controls.indexOf(document.activeElement);
+        if (event.shiftKey && currentIndex <= 0) {
+          event.preventDefault();
+          controls[controls.length - 1].focus();
+        } else if (!event.shiftKey && currentIndex === controls.length - 1) {
+          event.preventDefault();
+          controls[0].focus();
+        }
       }
     });
 
@@ -419,7 +448,7 @@ export function initGallery(galleryData) {
       : normalizeImageList(imagesByCategory[slug] || []);
 
     const cover = normalizeImageUrl(coverByCategory[slug]);
-    const heroUrl = cover || fallbackImages[0] || '';
+    const heroUrl = cover || normalizeImageUrl(fallbackImages[0]?.full) || '';
     heroEl.style.backgroundImage = heroUrl ? `url('${heroUrl}')` : '';
   };
 
@@ -474,4 +503,3 @@ export function initGallery(galleryData) {
     hydrateGalleryGrid(grid, []);
   }
 }
-

@@ -1,9 +1,18 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { rmSync } from 'fs';
 
 export default defineConfig({
   // Use relative base so the site works on both custom domains and GitHub Pages
   base: './',
+  plugins: [
+    {
+      name: 'remove-unused-legacy-logo',
+      closeBundle() {
+        rmSync(resolve(__dirname, 'dist/assets/icons/logo.png'), { force: true });
+      },
+    },
+  ],
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -15,6 +24,8 @@ export default defineConfig({
         'exterior-painting': resolve(__dirname, 'exterior-painting.html'),
         'custom-trim': resolve(__dirname, 'carpentry.html'),
         'interior-painting': resolve(__dirname, 'interior-painting.html'),
+        'request-estimate': resolve(__dirname, 'request-estimate.html'),
+        privacy: resolve(__dirname, 'privacy.html'),
       },
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]',
@@ -23,5 +34,5 @@ export default defineConfig({
       },
     },
   },
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.svg', '**/*.gif'],
+  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.webp', '**/*.svg', '**/*.gif'],
 });

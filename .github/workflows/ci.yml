@@ -36,7 +36,11 @@ jobs:
       - name: Test (Node)
         if: matrix.language == 'node'
         run: |
-          npm test --if-present -- --coverage
+          npm test --if-present
+
+      - name: Production build and site checks (Node)
+        if: matrix.language == 'node'
+        run: npm run build
 
       - name: Setup Python
         if: matrix.language == 'python'

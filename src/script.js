@@ -1,24 +1,31 @@
 import './style.css';
 import { buildGallery } from './gallery-builder.js';
 import { initGallery } from './gallery.js';
-import heroImage1 from './assets/hero/[21] interior_04-2021.jpeg';
-import heroImage2 from './assets/hero/[67] interior_11-2022.jpeg';
-import exterior from './assets/exterior.png';
-import dine from './assets/dine.png';
-import dine2 from './assets/dine2.png';
 
-// Preload hero and gallery images to ensure they are bundled and ready
-const preloadedImages = [heroImage1, heroImage2, exterior, dine, dine2];
-if (typeof window !== 'undefined') {
-  preloadedImages.forEach((src) => {
-    if (!src) return;
-    const img = new Image();
-    img.src = src;
-  });
-}
+const initPersistentActions = () => {
+  if (!document.querySelector('.skip-link')) {
+    const skipLink = document.createElement('a');
+    skipLink.className = 'skip-link';
+    skipLink.href = '#main-content';
+    skipLink.textContent = 'Skip to main content';
+    document.body.prepend(skipLink);
+  }
+
+  if (document.querySelector('.mobile-action-bar')) return;
+  const actionBar = document.createElement('nav');
+  actionBar.className = 'mobile-action-bar';
+  actionBar.setAttribute('aria-label', 'Quick contact actions');
+  actionBar.innerHTML = `
+    <a href="tel:+12156038009">Call</a>
+    <a href="sms:+12156038009">Text</a>
+    <a href="request-estimate.html">Request Estimate</a>
+  `;
+  document.body.appendChild(actionBar);
+};
 
 // Initialize site features when the DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
+  initPersistentActions();
   const heroExists = document.querySelector('.hero-slide');
   const navExists =
     document.getElementById('mobile-menu-button') ||

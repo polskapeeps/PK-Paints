@@ -1,15 +1,37 @@
-// gallery-builder.js - Compile gallery images grouped by category folders.
-// Uses Vite's import.meta.glob to gather all images in src/assets/gallery and
-// falls back to public/gallery.json when not running through the Vite server.
+// Build gallery data from Vite-managed originals and generated lightweight thumbnails.
 
 const COVER_IMAGE_REGEX = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i;
 const ROOT_IMAGE_PREFIX = 'painting_';
 const EXCLUDED_CATEGORY = 'Commercial';
-const FALLBACK_GALLERY_JSON = 'gallery.json';
 
-const CATEGORY_RENAMES = new Map([
-  ['Carpentry', 'Custom Trim'],
-]);
+const CATEGORY_RENAMES = new Map([['Carpentry', 'Custom Trim']]);
+
+const CATEGORY_COPY = {
+  'Custom Trim': {
+    alt: 'Custom trim and millwork project',
+    caption: 'Custom trim & millwork',
+  },
+  'Exterior Painting': {
+    alt: 'Exterior painting project',
+    caption: 'Exterior painting',
+  },
+  'Interior Painting': {
+    alt: 'Interior painting project',
+    caption: 'Interior painting',
+  },
+  'Kitchen Refinish': {
+    alt: 'Cabinet and kitchen refinishing project',
+    caption: 'Cabinet refinishing',
+  },
+  Remodeling: {
+    alt: 'Home renovation project',
+    caption: 'Renovation details',
+  },
+  Stain: {
+    alt: 'Wood staining and restoration project',
+    caption: 'Wood staining & restoration',
+  },
+};
 
 const createEmptyResult = () => ({
   categories: [],
@@ -24,133 +46,92 @@ const normalizeCategoryName = (name) => {
   return CATEGORY_RENAMES.get(trimmed) || trimmed;
 };
 
-const slugifyCategory = (name) =>
-  name
+const slugify = (value) =>
+  value
     .toLowerCase()
+    .replace(/\.[^.]+$/, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-let imageModules = {};
-try {
-  imageModules = import.meta.glob('./assets/gallery/*/*.{jpg,jpeg,png,webp}', {
-    eager: true,
-    query: '?url',
-    import: 'default',
-  });
-} catch {
-  imageModules = {};
-}
+const thumbnailUrl = (categoryName, fileName) => {
+  const base = import.meta.env.BASE_URL || './';
+  return `${base}assets/gallery-thumbs/${slugify(categoryName)}/${slugify(fileName)}.webp`;
+};
+
+const imageModules = import.meta.glob('./assets/gallery/*/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
 
 /**
- * Builds gallery data by scanning image files or loading from gallery.json fallback.
- * Uses Vite's import.meta.glob in development, falls back to JSON in production.
- * @returns {Promise<Object>} Gallery data with categories, imagesByCategory, and coverByCategory
- * @returns {Promise<Array>} returns.categories - Sorted array of {name, slug} category objects
- * @returns {Promise<Object>} returns.imagesByCategory - Map of slug to image URL arrays
- * @returns {Promise<Object>} returns.coverByCategory - Map of slug to cover image URLs
+ * Builds gallery data from source images that Vite fingerprints for production.
+ * @returns {Promise<Object>} Category metadata, image entries, and category covers.
  */
 export async function buildGallery() {
   const categories = new Map();
   const coverCandidates = {};
 
-  const ensureCategory = (categoryName) => {
-    const displayName = normalizeCategoryName(categoryName);
-    if (!displayName) return null;
+  for (const [sourcePath, fullUrl] of Object.entries(imageModules)) {
+    const parts = sourcePath.split('/');
+    const fileName = parts.pop();
+    if (!fileName || fileName.startsWith(ROOT_IMAGE_PREFIX)) continue;
 
-    const slug = slugifyCategory(displayName);
-    if (!slug) return null;
+    const galleryIndex = parts.indexOf('gallery');
+    const sourceCategory = parts[galleryIndex + 1];
+    const displayName = normalizeCategoryName(sourceCategory);
+    if (!displayName) continue;
 
+    const slug = slugify(displayName);
     if (!categories.has(slug)) {
       categories.set(slug, { slug, name: displayName, images: [] });
     }
 
-    return categories.get(slug);
-  };
+    const entry = {
+      full: typeof fullUrl === 'string' ? fullUrl.trim() : '',
+      thumbnail: thumbnailUrl(sourceCategory, fileName),
+      fileName,
+    };
+    if (!entry.full) continue;
 
-  const registerImage = (categoryName, url, fileName = '') => {
-    const category = ensureCategory(categoryName);
-    if (!category) return;
-
-    const normalizedUrl = typeof url === 'string' ? url.trim() : '';
-    if (!normalizedUrl) return;
-
-    category.images.push(normalizedUrl);
-
-    if (
-      !coverCandidates[category.slug] &&
-      COVER_IMAGE_REGEX.test(typeof fileName === 'string' ? fileName : '')
-    ) {
-      coverCandidates[category.slug] = normalizedUrl;
-    }
-  };
-
-  if (Object.keys(imageModules).length > 0) {
-    for (const [path, url] of Object.entries(imageModules)) {
-      const parts = path.split('/');
-      const fileName = parts.pop();
-      if (!fileName || fileName.startsWith(ROOT_IMAGE_PREFIX)) continue;
-
-      const galleryIdx = parts.indexOf('gallery');
-      if (galleryIdx === -1) continue;
-
-      const categoryName = parts[galleryIdx + 1];
-      if (!categoryName || categoryName.startsWith(ROOT_IMAGE_PREFIX)) continue;
-
-      registerImage(categoryName, url, fileName);
-    }
-  } else {
-    try {
-      const res = await fetch(FALLBACK_GALLERY_JSON);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && typeof data === 'object') {
-          for (const [categoryName, urls] of Object.entries(data)) {
-            if (!Array.isArray(urls)) continue;
-
-            for (const value of urls) {
-              if (typeof value !== 'string') continue;
-              const normalizedUrl = value.trim();
-              if (!normalizedUrl) continue;
-
-              const fileName = normalizedUrl.split('/').pop();
-              registerImage(categoryName, normalizedUrl, fileName);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load gallery.json', err);
+    categories.get(slug).images.push(entry);
+    if (!coverCandidates[slug] && COVER_IMAGE_REGEX.test(fileName)) {
+      coverCandidates[slug] = entry;
     }
   }
 
-  if (categories.size === 0) {
-    return createEmptyResult();
-  }
+  if (categories.size === 0) return createEmptyResult();
 
   const sortedCategories = Array.from(categories.values()).sort((a, b) =>
-    a.name.localeCompare(b.name)
+    a.name.localeCompare(b.name),
   );
-
   const imagesByCategory = {};
   const coverByCategory = {};
 
-  sortedCategories.forEach(({ slug, images }) => {
-    const uniqueUrls = Array.from(
-      new Set(
-        images
-          .map((imageUrl) =>
-            typeof imageUrl === 'string' ? imageUrl.trim() : ''
-          )
-          .filter(Boolean)
-      )
-    );
+  sortedCategories.forEach(({ slug, name, images }) => {
+    const seen = new Set();
+    const uniqueImages = images
+      .filter((entry) => {
+        if (seen.has(entry.full)) return false;
+        seen.add(entry.full);
+        return true;
+      })
+      .sort((a, b) => a.fileName.localeCompare(b.fileName));
 
-    uniqueUrls.sort((a, b) => a.localeCompare(b));
-    imagesByCategory[slug] = uniqueUrls;
+    const copy = CATEGORY_COPY[name] || {
+      alt: `${name} project`,
+      caption: name,
+    };
 
-    if (coverCandidates[slug]) {
-      coverByCategory[slug] = coverCandidates[slug];
-    }
+    imagesByCategory[slug] = uniqueImages.map((entry, index) => ({
+      full: entry.full,
+      thumbnail: entry.thumbnail,
+      alt: `${copy.alt}, photo ${index + 1}`,
+      caption: copy.caption,
+    }));
+
+    const cover = coverCandidates[slug] || uniqueImages[0];
+    if (cover) coverByCategory[slug] = cover.full;
   });
 
   return {

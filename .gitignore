@@ -4,9 +4,16 @@
 old.*
 .dev/
 og.*
+!public/og.png
 
 node_modules/
 dist/
+public/assets/gallery-thumbs/
+public/assets/featured/
+public/assets/content/
+public/assets/icons/favicon-16x16.png
+public/assets/icons/favicon-32x32.png
+public/assets/icons/header-logo.webp
 
 # Build artifacts
 .vite/

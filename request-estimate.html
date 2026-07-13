@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request a Painting or Trim Estimate | PK Paints &amp; Renovations</title>
+  <meta name="description" content="Tell PK Paints & Renovations about your Philadelphia-area painting, cabinet refinishing, restoration, or custom trim project." />
+  <link rel="canonical" href="https://pkpaintsrenovations.com/request-estimate" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pkpaintsrenovations.com/request-estimate" />
+  <meta property="og:title" content="Request an Estimate | PK Paints & Renovations" />
+  <meta property="og:description" content="Share the details of your painting, refinishing, or custom trim project." />
+  <meta property="og:image" content="https://pkpaintsrenovations.com/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://pkpaintsrenovations.com/og.png" />
+  <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body class="bg-gray-950 text-gray-200 antialiased font-inter">
+  <header class="glass-header fixed top-0 z-50 w-full">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-24 gap-4">
+        <a href="index.html" aria-label="PK Paints & Renovations home" class="flex-shrink-0">
+          <img src="assets/icons/header-logo.webp" width="240" height="123" alt="PK Paints & Renovations" class="h-14 w-auto rounded-md" />
+        </a>
+        <nav class="hidden md:flex items-center gap-2" aria-label="Primary navigation">
+          <a href="index.html" class="glass-nav-item px-4 py-2 rounded-lg">Home</a>
+          <a href="interior-painting.html" class="glass-nav-item px-4 py-2 rounded-lg">Painting</a>
+          <a href="carpentry.html" class="glass-nav-item px-4 py-2 rounded-lg">Custom Trim</a>
+          <a href="gallery.html" class="glass-nav-item px-4 py-2 rounded-lg">Gallery</a>
+          <a href="request-estimate.html" aria-current="page" class="nav-cta px-5 py-2 rounded-xl">Estimate</a>
+        </nav>
+        <div class="md:hidden flex items-center gap-3">
+          <a href="tel:+12156038009" class="text-amber-200 text-sm font-semibold">Call</a>
+          <a href="index.html" class="glass-nav-item px-3 py-2 rounded-lg text-sm">Home</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="estimate-page-main relative z-10">
+    <div class="estimate-shell">
+      <div class="estimate-intro">
+        <p class="hero-eyebrow">Tell us about your project</p>
+        <h1 class="text-4xl md:text-6xl font-bold gradient-text mt-4">Request an Estimate</h1>
+        <p class="text-lg text-gray-300 leading-relaxed mt-5">Send the basics below. Peter will contact you to discuss the project and arrange the next step.</p>
+      </div>
+
+      <div class="estimate-layout">
+        <form id="estimate-form" class="estimate-form" novalidate enctype="multipart/form-data">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="name">Name <span aria-hidden="true">*</span></label>
+              <input id="name" name="name" autocomplete="name" required maxlength="100" />
+              <p id="name-error" class="field-error" aria-live="polite"></p>
+            </div>
+            <div class="form-field">
+              <label for="zip">Project ZIP code <span aria-hidden="true">*</span></label>
+              <input id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" required maxlength="10" pattern="\d{5}(-\d{4})?" />
+              <p id="zip-error" class="field-error" aria-live="polite"></p>
+            </div>
+            <fieldset class="form-field form-field-full contact-details">
+              <legend>How should we contact you? <span aria-hidden="true">*</span></legend>
+              <p id="contact-help" class="field-help">Enter a phone number, an email address, or both.</p>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="phone">Phone number</label>
+                  <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" aria-describedby="contact-help contact-error phone-error" />
+                  <p id="phone-error" class="field-error" aria-live="polite"></p>
+                </div>
+                <div class="form-field">
+                  <label for="email">Email address</label>
+                  <input id="email" name="email" type="email" autocomplete="email" maxlength="150" aria-describedby="contact-help contact-error email-error" />
+                  <p id="email-error" class="field-error" aria-live="polite"></p>
+                </div>
+              </div>
+              <p id="contact-error" class="field-error" aria-live="polite"></p>
+            </fieldset>
+            <div class="form-field form-field-full">
+              <label for="scope">Tell us about the project <span aria-hidden="true">*</span></label>
+              <textarea id="scope" name="scope" required minlength="10" maxlength="3000" placeholder="For example: Paint two bedrooms and a hallway, including minor wall repairs."></textarea>
+              <p id="scope-error" class="field-error" aria-live="polite"></p>
+            </div>
+            <div class="form-field form-field-full">
+              <label for="photo">Project photo</label>
+              <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
+              <p class="field-help">Optional. Add one JPG, PNG, or WebP photo up to 12 MB if it helps explain the project.</p>
+              <p id="photo-error" class="field-error" aria-live="polite"></p>
+            </div>
+            <div class="form-field form-field-full consent-field">
+              <label class="consent-control">
+                <input type="checkbox" name="privacy_consent" value="yes" required class="consent-checkbox" />
+                <span class="consent-copy">I agree that PK Paints &amp; Renovations may use these details to respond to this estimate request. <a href="privacy.html" class="text-amber-200 underline">Privacy notice</a>.</span>
+              </label>
+              <p id="privacy_consent-error" class="field-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="honeypot-field" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+          <input type="hidden" name="started_at" />
+          <input type="hidden" name="submission_id" />
+          <input type="hidden" name="landing_path" />
+          <input type="hidden" name="referrer_host" />
+          <input type="hidden" name="utm_source" />
+          <input type="hidden" name="utm_medium" />
+          <input type="hidden" name="utm_campaign" />
+          <input type="hidden" name="utm_term" />
+          <input type="hidden" name="utm_content" />
+
+          <div class="form-submit-row">
+            <button type="submit" class="btn-primary px-7 py-4 rounded-xl">Send Estimate Request</button>
+            <p class="privacy-note">Your details go directly to Peter and are used only to follow up about your project.</p>
+          </div>
+          <div id="form-status" class="form-status" tabindex="-1" role="status" aria-live="polite" hidden></div>
+        </form>
+
+        <aside class="estimate-aside" aria-label="Direct contact options">
+          <p class="hero-eyebrow">Prefer direct contact?</p>
+          <h2 class="text-2xl font-bold text-white mt-3">Talk with Peter</h2>
+          <p class="text-gray-300 mt-3 leading-relaxed">Call or email about your project. Please avoid sending sensitive personal information or private documents.</p>
+          <div class="grid gap-3 mt-6">
+            <a href="tel:+12156038009" class="btn-secondary px-5 py-3 rounded-xl text-center">Call (215) 603-8009</a>
+            <a href="mailto:pkpaintsreno@gmail.com" class="btn-secondary px-5 py-3 rounded-xl text-center break-all">pkpaintsreno@gmail.com</a>
+          </div>
+          <p class="text-sm text-gray-400 mt-6">Serving Philadelphia and surrounding communities.</p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-10 relative z-10">
+    <div class="container mx-auto px-4 text-center text-sm text-gray-400">
+      <p>&copy; 2013–<span id="currentYear"></span> PK Paints &amp; Renovations.</p>
+      <p class="mt-2"><a href="privacy.html" class="hover:text-white underline">Privacy</a></p>
+    </div>
+  </footer>
+  <script type="module" src="src/script.js"></script>
+  <script type="module" src="src/estimate-form.js"></script>
+</body>
+</html>

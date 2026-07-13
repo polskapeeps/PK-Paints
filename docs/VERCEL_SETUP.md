@@ -17,7 +17,7 @@ The estimate page posts to the repository's `/api/estimate` Vercel Function. The
 3. Add these environment variables to both Preview and Production:
    - `RESEND_API_KEY` (created by the integration)
    - `ESTIMATE_FROM_EMAIL` (for example `PK Paints Website <forms@send.pkpaintsrenovations.com>` after that domain is verified)
-   - `ESTIMATE_TO_EMAIL=peterkpaint@gmail.com`
+   - `ESTIMATE_TO_EMAIL=pkpaintsreno@gmail.com`
 4. Redeploy the branch preview.
 5. Send one clearly labeled test request. Confirm delivery, Reply-To behavior, optional photo delivery, and campaign fields, then delete the test message and attachment.
 

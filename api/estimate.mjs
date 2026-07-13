@@ -1,23 +1,6 @@
 const MAX_PHOTO_BYTES = 2_800_000;
 const MAX_SCOPE_LENGTH = 3_000;
 const ALLOWED_PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const ALLOWED_SERVICES = new Set([
-  'Interior painting',
-  'Exterior painting',
-  'Cabinet refinishing',
-  'Custom trim and millwork',
-  'Surface repair or restoration',
-  'Commercial painting',
-  'Other',
-]);
-const ALLOWED_TIMEFRAMES = new Set([
-  'As soon as practical',
-  'Within 1 month',
-  'Within 1–3 months',
-  'Within 3–6 months',
-  'Planning ahead',
-]);
-const ALLOWED_CONTACT_METHODS = new Set(['Phone call', 'Text message', 'Email']);
 
 const json = (body, status = 200) =>
   Response.json(body, {
@@ -64,12 +47,7 @@ export function validateEstimate(formData, now = Date.now()) {
     phone: clean(formData.get('phone')),
     email: clean(formData.get('email')),
     zip: clean(formData.get('zip'), 10),
-    service: clean(formData.get('service')),
     scope: clean(formData.get('scope'), MAX_SCOPE_LENGTH),
-    timeframe: clean(formData.get('timeframe')),
-    contactMethod: clean(formData.get('contact_method')),
-    budget: clean(formData.get('budget')),
-    projectSize: clean(formData.get('project_size')),
     landingPath: clean(formData.get('landing_path'), 200),
     referrerHost: clean(formData.get('referrer_host'), 200),
     submissionId: clean(formData.get('submission_id'), 80),
@@ -83,18 +61,10 @@ export function validateEstimate(formData, now = Date.now()) {
 
   if (!fields.name) errors.name = 'Enter your name.';
   if (!/^\d{5}(?:-\d{4})?$/.test(fields.zip)) errors.zip = 'Enter a valid project ZIP code.';
-  if (!ALLOWED_SERVICES.has(fields.service)) errors.service = 'Choose a project type.';
   if (fields.scope.length < 10) errors.scope = 'Tell us a little more about the project.';
-  if (!ALLOWED_TIMEFRAMES.has(fields.timeframe)) errors.timeframe = 'Choose a desired timeframe.';
-  if (!ALLOWED_CONTACT_METHODS.has(fields.contactMethod)) {
-    errors.contact_method = 'Choose a preferred contact method.';
-  }
   if (fields.email && !isValidEmail(fields.email)) errors.email = 'Enter a valid email address.';
   if (fields.phone && !isValidPhone(fields.phone)) errors.phone = 'Enter a valid US phone number.';
-  if (fields.contactMethod === 'Email' && !fields.email) errors.email = 'Email is required for email follow-up.';
-  if (['Phone call', 'Text message'].includes(fields.contactMethod) && !fields.phone) {
-    errors.phone = 'Phone is required for call or text follow-up.';
-  }
+  if (!fields.phone && !fields.email) errors.contact = 'Enter a phone number, an email address, or both.';
   if (formData.get('privacy_consent') !== 'yes') {
     errors.privacy_consent = 'Confirm that we may use these details to respond.';
   }
@@ -128,14 +98,9 @@ const formatLeadText = (fields) => {
     `Name: ${fields.name}`,
     `Phone: ${fields.phone || 'Not provided'}`,
     `Email: ${fields.email || 'Not provided'}`,
-    `Preferred contact: ${fields.contactMethod}`,
     `Project ZIP: ${fields.zip}`,
-    `Service: ${fields.service}`,
-    `Timeframe: ${fields.timeframe}`,
-    `Approximate budget: ${fields.budget || 'Not provided'}`,
-    `Project size: ${fields.projectSize || 'Not provided'}`,
     '',
-    'Project scope:',
+    'Project details:',
     fields.scope,
     '',
     `Landing page: ${fields.landingPath || 'Not captured'}`,
@@ -154,14 +119,9 @@ const formatLeadHtml = (fields) => {
       <tr><th align="left">Name</th><td>${safe.name}</td></tr>
       <tr><th align="left">Phone</th><td>${safe.phone}</td></tr>
       <tr><th align="left">Email</th><td>${safe.email}</td></tr>
-      <tr><th align="left">Preferred contact</th><td>${safe.contactMethod}</td></tr>
       <tr><th align="left">Project ZIP</th><td>${safe.zip}</td></tr>
-      <tr><th align="left">Service</th><td>${safe.service}</td></tr>
-      <tr><th align="left">Timeframe</th><td>${safe.timeframe}</td></tr>
-      <tr><th align="left">Budget</th><td>${safe.budget}</td></tr>
-      <tr><th align="left">Project size</th><td>${safe.projectSize}</td></tr>
     </table>
-    <h2>Project scope</h2>
+    <h2>Project details</h2>
     <p style="white-space:pre-wrap">${safe.scope}</p>
     <hr>
     <p><strong>Landing page:</strong> ${safe.landingPath}<br>
@@ -195,7 +155,7 @@ export async function POST(request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.ESTIMATE_FROM_EMAIL;
-  const to = process.env.ESTIMATE_TO_EMAIL || 'peterkpaint@gmail.com';
+  const to = process.env.ESTIMATE_TO_EMAIL || 'pkpaintsreno@gmail.com';
   if (!apiKey || !from) {
     return json(
       {
@@ -218,13 +178,12 @@ export async function POST(request) {
   const emailPayload = {
     from,
     to: [to],
-    subject: `Estimate request: ${fields.service} — ${fields.zip}`,
+    subject: `Estimate request — ${fields.zip}`,
     text: formatLeadText(fields),
     html: formatLeadHtml(fields),
     attachments,
     tags: [
       { name: 'form', value: 'estimate-request' },
-      { name: 'service', value: fields.service.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 60) },
     ],
   };
   if (fields.email) emailPayload.reply_to = fields.email;
@@ -256,6 +215,6 @@ export async function POST(request) {
 
   return json({
     ok: true,
-    message: 'Your request was sent to PK Paints & Renovations. We’ll use your preferred contact method to follow up.',
+    message: 'Your request was sent to PK Paints & Renovations. Peter will follow up to discuss the next step.',
   });
 }

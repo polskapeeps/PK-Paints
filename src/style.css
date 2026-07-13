@@ -1288,7 +1288,7 @@ nav button.active,
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.1rem;
 }
 
@@ -1352,28 +1352,14 @@ nav button.active,
   min-height: 1.25rem;
 }
 
-.contact-choice {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-}
-
-.contact-choice label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 2.75rem;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  border-radius: 0.75rem;
-  background: rgba(15, 23, 42, 0.7);
-  cursor: pointer;
-}
-
-.contact-choice input {
-  width: 1rem;
-  min-height: auto;
+.contact-details {
+  border: 0;
   padding: 0;
+  margin: 0;
+}
+
+.contact-details > .field-help {
+  margin: -0.15rem 0 0.75rem;
 }
 
 .form-submit-row {

@@ -23,11 +23,12 @@ const setFieldError = (field, message = '') => {
   if (error) error.textContent = message;
 };
 
-const setContactMethodError = (form, message = '') => {
-  form.querySelectorAll('input[name="contact_method"]').forEach((field) => {
-    field.setAttribute('aria-invalid', String(Boolean(message)));
-  });
-  const error = document.getElementById('contact_method-error');
+const setContactError = (form, message = '') => {
+  if (message) {
+    form.elements.namedItem('phone').setAttribute('aria-invalid', 'true');
+    form.elements.namedItem('email').setAttribute('aria-invalid', 'true');
+  }
+  const error = document.getElementById('contact-error');
   if (error) error.textContent = message;
 };
 
@@ -89,16 +90,7 @@ const preparePhoto = async (file) => {
   return new File([blob], `${baseName || 'project-photo'}.jpg`, { type: 'image/jpeg' });
 };
 
-const validateContactMethod = (form) => {
-  const method = form.querySelector('input[name="contact_method"]:checked')?.value || '';
-  const phone = form.elements.namedItem('phone');
-  const email = form.elements.namedItem('email');
-  phone.required = method === 'Phone call' || method === 'Text message';
-  email.required = method === 'Email';
-};
-
 const validateForm = (form) => {
-  validateContactMethod(form);
   let firstInvalid = null;
   form.querySelectorAll('input, select, textarea').forEach((field) => {
     if (!field.name || field.type === 'hidden' || field.name === 'website') return;
@@ -110,16 +102,20 @@ const validateForm = (form) => {
     if (field.name === 'scope' && field.value.trim().length < 10) {
       message = 'Tell us a little more about the project.';
     }
+    if (field.name === 'phone' && field.value && !/^\+?1?\D*\d{3}\D*\d{3}\D*\d{4}$/.test(field.value.trim())) {
+      message = 'Enter a valid US phone number.';
+    }
     setFieldError(field, message);
     if (message && !firstInvalid) firstInvalid = field;
   });
 
-  const methodGroup = form.querySelector('input[name="contact_method"]');
-  if (!form.querySelector('input[name="contact_method"]:checked')) {
-    setContactMethodError(form, 'Choose a preferred contact method.');
-    firstInvalid ||= methodGroup;
+  const phone = form.elements.namedItem('phone');
+  const email = form.elements.namedItem('email');
+  if (!phone.value.trim() && !email.value.trim()) {
+    setContactError(form, 'Enter a phone number, an email address, or both.');
+    firstInvalid ||= phone;
   } else {
-    setContactMethodError(form);
+    setContactError(form);
   }
 
   if (firstInvalid) firstInvalid.focus();
@@ -134,16 +130,10 @@ const initializeForm = () => {
   captureLeadSource(form);
   form.elements.namedItem('started_at').value = String(Date.now());
   form.elements.namedItem('submission_id').value = crypto.randomUUID();
-  form.querySelectorAll('input[name="contact_method"]').forEach((input) => {
-    input.addEventListener('change', () => {
-      validateContactMethod(form);
-      setContactMethodError(form);
-    });
-  });
 
   form.addEventListener('input', (event) => {
-    if (event.target.name === 'contact_method') setContactMethodError(form);
-    else if (event.target.name) setFieldError(event.target);
+    if (event.target.name) setFieldError(event.target);
+    if (event.target.name === 'phone' || event.target.name === 'email') setContactError(form);
   });
 
   form.addEventListener('submit', async (event) => {
@@ -174,7 +164,7 @@ const initializeForm = () => {
         if (payload.errors && typeof payload.errors === 'object') {
           Object.entries(payload.errors).forEach(([name, message]) => {
             const field = form.elements.namedItem(name);
-            if (name === 'contact_method') setContactMethodError(form, message);
+            if (name === 'contact') setContactError(form, message);
             else if (field instanceof HTMLElement) setFieldError(field, message);
           });
         }

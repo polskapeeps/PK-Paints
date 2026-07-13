@@ -8,10 +8,7 @@ const createValidFormData = () => {
   data.set('phone', '(215) 555-0123');
   data.set('email', 'jane@example.com');
   data.set('zip', '19103');
-  data.set('service', 'Interior painting');
   data.set('scope', 'Paint the living room walls, ceiling, and trim.');
-  data.set('timeframe', 'Within 1–3 months');
-  data.set('contact_method', 'Email');
   data.set('privacy_consent', 'yes');
   data.set('started_at', String(Date.now() - 5_000));
   data.set('submission_id', 'test-submission-123');
@@ -26,23 +23,30 @@ test('valid estimate data passes server validation', () => {
   assert.equal(fields.utmSource, 'google');
 });
 
-test('contact preference requires its matching contact field', () => {
+test('a phone number, an email address, or both can be used for contact', () => {
   const data = createValidFormData();
-  data.set('contact_method', 'Text message');
-  data.set('phone', '');
-  const { errors } = validateEstimate(data);
-  assert.equal(errors.phone, 'Phone is required for call or text follow-up.');
+  data.delete('phone');
+  data.delete('email');
+  assert.equal(
+    validateEstimate(data).errors.contact,
+    'Enter a phone number, an email address, or both.',
+  );
+
+  data.set('email', 'jane@example.com');
+  assert.deepEqual(validateEstimate(data).errors, {});
+
+  data.delete('email');
+  data.set('phone', '(215) 555-0123');
+  assert.deepEqual(validateEstimate(data).errors, {});
 });
 
-test('invalid service, ZIP, scope, consent, and rushed submissions are rejected', () => {
+test('invalid ZIP, scope, consent, and rushed submissions are rejected', () => {
   const data = createValidFormData();
-  data.set('service', 'Anything');
   data.set('zip', 'abc');
   data.set('scope', 'short');
   data.delete('privacy_consent');
   data.set('started_at', String(Date.now()));
   const { errors } = validateEstimate(data);
-  assert.ok(errors.service);
   assert.ok(errors.zip);
   assert.ok(errors.scope);
   assert.ok(errors.privacy_consent);
@@ -109,8 +113,9 @@ test('configured submissions send a validated Resend request', async () => {
     const email = JSON.parse(outbound.options.body);
     assert.deepEqual(email.to, ['owner@example.com']);
     assert.equal(email.reply_to, 'jane@example.com');
-    assert.match(email.subject, /Interior painting/);
+    assert.match(email.subject, /19103/);
     assert.match(email.text, /19103/);
+    assert.match(email.text, /living room walls/);
   } finally {
     globalThis.fetch = previousFetch;
     if (previousKey) process.env.RESEND_API_KEY = previousKey;

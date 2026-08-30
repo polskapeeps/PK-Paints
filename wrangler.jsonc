@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pk-paints-renovations",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-08-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
+  // Deliberately no custom domains or routes. Deployment must not change DNS.
+  "routes": [],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+    // Keep all existing pages and images on free, unlimited static asset serving.
+    "run_worker_first": ["/api", "/api/*"]
+  },
+  "env": {
+    "preview": {
+      "name": "pk-paints-renovations-preview",
+      "workers_dev": true,
+      "preview_urls": true,
+      "routes": [],
+      "assets": {
+        "directory": "./dist",
+        "binding": "ASSETS",
+        "html_handling": "drop-trailing-slash",
+        "not_found_handling": "404-page",
+        "run_worker_first": ["/api", "/api/*"]
+      }
+    }
+  }
+}

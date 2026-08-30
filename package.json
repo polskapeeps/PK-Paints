@@ -8,6 +8,12 @@
     "generate:gallery": "node scripts/generate-gallery-assets.js",
     "build": "npm run generate:gallery && vite build && npm run check:site",
     "preview": "vite preview",
+    "preview:cloudflare": "wrangler dev --local --env preview",
+    "check:cloudflare": "node scripts/check-cloudflare.mjs",
+    "deploy:cloudflare:preview": "npm run build && wrangler deploy --env preview",
+    "deploy:cloudflare": "npm run build && wrangler deploy",
+    "test:cloudflare": "node --test tests/cloudflare.integration.mjs",
+    "verify:cloudflare": "npm test && npm run build && npm run test:cloudflare && npm audit --audit-level=high && wrangler deploy --env preview --dry-run --outdir .wrangler/dry-run",
     "check:site": "node scripts/check-built-site.mjs",
     "lint": "eslint .",
     "test": "npm run lint && node --test tests/*.test.mjs"
@@ -20,6 +26,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "bugs": {
     "url": "https://github.com/polskapeeps/PK-Paints/issues"
   },
@@ -28,9 +37,10 @@
     "@eslint/js": "^9.34.0",
     "eslint": "^9.34.0",
     "globals": "^16.3.0",
-    "postcss": "^8.5.17",
+    "postcss": "^8.5.23",
     "sharp": "^0.35.3",
     "tailwindcss": "^3.4.19",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "wrangler": "4.127.1"
   }
 }

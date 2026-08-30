@@ -17,6 +17,10 @@ public/assets/icons/header-logo.webp
 
 # Build artifacts
 .vite/
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 coverage/
 *.tsbuildinfo
 

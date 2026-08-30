@@ -10,7 +10,14 @@ const walk = (directory) =>
     return entry.isDirectory() ? walk(fullPath) : [fullPath];
   });
 
-const htmlFiles = walk(root).filter((file) => file.endsWith('.html'));
+const builtFiles = walk(root);
+const htmlFiles = builtFiles.filter((file) => file.endsWith('.html'));
+if (builtFiles.length > 20_000) failures.push('Cloudflare Free allows up to 20,000 static files.');
+for (const file of builtFiles) {
+  if (fs.statSync(file).size > 25 * 1024 * 1024) {
+    failures.push(`${path.relative(root, file)} exceeds the Cloudflare 25 MiB per-file limit.`);
+  }
+}
 const htmlByPath = new Map(
   htmlFiles.map((file) => [path.normalize(file), fs.readFileSync(file, 'utf8')]),
 );
@@ -87,7 +94,7 @@ for (const file of htmlFiles) {
   }
 }
 
-for (const expected of ['robots.txt', 'sitemap.xml', 'og.png']) {
+for (const expected of ['robots.txt', 'sitemap.xml', 'og.png', '_headers', '_redirects']) {
   if (!fs.existsSync(path.join(root, expected))) failures.push(`missing dist/${expected}`);
 }
 

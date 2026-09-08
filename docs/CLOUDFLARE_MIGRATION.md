@@ -3,6 +3,10 @@
 Verified August 30, 2026. Repository: `polskapeeps/PK-Paints`.
 Migration branch: `chore/cloudflare-migration`. Leave `main` and Vercel in place until the new host is approved.
 
+Rechecked September 8, 2026: clean dependency installation, lint, all 22 tests, all seven built pages, and the Cloudflare deployment dry run passed. Updated the development-only `@humanfs/node` dependency to 0.16.8 to resolve a newly reported moderate advisory; npm audit now reports zero known vulnerabilities. The local and remote main commits remain unchanged. This establishes readiness for preview, not production email delivery or an uptime guarantee.
+
+Review limitations: the existing CI Security & Secrets commands ignore errors (`|| true`), so green CI is not proof of a successful secret scan. The estimate form has basic honeypot/timing checks, not a dedicated rate limiter or CAPTCHA; these checks do not prevent determined automated submissions. Monitor email quota and add stronger abuse protection if needed. Real email delivery and large-photo CPU usage remain required pre-cutover checks.
+
 The public apex returned HTTP 402 from Vercel during this audit; `www` redirected to the apex. The exact account/billing cause is unverified. Keeping Vercel is a rollback option only after its serving/billing issue is resolved; do not assume the currently paused endpoint is a working backup.
 
 ## Recommendation and costs

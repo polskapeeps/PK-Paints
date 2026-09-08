@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.node-version'
           cache: 'npm'
 
       - name: Install (Node)
@@ -35,6 +35,15 @@ jobs:
 
       - name: Production build and site checks (Node)
         run: npm run build
+
+      - name: Cloudflare runtime integration checks
+        run: npm run test:cloudflare
+
+      - name: Cloudflare preview deployment dry run
+        run: npx wrangler deploy --env preview --dry-run --outdir .wrangler/dry-run
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
 
       - name: Security & Secrets
         run: |

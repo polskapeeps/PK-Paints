@@ -1,5 +1,7 @@
 # Vercel deployment setup
 
+For the prepared Cloudflare migration, see [CLOUDFLARE_MIGRATION.md](CLOUDFLARE_MIGRATION.md). Keep this Vercel setup available for rollback; the migration branch does not disconnect Vercel or change DNS.
+
 The live site is a Vite project deployed by Vercel from this repository. Vercel should use:
 
 - Build command: `npm run build`

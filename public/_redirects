@@ -1,0 +1,5 @@
+# Preserve the existing Vercel redirects and old inbound links.
+/index.html / 301
+/exterior-painting /interior-painting#exterior 301
+/exterior-painting.html /interior-painting#exterior 301
+/exterior-painting/ /interior-painting#exterior 301

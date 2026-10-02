@@ -1,4 +1,7 @@
+import { Buffer } from 'node:buffer';
+
 const MAX_PHOTO_BYTES = 2_800_000;
+const MAX_REQUEST_BYTES = 3_200_000;
 const MAX_SCOPE_LENGTH = 3_000;
 const ALLOWED_PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -8,6 +11,8 @@ const json = (body, status = 200) =>
     headers: {
       'Cache-Control': 'no-store',
       'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
     },
   });
 
@@ -130,16 +135,36 @@ const formatLeadHtml = (fields) => {
   `;
 };
 
-export async function POST(request) {
+export async function handleEstimate(request, env) {
   const requestUrl = new URL(request.url);
   const origin = request.headers.get('origin');
   if (origin && origin !== requestUrl.origin) {
     return json({ ok: false, message: 'This request could not be accepted.' }, 403);
   }
 
+  const tooLarge = () => json({ ok: false, message: 'The request is too large. Use a smaller photo.' }, 413);
+  if (Number(request.headers.get('content-length')) > MAX_REQUEST_BYTES) return tooLarge();
+
   let formData;
   try {
-    formData = await request.formData();
+    // Bound streamed bodies too: Cloudflare's upstream limit is much larger than Vercel's.
+    const reader = request.body?.getReader();
+    if (!reader) return json({ ok: false, message: 'The form data could not be read.' }, 400);
+    const chunks = [];
+    let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_REQUEST_BYTES) {
+        await reader.cancel();
+        return tooLarge();
+      }
+      chunks.push(value);
+    }
+    formData = await new Response(new Blob(chunks), {
+      headers: { 'Content-Type': request.headers.get('content-type') || '' },
+    }).formData();
   } catch {
     return json({ ok: false, message: 'The form data could not be read.' }, 400);
   }
@@ -153,9 +178,9 @@ export async function POST(request) {
     return json({ ok: false, message: 'Please correct the highlighted fields.', errors }, 422);
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.ESTIMATE_FROM_EMAIL;
-  const to = process.env.ESTIMATE_TO_EMAIL || 'pkpaintsreno@gmail.com';
+  const apiKey = env.RESEND_API_KEY;
+  const from = env.ESTIMATE_FROM_EMAIL;
+  const to = env.ESTIMATE_TO_EMAIL || 'pkpaintsreno@gmail.com';
   if (!apiKey || !from) {
     return json(
       {
@@ -217,4 +242,9 @@ export async function POST(request) {
     ok: true,
     message: 'Your request was sent to PK Paints & Renovations. Peter will follow up to discuss the next step.',
   });
+}
+
+// Retain the Vercel entry point so this branch can still be previewed or rolled back there.
+export async function POST(request) {
+  return handleEstimate(request, process.env);
 }

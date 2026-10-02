@@ -15,10 +15,14 @@ const initPersistentActions = () => {
   const actionBar = document.createElement('nav');
   actionBar.className = 'mobile-action-bar';
   actionBar.setAttribute('aria-label', 'Quick contact actions');
+  // On the estimate page itself, offer email instead of a link back to the same form.
+  const onEstimatePage = Boolean(document.getElementById('estimate-form'));
   actionBar.innerHTML = `
     <a href="tel:+12156038009">Call</a>
     <a href="sms:+12156038009">Text</a>
-    <a href="request-estimate.html">Request Estimate</a>
+    ${onEstimatePage
+      ? '<a href="mailto:pkpaintsreno@gmail.com">Email</a>'
+      : '<a href="request-estimate.html">Request Estimate</a>'}
   `;
   document.body.appendChild(actionBar);
 };
@@ -26,6 +30,10 @@ const initPersistentActions = () => {
 // Initialize site features when the DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   initPersistentActions();
+  // Every page's footer shows the current year, including pages without the nav menu.
+  const currentYearElement = document.getElementById('currentYear');
+  if (currentYearElement) currentYearElement.textContent = String(new Date().getFullYear());
+
   const heroExists = document.querySelector('.hero-slide');
   const navExists =
     document.getElementById('mobile-menu-button') ||
@@ -60,16 +68,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (galleryPage) {
     initGallery(galleryData);
-  }
-
-  // Reorder homepage sections: place Services above About (neatly)
-  const aboutSection = document.getElementById('about');
-  const servicesSection = document.getElementById('services');
-  if (aboutSection && servicesSection) {
-    const parent = aboutSection.parentNode;
-    if (parent) {
-      // Always ensure Services appears before About
-      parent.insertBefore(servicesSection, aboutSection);
-    }
   }
 });

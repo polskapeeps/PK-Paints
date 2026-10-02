@@ -9,6 +9,8 @@ og.*
 node_modules/
 dist/
 public/assets/gallery-thumbs/
+public/assets/gallery-large/
+src/generated/
 public/assets/featured/
 public/assets/content/
 public/assets/icons/favicon-16x16.png
@@ -17,6 +19,10 @@ public/assets/icons/header-logo.webp
 
 # Build artifacts
 .vite/
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 coverage/
 *.tsbuildinfo
 

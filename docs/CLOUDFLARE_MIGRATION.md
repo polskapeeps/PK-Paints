@@ -1,5 +1,12 @@
 # Cloudflare migration checklist
 
+> **Update, October 2, 2026:** the domain expired on September 14, 2026 (auto-renew was off)
+> and now uses the registrar's parking nameservers, so there is no live Vercel site or DNS
+> zone to preserve. Follow [GO_LIVE.md](GO_LIVE.md) for the current order of steps:
+> renew the domain, deploy to Cloudflare, configure email, then point the nameservers.
+> Since the recheck below, wrangler (4.146.0) and sharp (0.35.5) were upgraded to clear
+> new high-severity advisories, and the test suite is 16 unit + 6 workerd integration tests.
+
 Verified August 30, 2026. Repository: `polskapeeps/PK-Paints`.
 Migration branch: `chore/cloudflare-migration`. Leave `main` and Vercel in place until the new host is approved.
 

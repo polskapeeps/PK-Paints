@@ -1,141 +1,39 @@
-// Build gallery data from Vite-managed originals and generated lightweight thumbnails.
+// Build gallery data from the manifest written by scripts/generate-gallery-assets.js.
+// Only the generated thumbnails and lightbox-sized WebP images ship; originals stay in src/.
+import manifest from './generated/gallery-manifest.json';
 
-const COVER_IMAGE_REGEX = /(^|\/)cover\.(jpg|jpeg|png|webp)(\?|$)/i;
-const ROOT_IMAGE_PREFIX = 'painting_';
-const EXCLUDED_CATEGORY = 'Commercial';
-
-const CATEGORY_RENAMES = new Map([['Carpentry', 'Custom Trim']]);
-
-const CATEGORY_COPY = {
-  'Custom Trim': {
-    alt: 'Custom trim and millwork project',
-    caption: 'Custom trim & millwork',
-  },
-  'Exterior Painting': {
-    alt: 'Exterior painting project',
-    caption: 'Exterior painting',
-  },
-  'Interior Painting': {
-    alt: 'Interior painting project',
-    caption: 'Interior painting',
-  },
-  'Kitchen Refinish': {
-    alt: 'Cabinet and kitchen refinishing project',
-    caption: 'Cabinet refinishing',
-  },
-  Remodeling: {
-    alt: 'Home renovation project',
-    caption: 'Renovation details',
-  },
-  Stain: {
-    alt: 'Wood staining and restoration project',
-    caption: 'Wood staining & restoration',
-  },
+const CATEGORY_ALT = {
+  'Custom Trim': 'Custom trim and millwork project',
+  'Exterior Painting': 'Exterior painting project',
+  'Interior Painting': 'Interior painting project',
+  'Kitchen Refinish': 'Cabinet and kitchen refinishing project',
+  Remodeling: 'Home renovation project',
+  Stain: 'Wood staining and restoration project',
 };
 
-const createEmptyResult = () => ({
-  categories: [],
-  imagesByCategory: {},
-  coverByCategory: {},
-});
-
-const normalizeCategoryName = (name) => {
-  if (typeof name !== 'string') return '';
-  const trimmed = name.trim();
-  if (!trimmed || trimmed === EXCLUDED_CATEGORY) return '';
-  return CATEGORY_RENAMES.get(trimmed) || trimmed;
-};
-
-const slugify = (value) =>
-  value
-    .toLowerCase()
-    .replace(/\.[^.]+$/, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-
-const thumbnailUrl = (categoryName, fileName) => {
-  const base = import.meta.env.BASE_URL || './';
-  return `${base}assets/gallery-thumbs/${slugify(categoryName)}/${slugify(fileName)}.webp`;
-};
-
-const imageModules = import.meta.glob('./assets/gallery/*/*.{jpg,jpeg,png,webp}', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
+const withBase = (assetPath) => `${import.meta.env.BASE_URL || './'}${assetPath}`;
 
 /**
- * Builds gallery data from source images that Vite fingerprints for production.
+ * Builds gallery data for the navigation menus, inline galleries, and gallery page.
  * @returns {Promise<Object>} Category metadata, image entries, and category covers.
  */
 export async function buildGallery() {
-  const categories = new Map();
-  const coverCandidates = {};
-
-  for (const [sourcePath, fullUrl] of Object.entries(imageModules)) {
-    const parts = sourcePath.split('/');
-    const fileName = parts.pop();
-    if (!fileName || fileName.startsWith(ROOT_IMAGE_PREFIX)) continue;
-
-    const galleryIndex = parts.indexOf('gallery');
-    const sourceCategory = parts[galleryIndex + 1];
-    const displayName = normalizeCategoryName(sourceCategory);
-    if (!displayName) continue;
-
-    const slug = slugify(displayName);
-    if (!categories.has(slug)) {
-      categories.set(slug, { slug, name: displayName, images: [] });
-    }
-
-    const entry = {
-      full: typeof fullUrl === 'string' ? fullUrl.trim() : '',
-      thumbnail: thumbnailUrl(sourceCategory, fileName),
-      fileName,
-    };
-    if (!entry.full) continue;
-
-    categories.get(slug).images.push(entry);
-    if (!coverCandidates[slug] && COVER_IMAGE_REGEX.test(fileName)) {
-      coverCandidates[slug] = entry;
-    }
-  }
-
-  if (categories.size === 0) return createEmptyResult();
-
-  const sortedCategories = Array.from(categories.values()).sort((a, b) =>
-    a.name.localeCompare(b.name),
-  );
+  const categories = Array.isArray(manifest?.categories) ? manifest.categories : [];
   const imagesByCategory = {};
   const coverByCategory = {};
 
-  sortedCategories.forEach(({ slug, name, images }) => {
-    const seen = new Set();
-    const uniqueImages = images
-      .filter((entry) => {
-        if (seen.has(entry.full)) return false;
-        seen.add(entry.full);
-        return true;
-      })
-      .sort((a, b) => a.fileName.localeCompare(b.fileName));
-
-    const copy = CATEGORY_COPY[name] || {
-      alt: `${name} project`,
-      caption: name,
-    };
-
-    imagesByCategory[slug] = uniqueImages.map((entry, index) => ({
-      full: entry.full,
-      thumbnail: entry.thumbnail,
-      alt: `${copy.alt}, photo ${index + 1}`,
-      caption: copy.caption,
+  categories.forEach(({ name, slug, cover, images }) => {
+    const alt = CATEGORY_ALT[name] || `${name} project`;
+    imagesByCategory[slug] = images.map((image, index) => ({
+      full: withBase(image.full),
+      thumbnail: withBase(image.thumbnail),
+      alt: `${alt}, photo ${index + 1}`,
     }));
-
-    const cover = coverCandidates[slug] || uniqueImages[0];
-    if (cover) coverByCategory[slug] = cover.full;
+    if (cover) coverByCategory[slug] = withBase(cover);
   });
 
   return {
-    categories: sortedCategories.map(({ slug, name }) => ({ name, slug })),
+    categories: categories.map(({ name, slug }) => ({ name, slug })),
     imagesByCategory,
     coverByCategory,
   };

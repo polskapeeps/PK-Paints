@@ -187,12 +187,6 @@ export function initNavMenu(galleryData) {
   initDesktopDropdown(desktopServicesButton, desktopServicesMenu);
   initDesktopDropdown(desktopGalleryButton, desktopGalleryMenu);
 
-  // Set current year in footer
-  const currentYearElement = document.getElementById('currentYear');
-  if (currentYearElement) {
-    currentYearElement.textContent = new Date().getFullYear();
-  }
-
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', function (e) {
@@ -223,35 +217,28 @@ export function initNavMenu(galleryData) {
     });
   });
 
-  // Get or create shared IntersectionObserver for service card animations
-  if (!sharedServiceCardObserver) {
-    const observerOptions = {
-      threshold: OBSERVER_THRESHOLD,
-      rootMargin: OBSERVER_ROOT_MARGIN,
-    };
+  // Reveal service cards as they scroll into view. Class-based (not inline transforms)
+  // so the cards' CSS hover lift keeps working; skipped for reduced-motion visitors.
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if ('IntersectionObserver' in window && !prefersReducedMotion) {
+    if (!sharedServiceCardObserver) {
+      sharedServiceCardObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            sharedServiceCardObserver.unobserve(entry.target);
+          });
+        },
+        { threshold: OBSERVER_THRESHOLD, rootMargin: OBSERVER_ROOT_MARGIN },
+      );
+    }
 
-    sharedServiceCardObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-
-          if (entry.target.classList.contains('service-card')) {
-            entry.target.style.boxShadow =
-              '0 16px 48px rgba(59, 130, 246, 0.15)';
-          }
-        }
-      });
-    }, observerOptions);
+    document.querySelectorAll('.service-card').forEach((el) => {
+      el.classList.add('reveal');
+      sharedServiceCardObserver.observe(el);
+    });
   }
-
-  document.querySelectorAll('.service-card, .gallery-item').forEach((el) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition =
-      'opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.8s ease-out';
-    sharedServiceCardObserver.observe(el);
-  });
 
   // Background shape animation controls
   const controlBackgroundShapes = () => {
@@ -272,11 +259,7 @@ export function initNavMenu(galleryData) {
 
   // Performance optimization - reduce motion for users who prefer it
   const respectReducedMotion = () => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    );
-
-    if (prefersReducedMotion.matches) {
+    if (prefersReducedMotion) {
       document
         .querySelectorAll('.float-1, .float-2, .float-3')
         .forEach((el) => {

@@ -9,6 +9,8 @@ og.*
 node_modules/
 dist/
 public/assets/gallery-thumbs/
+public/assets/gallery-large/
+src/generated/
 public/assets/featured/
 public/assets/content/
 public/assets/icons/favicon-16x16.png

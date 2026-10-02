@@ -98,9 +98,29 @@ for (const expected of ['robots.txt', 'sitemap.xml', 'og.png', '_headers', '_red
   if (!fs.existsSync(path.join(root, expected))) failures.push(`missing dist/${expected}`);
 }
 
+// Gallery images are referenced from JavaScript, so the HTML link scan above cannot see them.
+const manifest = JSON.parse(fs.readFileSync(path.resolve('src/generated/gallery-manifest.json'), 'utf8'));
+let galleryImages = 0;
+for (const category of manifest.categories) {
+  if (category.images.length === 0) failures.push(`gallery category ${category.slug} is empty`);
+  for (const image of category.images) {
+    for (const assetPath of [image.thumbnail, image.full]) {
+      galleryImages += 1;
+      if (!fs.existsSync(path.join(root, assetPath))) failures.push(`missing gallery image dist/${assetPath}`);
+    }
+  }
+}
+// Vite writes bundled (hashed) files straight into dist/assets; originals there mean an import regressed.
+const shippedOriginals = builtFiles.filter(
+  (file) => path.dirname(file) === path.join(root, 'assets') && /-[\w-]{8}\.(?:jpe?g|png)$/i.test(file),
+);
+if (shippedOriginals.length > 0) {
+  failures.push(`${shippedOriginals.length} unoptimized gallery originals were bundled; serve generated WebP instead.`);
+}
+
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));
   process.exitCode = 1;
 } else {
-  console.log(`Checked ${htmlFiles.length} HTML files: links, assets, metadata, and JSON-LD passed.`);
+  console.log(`Checked ${htmlFiles.length} HTML files and ${galleryImages} gallery images: links, assets, metadata, and JSON-LD passed.`);
 }

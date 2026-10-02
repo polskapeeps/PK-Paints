@@ -20,12 +20,21 @@ possibly sooner. After that it enters a 30-day redemption period with a large re
 fee (often $80–$200+) and can't be transferred. If that also lapses, anyone can buy it.
 
 1. Sign in at vercel.com (account `polskapeeps`, team "polskapeeps' projects").
-   If you can't sign in, use "Forgot password", or sign in with GitHub if that's how the
-   account was created.
-2. Go to **Domains → pkpaintsrenovations.com → Renew**. Pay for 1 year (or more).
-3. Turn **auto-renew on** so this doesn't happen again.
+   The username matches the GitHub account, so try **Continue with GitHub** first, then
+   the email option with your Gmail address (Vercel emails a sign-in link).
+2. **The Vercel account is currently blocked.** GitHub shows "Vercel: Account is blocked" on
+   every commit, and the site returned HTTP 402 before the domain lapsed. This is usually an
+   unpaid invoice (for example, after a Pro trial) or a plan problem. Check
+   **Settings → Billing → Invoices**. Pay it, or if it's for a plan you never meant to use,
+   open a billing case at vercel.com/help and ask them to downgrade you to Hobby and waive it.
+   Mention that you need to renew an expiring domain. A block can stop the renewal, so
+   do this first.
+3. Go to **Domains → pkpaintsrenovations.com → Renew**. Pay for 1 year (or more).
+4. Turn **auto-renew on** so this doesn't happen again.
 
 You only need Vercel to keep the domain registered. You don't need any paid Vercel plan.
+If the domain is lost anyway, the site still works on Cloudflare. Register a new name there
+and update the `pkpaintsrenovations.com` references in the HTML, `sitemap.xml`, and `robots.txt`.
 
 ## 2. Put the site on Cloudflare (free)
 

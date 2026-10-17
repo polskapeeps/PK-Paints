@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
 import { rmSync } from 'fs';
 
@@ -6,6 +7,7 @@ export default defineConfig({
   // Use relative base so the site works on both custom domains and GitHub Pages
   base: './',
   plugins: [
+    tailwindcss(),
     {
       name: 'remove-unused-legacy-logo',
       closeBundle() {
@@ -13,6 +15,9 @@ export default defineConfig({
       },
     },
   ],
+  // Tailwind runs as the Vite plugin above. An inline (empty) PostCSS config stops Vite from
+  // using a postcss.config.* found in a parent folder, such as the main checkout of a worktree.
+  css: { postcss: {} },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

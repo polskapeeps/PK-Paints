@@ -7,8 +7,8 @@
 > Since the recheck below, wrangler (4.149.0) and sharp (0.35.5) were upgraded to clear
 > new high-severity advisories, and the test suite is 16 unit + 6 workerd integration tests.
 > The audit step now runs `npm run audit:deps`, which fails on any high or critical advisory
-> except those listed with a reason in `scripts/audit-deps.mjs`. As of October 17 that is only
-> `braces` via Tailwind 3 (no patched release; build-time only). Moving to Tailwind 4 clears it.
+> except those listed with a reason in `scripts/audit-deps.mjs`. That list is empty: the only
+> entry, `braces` via Tailwind 3, was cleared by upgrading to Tailwind 4.
 
 Verified August 30, 2026. Repository: `polskapeeps/PK-Paints`.
 Migration branch: `chore/cloudflare-migration`. Leave `main` and Vercel in place until the new host is approved.

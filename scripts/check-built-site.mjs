@@ -10,7 +10,14 @@ const walk = (directory) =>
     return entry.isDirectory() ? walk(fullPath) : [fullPath];
   });
 
-const htmlFiles = walk(root).filter((file) => file.endsWith('.html'));
+const builtFiles = walk(root);
+const htmlFiles = builtFiles.filter((file) => file.endsWith('.html'));
+if (builtFiles.length > 20_000) failures.push('Cloudflare Free allows up to 20,000 static files.');
+for (const file of builtFiles) {
+  if (fs.statSync(file).size > 25 * 1024 * 1024) {
+    failures.push(`${path.relative(root, file)} exceeds the Cloudflare 25 MiB per-file limit.`);
+  }
+}
 const htmlByPath = new Map(
   htmlFiles.map((file) => [path.normalize(file), fs.readFileSync(file, 'utf8')]),
 );
@@ -87,13 +94,33 @@ for (const file of htmlFiles) {
   }
 }
 
-for (const expected of ['robots.txt', 'sitemap.xml', 'og.png']) {
+for (const expected of ['robots.txt', 'sitemap.xml', 'og.png', '_headers', '_redirects']) {
   if (!fs.existsSync(path.join(root, expected))) failures.push(`missing dist/${expected}`);
+}
+
+// Gallery images are referenced from JavaScript, so the HTML link scan above cannot see them.
+const manifest = JSON.parse(fs.readFileSync(path.resolve('src/generated/gallery-manifest.json'), 'utf8'));
+let galleryImages = 0;
+for (const category of manifest.categories) {
+  if (category.images.length === 0) failures.push(`gallery category ${category.slug} is empty`);
+  for (const image of category.images) {
+    for (const assetPath of [image.thumbnail, image.full]) {
+      galleryImages += 1;
+      if (!fs.existsSync(path.join(root, assetPath))) failures.push(`missing gallery image dist/${assetPath}`);
+    }
+  }
+}
+// Vite writes bundled (hashed) files straight into dist/assets; originals there mean an import regressed.
+const shippedOriginals = builtFiles.filter(
+  (file) => path.dirname(file) === path.join(root, 'assets') && /-[\w-]{8}\.(?:jpe?g|png)$/i.test(file),
+);
+if (shippedOriginals.length > 0) {
+  failures.push(`${shippedOriginals.length} unoptimized gallery originals were bundled; serve generated WebP instead.`);
 }
 
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));
   process.exitCode = 1;
 } else {
-  console.log(`Checked ${htmlFiles.length} HTML files: links, assets, metadata, and JSON-LD passed.`);
+  console.log(`Checked ${htmlFiles.length} HTML files and ${galleryImages} gallery images: links, assets, metadata, and JSON-LD passed.`);
 }

@@ -1,0 +1,6 @@
+# Copy to .dev.vars for local Cloudflare testing. Never commit real credentials.
+# A new preview works without these, but valid estimate submissions return a helpful 503.
+RESEND_API_KEY=
+# Set only after confirming this sending domain in your own Resend account.
+ESTIMATE_FROM_EMAIL="PK Paints Website <forms@send.pkpaintsrenovations.com>"
+ESTIMATE_TO_EMAIL=pkpaintsreno@gmail.com

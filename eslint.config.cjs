@@ -3,7 +3,7 @@ const globals = require("globals");
 
 module.exports = [
   {
-    ignores: ["node_modules/**", "dist/**", "public/**"],
+    ignores: ["node_modules/**", "dist/**", "public/**", ".wrangler/**", "coverage/**"],
   },
   js.configs.recommended,
   {

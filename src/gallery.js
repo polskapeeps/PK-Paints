@@ -1,22 +1,20 @@
 // Configuration constants
 const GALLERY_PRELOAD_ATTRIBUTE = 'data-gallery-preload';
-const SWIPE_THRESHOLD_PX = 100;
+const SWIPE_THRESHOLD_PX = 60;
 const OBSERVER_THRESHOLD = 0.1;
 const OBSERVER_ROOT_MARGIN = '0px 0px -50px 0px';
-const MAX_PRELOAD_IMAGES = 1;
+const PREFERRED_SLUGS = ['interior-painting', 'exterior-painting', 'custom-trim'];
 
 // Module-level state
-let lightboxInitialized = false;
-let reducedMotionStylesApplied = false;
-let reducedMotionListenerRegistered = false;
 let sharedGalleryObserver = null;
+let lightboxController = null;
 
 const normalizeImageUrl = (url) => (typeof url === 'string' ? url.trim() : '');
 
 const normalizeImageEntry = (value) => {
   if (typeof value === 'string') {
     const full = normalizeImageUrl(value);
-    return full ? { full, thumbnail: full, alt: 'Project photo', caption: '' } : null;
+    return full ? { full, thumbnail: full, alt: 'Project photo' } : null;
   }
 
   if (!value || typeof value !== 'object') return null;
@@ -27,7 +25,6 @@ const normalizeImageEntry = (value) => {
     full,
     thumbnail: normalizeImageUrl(value.thumbnail) || full,
     alt: typeof value.alt === 'string' && value.alt.trim() ? value.alt.trim() : 'Project photo',
-    caption: typeof value.caption === 'string' ? value.caption.trim() : '',
   };
 };
 
@@ -47,104 +44,50 @@ const normalizeImageList = (urls) => {
   return normalized;
 };
 
-const updatePreloadLinks = (urls = []) => {
-  if (typeof document === 'undefined') return;
+const updatePreloadLinks = (entries = []) => {
   const head = document.head;
   if (!head) return;
 
-  const selector = `link[${GALLERY_PRELOAD_ATTRIBUTE}]`;
-  head.querySelectorAll(selector).forEach((link) => link.remove());
+  head.querySelectorAll(`link[${GALLERY_PRELOAD_ATTRIBUTE}]`).forEach((link) => link.remove());
 
-  urls.slice(0, MAX_PRELOAD_IMAGES).forEach((entry) => {
-    const href = normalizeImageUrl(entry.thumbnail);
-    if (!href) return;
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = href;
-    link.setAttribute(GALLERY_PRELOAD_ATTRIBUTE, 'true');
-    head.appendChild(link);
-  });
+  const href = normalizeImageUrl(entries[0]?.thumbnail);
+  if (!href) return;
+  const link = document.createElement('link');
+  link.rel = 'preload';
+  link.as = 'image';
+  link.href = href;
+  link.setAttribute(GALLERY_PRELOAD_ATTRIBUTE, 'true');
+  head.appendChild(link);
 };
 
-const applyReducedMotionPreferences = () => {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return;
-  if (reducedMotionStylesApplied) return;
-
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  const applyStyles = () => {
-    if (!mediaQuery.matches || reducedMotionStylesApplied) return;
-
-    const style = document.createElement('style');
-    style.setAttribute('data-gallery-reduced-motion', 'true');
-    style.textContent = `
-      .gallery-item,
-      .gallery-filter,
-      .lightbox-content {
-        transition: none !important;
-        animation: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-    reducedMotionStylesApplied = true;
-  };
-
-  if (mediaQuery.matches) {
-    applyStyles();
-  } else if (!reducedMotionListenerRegistered) {
-    reducedMotionListenerRegistered = true;
-    if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener(
-        'change',
-        (event) => {
-          if (event.matches) applyStyles();
-        },
-        { once: true }
-      );
-    } else if (typeof mediaQuery.addListener === 'function') {
-      // Legacy Safari fallback
-      const legacyListener = (event) => {
-        if (event.matches) {
-          applyStyles();
-          mediaQuery.removeListener(legacyListener);
-        }
-      };
-      mediaQuery.addListener(legacyListener);
-    }
+// Shared IntersectionObserver that fades gallery tiles in as they scroll into view.
+const observeTiles = (gridElement) => {
+  const tiles = gridElement.querySelectorAll('.fade-in');
+  if (!('IntersectionObserver' in window)) {
+    tiles.forEach((tile) => tile.classList.add('visible'));
+    return;
   }
-};
-
-const shouldEnableHoverEffects = () => {
-  if (typeof window === 'undefined') return true;
-  return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-};
-
-// Get or create a shared IntersectionObserver for gallery animations
-const getGalleryObserver = () => {
   if (!sharedGalleryObserver) {
-    const observerOptions = {
-      threshold: OBSERVER_THRESHOLD,
-      rootMargin: OBSERVER_ROOT_MARGIN,
-    };
-    sharedGalleryObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+    sharedGalleryObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
           entry.target.classList.add('visible');
-        }
-      });
-    }, observerOptions);
+          sharedGalleryObserver.unobserve(entry.target);
+        });
+      },
+      { threshold: OBSERVER_THRESHOLD, rootMargin: OBSERVER_ROOT_MARGIN },
+    );
   }
-  return sharedGalleryObserver;
+  tiles.forEach((tile) => sharedGalleryObserver.observe(tile));
 };
 
 const createGalleryItem = (entry, gridElement) => {
-  const wrapper = document.createElement('button');
-  wrapper.type = 'button';
-  wrapper.className = 'gallery-item overflow-hidden fade-in';
-  wrapper.style.transition = 'transform 0.3s ease';
-  wrapper.dataset.fullSrc = entry.full;
-  wrapper.setAttribute('aria-label', `Open ${entry.alt} in the image viewer`);
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'gallery-item fade-in';
+  button.dataset.fullSrc = entry.full;
+  button.setAttribute('aria-label', `Open ${entry.alt} in the image viewer`);
 
   const img = document.createElement('img');
   img.alt = entry.alt;
@@ -155,30 +98,12 @@ const createGalleryItem = (entry, gridElement) => {
   img.src = entry.thumbnail;
 
   img.addEventListener('error', () => {
-    wrapper.remove();
-    if (gridElement && gridElement.children.length === 0) {
-      gridElement.classList.remove('visible');
-    }
+    button.remove();
+    if (gridElement.children.length === 0) gridElement.classList.remove('visible');
   });
 
-  if (shouldEnableHoverEffects()) {
-    wrapper.addEventListener('mouseenter', () => {
-      wrapper.style.transform = 'scale(1.02) translateY(-2px)';
-    });
-
-    wrapper.addEventListener('mouseleave', () => {
-      wrapper.style.transform = 'scale(1) translateY(0)';
-    });
-  }
-
-  wrapper.appendChild(img);
-  if (entry.caption) {
-    const caption = document.createElement('span');
-    caption.className = 'gallery-caption';
-    caption.textContent = entry.caption;
-    wrapper.appendChild(caption);
-  }
-  return wrapper;
+  button.appendChild(img);
+  return button;
 };
 
 const hydrateGalleryGrid = (gridElement, urls = []) => {
@@ -186,320 +111,234 @@ const hydrateGalleryGrid = (gridElement, urls = []) => {
 
   const normalizedUrls = normalizeImageList(urls);
   const fragment = document.createDocumentFragment();
-
-  normalizedUrls.forEach((entry) => {
-    fragment.appendChild(createGalleryItem(entry, gridElement));
-  });
+  normalizedUrls.forEach((entry) => fragment.appendChild(createGalleryItem(entry, gridElement)));
 
   gridElement.replaceChildren(fragment);
   gridElement.classList.toggle('visible', normalizedUrls.length > 0);
-
-  updatePreloadLinks(normalizedUrls);
-  applyReducedMotionPreferences();
+  observeTiles(gridElement);
 
   return normalizedUrls;
 };
 
+/**
+ * One lightbox per page, shared by every gallery grid on it. Navigation always walks
+ * the grid that opened it, so pages with several grids (or a re-rendered grid) stay in sync.
+ */
+const getLightbox = () => {
+  if (lightboxController) return lightboxController;
+
+  const root = document.getElementById('lightbox');
+  const image = document.getElementById('lightbox-img');
+  const closeButton = root?.querySelector('.lightbox-close');
+  const prevButton = root?.querySelector('.lightbox-prev');
+  const nextButton = root?.querySelector('.lightbox-next');
+  const status = document.getElementById('lightbox-status');
+  if (!root || !image || !closeButton || !prevButton || !nextButton) return null;
+
+  let items = [];
+  let index = 0;
+  let returnFocusTo = null;
+
+  root.setAttribute('role', 'dialog');
+  root.setAttribute('aria-modal', 'true');
+  root.setAttribute('aria-label', 'Image viewer');
+
+  const counter = document.createElement('p');
+  counter.className = 'lightbox-counter';
+  counter.setAttribute('aria-hidden', 'true');
+  root.appendChild(counter);
+
+  const preload = (position) => {
+    const item = items[(position + items.length) % items.length];
+    if (item?.dataset.fullSrc) new Image().src = item.dataset.fullSrc;
+  };
+
+  const show = (position) => {
+    if (items.length === 0) return;
+    index = ((position % items.length) + items.length) % items.length;
+    const item = items[index];
+    const thumbnail = item.querySelector('img');
+    image.src = item.dataset.fullSrc || thumbnail?.currentSrc || thumbnail?.src || '';
+    image.alt = thumbnail?.alt || 'Project photo';
+    if (status) status.textContent = `${image.alt}. Image ${index + 1} of ${items.length}.`;
+    counter.textContent = `${index + 1} / ${items.length}`;
+
+    const single = items.length < 2;
+    prevButton.hidden = single;
+    nextButton.hidden = single;
+    if (!single) {
+      preload(index + 1);
+      preload(index - 1);
+    }
+  };
+
+  const isOpen = () => root.classList.contains('active');
+
+  const close = () => {
+    if (!isOpen()) return;
+    root.classList.remove('active');
+    root.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    image.removeAttribute('src');
+    if (returnFocusTo?.isConnected) returnFocusTo.focus();
+  };
+
+  const open = (gridItems, startIndex, trigger) => {
+    items = gridItems;
+    returnFocusTo = trigger;
+    show(startIndex);
+    root.classList.add('active');
+    root.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    closeButton.focus();
+  };
+
+  closeButton.addEventListener('click', close);
+  prevButton.addEventListener('click', () => show(index - 1));
+  nextButton.addEventListener('click', () => show(index + 1));
+  root.addEventListener('click', (event) => {
+    if (event.target === root) close();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!isOpen()) return;
+    if (event.key === 'Escape') close();
+    else if (event.key === 'ArrowRight') show(index + 1);
+    else if (event.key === 'ArrowLeft') show(index - 1);
+    else if (event.key === 'Tab') {
+      const controls = [closeButton, prevButton, nextButton].filter((control) => !control.hidden);
+      const current = controls.indexOf(document.activeElement);
+      if (event.shiftKey && current <= 0) {
+        event.preventDefault();
+        controls[controls.length - 1].focus();
+      } else if (!event.shiftKey && current === controls.length - 1) {
+        event.preventDefault();
+        controls[0].focus();
+      }
+    }
+  });
+
+  let touchStartX = 0;
+  root.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches[0]?.screenX ?? 0;
+  }, { passive: true });
+  root.addEventListener('touchend', (event) => {
+    const delta = (event.changedTouches[0]?.screenX ?? touchStartX) - touchStartX;
+    if (delta < -SWIPE_THRESHOLD_PX) show(index + 1);
+    else if (delta > SWIPE_THRESHOLD_PX) show(index - 1);
+  });
+
+  lightboxController = { open };
+  return lightboxController;
+};
+
+// Delegated so re-rendering a grid's tiles never stacks duplicate listeners.
+const bindGridToLightbox = (gridElement) => {
+  if (gridElement.dataset.lightboxBound) return;
+  gridElement.dataset.lightboxBound = 'true';
+  gridElement.addEventListener('click', (event) => {
+    const item = event.target.closest('.gallery-item');
+    const lightbox = getLightbox();
+    if (!item || !lightbox) return;
+    const items = Array.from(gridElement.querySelectorAll('.gallery-item'));
+    lightbox.open(items, items.indexOf(item), item);
+  });
+};
 
 const toggleSectionVisibility = (element, shouldShow) => {
   if (!element) return;
-
-  if (shouldShow) {
-    element.classList.remove('hidden');
-    element.removeAttribute('hidden');
-  } else {
-    element.classList.add('hidden');
-    element.setAttribute('hidden', '');
-  }
+  element.classList.toggle('hidden', !shouldShow);
+  element.toggleAttribute('hidden', !shouldShow);
 };
 
 const renderInlineGalleries = (imagesByCategory = {}) => {
-  if (typeof document === 'undefined') return;
-
-  const inlineGalleries = document.querySelectorAll('[data-gallery-slug]');
-
-  inlineGalleries.forEach((gridElement) => {
+  document.querySelectorAll('[data-gallery-slug]').forEach((gridElement) => {
     const slug = gridElement.getAttribute('data-gallery-slug');
     const parentSection = gridElement.closest('[data-gallery-section]');
+    const limitAttr = Number.parseInt(gridElement.getAttribute('data-gallery-limit'), 10);
+    const limit = Number.isFinite(limitAttr) && limitAttr > 0 ? limitAttr : undefined;
 
-    if (!slug || !(slug in imagesByCategory)) {
-      gridElement.replaceChildren();
-      toggleSectionVisibility(parentSection, false);
-      return;
-    }
-
-    const limitAttr = Number.parseInt(
-      gridElement.getAttribute('data-gallery-limit'),
-      10,
-    );
-    const limit = Number.isFinite(limitAttr) && limitAttr > 0 ? limitAttr : null;
-
-    const urls = imagesByCategory[slug] || [];
-    const limitedUrls = limit ? urls.slice(0, limit) : urls;
-    const normalized = hydrateGalleryGrid(gridElement, limitedUrls);
-
-    if (normalized.length === 0) {
-      toggleSectionVisibility(parentSection, false);
-      return;
-    }
-
-    toggleSectionVisibility(parentSection, true);
-    initGalleryUI(gridElement);
-  });
-};
-
-
-const initGalleryUI = (gridElement) => {
-  if (!gridElement) return;
-
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxClose = document.querySelector('.lightbox-close');
-  const lightboxPrev = document.querySelector('.lightbox-prev');
-  const lightboxNext = document.querySelector('.lightbox-next');
-  const lightboxStatus = document.getElementById('lightbox-status');
-
-  if (!lightbox || !lightboxImg || !lightboxClose || !lightboxPrev || !lightboxNext) {
-    return;
-  }
-
-  const getGalleryItems = () =>
-    Array.from(gridElement.querySelectorAll('.gallery-item'));
-
-  let currentImageIndex = 0;
-  let lastFocusedElement = null;
-
-  const updateLightboxImage = (item, index, total) => {
-    const img = item.querySelector('img');
-    const src = item.dataset.fullSrc || img?.currentSrc || img?.src;
-    if (!img || !src) return false;
-
-    lightboxImg.src = src;
-    lightboxImg.alt = img.alt || 'Project photo';
-    const announcement = `${lightboxImg.alt}. Image ${index + 1} of ${total}.`;
-    lightboxImg.setAttribute('aria-label', announcement);
-    if (lightboxStatus) lightboxStatus.textContent = announcement;
-    return true;
-  };
-
-  const openLightbox = (index, triggerElement = null) => {
-    const items = getGalleryItems();
-    if (items.length === 0) return;
-
-    const boundedIndex = index >= 0 && index < items.length ? index : 0;
-    const item = items[boundedIndex];
-    if (!item) return;
-
-    if (!updateLightboxImage(item, boundedIndex, items.length)) return;
-
-    // Add ARIA attributes for accessibility
-    lightbox.setAttribute('role', 'dialog');
-    lightbox.setAttribute('aria-modal', 'true');
-    lightbox.setAttribute('aria-label', 'Image viewer');
-    lastFocusedElement =
-      triggerElement instanceof HTMLElement ? triggerElement : document.activeElement;
-    lightbox.classList.add('active');
-    lightbox.setAttribute('aria-hidden', 'false');
-
-    if (document.body) {
-      document.body.style.overflow = 'hidden';
-    }
-
-    currentImageIndex = boundedIndex;
-
-    // Focus the close button for keyboard users
-    setTimeout(() => lightboxClose.focus(), 100);
-  };
-
-  const closeLightbox = () => {
-    lightbox.classList.remove('active');
-    lightbox.setAttribute('aria-hidden', 'true');
-    if (document.body) {
-      document.body.style.overflow = 'auto';
-    }
-    if (lastFocusedElement instanceof HTMLElement) lastFocusedElement.focus();
-  };
-
-  const updateImageFromIndex = (index) => {
-    const items = getGalleryItems();
-    if (items.length === 0) return;
-
-    const normalizedIndex = ((index % items.length) + items.length) % items.length;
-    const item = items[normalizedIndex];
-    if (!item) return;
-
-    if (!updateLightboxImage(item, normalizedIndex, items.length)) return;
-    currentImageIndex = normalizedIndex;
-  };
-
-  const nextImage = () => updateImageFromIndex(currentImageIndex + 1);
-  const prevImage = () => updateImageFromIndex(currentImageIndex - 1);
-
-  const galleryItems = getGalleryItems();
-
-  galleryItems.forEach((item) => {
-    const handleItemActivation = () => {
-      const items = getGalleryItems();
-      const index = items.indexOf(item);
-      if (index !== -1) {
-        openLightbox(index, item);
-      }
-    };
-
-    item.addEventListener('click', handleItemActivation);
-  });
-
-  if (!lightboxInitialized) {
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightboxNext.addEventListener('click', nextImage);
-    lightboxPrev.addEventListener('click', prevImage);
-
-    lightbox.addEventListener('click', (event) => {
-      if (event.target === lightbox) {
-        closeLightbox();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (!lightbox.classList.contains('active')) return;
-
-      if (event.key === 'Escape') {
-        closeLightbox();
-      } else if (event.key === 'ArrowRight') {
-        nextImage();
-      } else if (event.key === 'ArrowLeft') {
-        prevImage();
-      } else if (event.key === 'Tab') {
-        const controls = [lightboxClose, lightboxPrev, lightboxNext].filter(
-          (control) => !control.disabled,
-        );
-        const currentIndex = controls.indexOf(document.activeElement);
-        if (event.shiftKey && currentIndex <= 0) {
-          event.preventDefault();
-          controls[controls.length - 1].focus();
-        } else if (!event.shiftKey && currentIndex === controls.length - 1) {
-          event.preventDefault();
-          controls[0].focus();
-        }
-      }
-    });
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    lightbox.addEventListener('touchstart', (event) => {
-      if (event.changedTouches.length > 0) {
-        touchStartX = event.changedTouches[0].screenX;
-      }
-    });
-
-    lightbox.addEventListener('touchend', (event) => {
-      if (event.changedTouches.length > 0) {
-        touchEndX = event.changedTouches[0].screenX;
-        if (touchEndX < touchStartX - SWIPE_THRESHOLD_PX) {
-          nextImage();
-        } else if (touchEndX > touchStartX + SWIPE_THRESHOLD_PX) {
-          prevImage();
-        }
-      }
-    });
-
-    lightboxInitialized = true;
-  }
-
-  // Use shared observer for better performance
-  const observer = getGalleryObserver();
-  gridElement.querySelectorAll('.fade-in').forEach((el) => {
-    observer.observe(el);
+    const urls = slug in imagesByCategory ? imagesByCategory[slug].slice(0, limit) : [];
+    const normalized = hydrateGalleryGrid(gridElement, urls);
+    toggleSectionVisibility(parentSection, normalized.length > 0);
+    if (normalized.length > 0) bindGridToLightbox(gridElement);
   });
 };
 
 /**
- * Initializes the gallery UI with category filtering and lightbox functionality.
- * Renders inline galleries on service pages and main gallery page with category dropdown.
+ * Initializes inline galleries on service pages and, on the gallery page, the category
+ * filter chips, hero image, and full grid. Every grid opens the shared lightbox.
  * @param {Object} galleryData - Gallery data containing categories, images, and covers
  * @param {Array} galleryData.categories - Array of category objects with name and slug
- * @param {Object} galleryData.imagesByCategory - Map of category slugs to image URL arrays
+ * @param {Object} galleryData.imagesByCategory - Map of category slugs to image arrays
  * @param {Object} galleryData.coverByCategory - Map of category slugs to cover image URLs
  * @returns {void}
  */
 export function initGallery(galleryData) {
-  const {
-    categories = [],
-    imagesByCategory = {},
-    coverByCategory = {},
-  } = galleryData || {};
+  const { categories = [], imagesByCategory = {}, coverByCategory = {} } = galleryData || {};
 
-  if (typeof window === 'undefined') return;
   renderInlineGalleries(imagesByCategory);
-  if (!window.location.pathname.includes('gallery')) return;
 
-  const grid = document.querySelector('.gallery-grid');
+  const grid = document.querySelector('.gallery-page-grid');
   if (!grid) return;
+  bindGridToLightbox(grid);
 
-  const select = document.getElementById('gallery-select');
+  const filters = document.querySelector('.gallery-filters');
   const heroEl = document.querySelector('.service-hero');
-
-  const setHeroForCategory = (slug, normalizedImages) => {
-    if (!heroEl) return;
-
-    const fallbackImages = Array.isArray(normalizedImages)
-      ? normalizedImages
-      : normalizeImageList(imagesByCategory[slug] || []);
-
-    const cover = normalizeImageUrl(coverByCategory[slug]);
-    const heroUrl = cover || normalizeImageUrl(fallbackImages[0]?.full) || '';
-    heroEl.style.backgroundImage = heroUrl ? `url('${heroUrl}')` : '';
-  };
+  const getValidSlug = (slug) => (typeof slug === 'string' && slug in imagesByCategory ? slug : null);
 
   const renderCategory = (slug) => {
-    if (!slug || !(slug in imagesByCategory)) return;
+    const images = hydrateGalleryGrid(grid, imagesByCategory[slug]);
+    updatePreloadLinks(images);
 
-    const normalizedImages = hydrateGalleryGrid(grid, imagesByCategory[slug]);
-    imagesByCategory[slug] = normalizedImages;
-    initGalleryUI(grid);
-    setHeroForCategory(slug, normalizedImages);
+    const heroUrl = normalizeImageUrl(coverByCategory[slug]) || images[0]?.full;
+    if (heroEl && heroUrl) heroEl.style.backgroundImage = `url('${heroUrl}')`;
+
+    filters?.querySelectorAll('.gallery-chip').forEach((chip) => {
+      const active = chip.dataset.slug === slug;
+      chip.setAttribute('aria-pressed', String(active));
+      // Keep the active chip visible when the row scrolls sideways on phones.
+      if (active && filters.scrollWidth > filters.clientWidth) {
+        filters.scrollLeft = chip.offsetLeft - (filters.clientWidth - chip.offsetWidth) / 2;
+      }
+    });
   };
 
-  if (select) {
-    select.innerHTML = categories
-      .map((c) => `<option value="${c.slug}">${c.name}</option>`)
-      .join('');
+  if (filters) {
+    const fragment = document.createDocumentFragment();
+    categories.forEach(({ name, slug }) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'gallery-chip';
+      chip.dataset.slug = slug;
+      chip.setAttribute('aria-pressed', 'false');
+      chip.textContent = name;
+      const count = document.createElement('span');
+      count.className = 'gallery-chip-count';
+      count.textContent = String(imagesByCategory[slug]?.length || 0);
+      count.setAttribute('aria-label', `${count.textContent} photos`);
+      chip.appendChild(count);
+      fragment.appendChild(chip);
+    });
+    filters.replaceChildren(fragment);
 
-    select.addEventListener('change', () => {
-      try {
-        renderCategory(select.value);
-      } catch (error) {
-        console.error('Failed to render gallery category:', error);
-        if (grid) {
-          grid.innerHTML = '<div class="text-center text-gray-400 p-8">Unable to load gallery. Please refresh the page.</div>';
-        }
-      }
+    filters.addEventListener('click', (event) => {
+      const chip = event.target.closest('.gallery-chip');
+      const slug = getValidSlug(chip?.dataset.slug);
+      if (!slug) return;
+      renderCategory(slug);
+      const url = new URL(window.location.href);
+      url.searchParams.set('category', slug);
+      window.history.replaceState(null, '', url);
     });
   }
 
-  const getValidSlug = (slug) =>
-    typeof slug === 'string' && slug in imagesByCategory ? slug : null;
+  const requestedSlug = getValidSlug(new URLSearchParams(window.location.search).get('category'));
+  const initialSlug =
+    requestedSlug ||
+    PREFERRED_SLUGS.map(getValidSlug).find(Boolean) ||
+    getValidSlug(categories[0]?.slug);
 
-  const params = new URLSearchParams(window.location.search);
-  const requestedSlug = getValidSlug(params.get('category'));
-
-  const preferredSlugs = ['interior-painting', 'exterior-painting', 'custom-trim'];
-  const fallbackSlug =
-    preferredSlugs.map((slug) => getValidSlug(slug)).find(Boolean) ||
-    (categories[0] ? getValidSlug(categories[0].slug) : null);
-
-  const initialSlug = requestedSlug || fallbackSlug;
-
-  if (initialSlug) {
-    if (select) select.value = initialSlug;
-    try {
-      renderCategory(initialSlug);
-    } catch (error) {
-      console.error('Failed to render initial gallery category:', error);
-      hydrateGalleryGrid(grid, []);
-    }
-  } else {
-    hydrateGalleryGrid(grid, []);
-  }
+  if (initialSlug) renderCategory(initialSlug);
+  else hydrateGalleryGrid(grid, []);
 }

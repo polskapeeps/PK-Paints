@@ -6,10 +6,19 @@ const rootDir = path.resolve(__dirname, '..');
 const galleryDir = path.join(rootDir, 'src', 'assets', 'gallery');
 const publicDir = path.join(rootDir, 'public');
 const thumbnailDir = path.join(publicDir, 'assets', 'gallery-thumbs');
+const largeDir = path.join(publicDir, 'assets', 'gallery-large');
+const manifestPath = path.join(rootDir, 'src', 'generated', 'gallery-manifest.json');
 const iconDir = path.join(publicDir, 'assets', 'icons');
 const featuredDir = path.join(publicDir, 'assets', 'featured');
 const contentDir = path.join(publicDir, 'assets', 'content');
 const supportedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+
+// Folder names under src/assets/gallery map to public categories here.
+const EXCLUDED_CATEGORIES = new Set(['Commercial']);
+const CATEGORY_RENAMES = new Map([['Carpentry', 'Custom Trim']]);
+const EXCLUDED_FILE_PREFIX = 'painting_';
+const COVER_FILE = /^cover\.(jpe?g|png|webp)$/i;
+const naturalOrder = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 const slugify = (value) =>
   value
@@ -18,44 +27,111 @@ const slugify = (value) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-async function createGalleryThumbnails() {
+const isFresh = (sourcePath, outputPath) => {
+  try {
+    return fs.statSync(outputPath).mtimeMs >= fs.statSync(sourcePath).mtimeMs;
+  } catch {
+    return false;
+  }
+};
+
+const removeStaleFiles = (directory, expected) => {
+  if (!fs.existsSync(directory)) return;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      removeStaleFiles(fullPath, expected);
+      if (fs.readdirSync(fullPath).length === 0) fs.rmdirSync(fullPath);
+    } else if (!expected.has(fullPath)) {
+      fs.rmSync(fullPath);
+    }
+  }
+};
+
+const runWithConcurrency = async (jobs, limit) => {
+  let next = 0;
+  const worker = async () => {
+    while (next < jobs.length) await jobs[next++]();
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, jobs.length) }, worker));
+};
+
+// Writes a lightweight thumbnail and a screen-sized lightbox image for every public
+// gallery photo, plus the manifest the browser uses. Original photos never ship.
+async function createGalleryAssets() {
   const expectedPrefix = `${path.join(publicDir, 'assets')}${path.sep}`;
-  if (!thumbnailDir.startsWith(expectedPrefix)) {
+  if (!thumbnailDir.startsWith(expectedPrefix) || !largeDir.startsWith(expectedPrefix)) {
     throw new Error('Refusing to replace gallery assets outside the public assets directory.');
   }
 
-  fs.rmSync(thumbnailDir, { recursive: true, force: true });
-  fs.mkdirSync(thumbnailDir, { recursive: true });
+  const expectedOutputs = new Set();
+  const jobs = [];
+  const categories = [];
 
-  let total = 0;
-  const categories = fs
+  const directories = fs
     .readdirSync(galleryDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .filter((entry) => entry.isDirectory() && !EXCLUDED_CATEGORIES.has(entry.name));
 
-  for (const category of categories) {
-    const sourceDir = path.join(galleryDir, category.name);
-    const destinationDir = path.join(thumbnailDir, slugify(category.name));
-    fs.mkdirSync(destinationDir, { recursive: true });
-
+  for (const directory of directories) {
+    const name = CATEGORY_RENAMES.get(directory.name) || directory.name;
+    const folder = slugify(directory.name);
+    const sourceDir = path.join(galleryDir, directory.name);
     const files = fs
       .readdirSync(sourceDir)
       .filter((file) => supportedExtensions.has(path.extname(file).toLowerCase()))
-      .sort((a, b) => a.localeCompare(b));
+      .filter((file) => !file.startsWith(EXCLUDED_FILE_PREFIX))
+      .sort(naturalOrder.compare);
+    if (files.length === 0) continue;
 
+    const category = { name, slug: slugify(name), cover: null, images: [] };
     for (const file of files) {
       const sourcePath = path.join(sourceDir, file);
-      const outputPath = path.join(destinationDir, `${slugify(file)}.webp`);
-      await sharp(sourcePath)
-        .rotate()
-        .resize({ width: 720, height: 540, fit: 'cover', position: 'attention' })
-        .webp({ quality: 74, effort: 4 })
-        .toFile(outputPath);
-      total += 1;
+      const outputName = `${slugify(file)}.webp`;
+      const thumbnailPath = path.join(thumbnailDir, folder, outputName);
+      const largePath = path.join(largeDir, folder, outputName);
+      expectedOutputs.add(thumbnailPath).add(largePath);
+
+      const image = {
+        thumbnail: `assets/gallery-thumbs/${folder}/${outputName}`,
+        full: `assets/gallery-large/${folder}/${outputName}`,
+      };
+      category.images.push(image);
+      if (!category.cover && COVER_FILE.test(file)) category.cover = image.full;
+
+      if (!isFresh(sourcePath, thumbnailPath)) {
+        jobs.push(async () => {
+          fs.mkdirSync(path.dirname(thumbnailPath), { recursive: true });
+          await sharp(sourcePath)
+            .rotate()
+            .resize({ width: 720, height: 540, fit: 'cover', position: 'attention' })
+            .webp({ quality: 74, effort: 4 })
+            .toFile(thumbnailPath);
+        });
+      }
+      if (!isFresh(sourcePath, largePath)) {
+        jobs.push(async () => {
+          fs.mkdirSync(path.dirname(largePath), { recursive: true });
+          await sharp(sourcePath)
+            .rotate()
+            .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 78, effort: 4 })
+            .toFile(largePath);
+        });
+      }
     }
+    category.cover ||= category.images[0].full;
+    categories.push(category);
   }
 
-  return total;
+  await runWithConcurrency(jobs, 4);
+  removeStaleFiles(thumbnailDir, expectedOutputs);
+  removeStaleFiles(largeDir, expectedOutputs);
+
+  categories.sort((a, b) => naturalOrder.compare(a.name, b.name));
+  fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+  fs.writeFileSync(manifestPath, `${JSON.stringify({ categories }, null, 2)}\n`);
+
+  return categories.reduce((total, category) => total + category.images.length, 0);
 }
 
 async function createSiteIcons() {
@@ -131,12 +207,12 @@ async function createFeaturedImages() {
 }
 
 async function main() {
-  const [thumbnailCount] = await Promise.all([
-    createGalleryThumbnails(),
+  const [imageCount] = await Promise.all([
+    createGalleryAssets(),
     createSiteIcons(),
     createFeaturedImages(),
   ]);
-  console.log(`Generated ${thumbnailCount} gallery thumbnails and responsive site icons.`);
+  console.log(`Prepared ${imageCount} gallery photos (thumbnail + lightbox size) and responsive site icons.`);
 }
 
 main().catch((error) => {

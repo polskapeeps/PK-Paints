@@ -13,8 +13,9 @@
     "deploy:cloudflare:preview": "npm run build && wrangler deploy --env preview",
     "deploy:cloudflare": "npm run build && wrangler deploy",
     "test:cloudflare": "node --test tests/cloudflare.integration.mjs",
-    "verify:cloudflare": "npm test && npm run build && npm run test:cloudflare && npm audit --audit-level=high && wrangler deploy --env preview --dry-run --outdir .wrangler/dry-run",
+    "verify:cloudflare": "npm test && npm run build && npm run test:cloudflare && npm run audit:deps && wrangler deploy --env preview --dry-run --outdir .wrangler/dry-run",
     "check:site": "node scripts/check-built-site.mjs",
+    "audit:deps": "node scripts/audit-deps.mjs",
     "lint": "eslint .",
     "test": "npm run lint && node --test tests/*.test.mjs"
   },
@@ -42,6 +43,6 @@
     "sharp": "^0.35.5",
     "tailwindcss": "^3.4.19",
     "vite": "^6.4.3",
-    "wrangler": "4.146.0"
+    "wrangler": "4.149.0"
   }
 }

@@ -43,7 +43,7 @@ jobs:
         run: npx wrangler deploy --env preview --dry-run --outdir .wrangler/dry-run
 
       - name: Dependency audit
-        run: npm audit --audit-level=high
+        run: npm run audit:deps
 
       - name: Security & Secrets
         run: |

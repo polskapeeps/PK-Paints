@@ -4,8 +4,11 @@
 > and now uses the registrar's parking nameservers, so there is no live Vercel site or DNS
 > zone to preserve. Follow [GO_LIVE.md](GO_LIVE.md) for the current order of steps:
 > renew the domain, deploy to Cloudflare, configure email, then point the nameservers.
-> Since the recheck below, wrangler (4.146.0) and sharp (0.35.5) were upgraded to clear
+> Since the recheck below, wrangler (4.149.0) and sharp (0.35.5) were upgraded to clear
 > new high-severity advisories, and the test suite is 16 unit + 6 workerd integration tests.
+> The audit step now runs `npm run audit:deps`, which fails on any high or critical advisory
+> except those listed with a reason in `scripts/audit-deps.mjs`. As of October 17 that is only
+> `braces` via Tailwind 3 (no patched release; build-time only). Moving to Tailwind 4 clears it.
 
 Verified August 30, 2026. Repository: `polskapeeps/PK-Paints`.
 Migration branch: `chore/cloudflare-migration`. Leave `main` and Vercel in place until the new host is approved.

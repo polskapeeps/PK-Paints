@@ -1,6 +1,6 @@
 # Getting pkpaintsrenovations.com back online
 
-Status as of October 2, 2026. Start here; [CLOUDFLARE_MIGRATION.md](CLOUDFLARE_MIGRATION.md)
+Status as of October 17, 2026. Start here; [CLOUDFLARE_MIGRATION.md](CLOUDFLARE_MIGRATION.md)
 has the longer technical background.
 
 ## Where things stand
@@ -8,8 +8,11 @@ has the longer technical background.
 - **The domain expired on September 14, 2026.** It was registered through Vercel with
   auto-renew turned off. Its nameservers now point at the registrar's
   "renew your name" parking servers, so the site and any domain email are offline.
+  Rechecked October 17: still parked, so it has not been renewed yet.
 - **The code is ready for Cloudflare.** This branch builds, passes every test, and
   deploys to Cloudflare Workers on the Free plan ($0 for this site's traffic).
+- **Cloudflare is not connected to the GitHub repo yet.** Once it is, a Cloudflare
+  check appears next to each commit on GitHub.
 - **The estimate form** needs one free Resend account to deliver email (step 3).
 
 ## 1. Renew the domain now (urgent, about $10–20)

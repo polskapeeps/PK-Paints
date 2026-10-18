@@ -1,9 +1,98 @@
 /* Self-hosted variable Inter: no third-party font request, no render-blocking stylesheet. */
 @import '@fontsource-variable/inter/wght.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Scan only the pages and scripts (Tailwind 3's content globs), not docs, tests or the Worker. */
+@import 'tailwindcss' source(none);
+@source '../*.html';
+@source './**/*.{js,html}';
+
+/* Tailwind 4 only applies hover: utilities on devices with a mouse; keep Tailwind 3's behaviour. */
+@custom-variant hover (&:hover);
+
+@theme {
+  --font-inter: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+
+  /* Tailwind 3's sRGB values. Tailwind 4's OKLCH palette shifts these shades visibly. */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
+
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
+
+  --color-yellow-50: #fefce8;
+  --color-yellow-100: #fef9c3;
+  --color-yellow-200: #fef08a;
+  --color-yellow-300: #fde047;
+  --color-yellow-400: #facc15;
+  --color-yellow-500: #eab308;
+  --color-yellow-600: #ca8a04;
+  --color-yellow-700: #a16207;
+  --color-yellow-800: #854d0e;
+  --color-yellow-900: #713f12;
+  --color-yellow-950: #422006;
+}
+
+/* Tailwind 3 preflight defaults that Tailwind 4 changed. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+    color: var(--color-gray-400);
+  }
+
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+
+  :disabled {
+    cursor: default;
+  }
+
+  /* Tailwind 3 left the photo input's "Choose file" button with the browser's own styling. */
+  ::file-selector-button {
+    all: revert;
+    appearance: button;
+    font: inherit;
+  }
+}
+
+/*
+  Site styles live in the utilities layer, after Tailwind's own utilities, so the cascade matches
+  Tailwind 3: a rule here beats a plain utility of equal specificity, and loses to a more specific
+  one. Unlike Tailwind 3, it also beats sm:/md:/hover: utilities of equal specificity, so markup
+  cannot use those to override a property set by a class defined here.
+  Keep -webkit-backdrop-filter before backdrop-filter: Tailwind's minifier drops the standard
+  property when the prefixed one follows it.
+  The rest of the file is deliberately left unindented inside this block.
+*/
+@layer utilities {
 
 /* ==================== BASE STYLES ==================== */
 
@@ -154,8 +243,8 @@ body {
     rgba(7, 18, 34, 0.82)
   ) !important;
   border-bottom: 1px solid var(--brand-border);
-  backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
   box-shadow: 0 18px 45px rgba(6, 11, 25, 0.45);
 }
 
@@ -220,8 +309,8 @@ body {
   ) !important;
   border: 1px solid var(--brand-border);
   box-shadow: 0 28px 60px rgba(6, 11, 25, 0.55);
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 }
 
 /* Mobile menu improvements */
@@ -233,8 +322,8 @@ body {
   ) !important;
   border: 1px solid var(--brand-border);
   border-top: none;
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   box-shadow: 0 25px 55px rgba(6, 11, 25, 0.5);
 }
 
@@ -345,16 +434,16 @@ nav button.active,
     rgba(11, 21, 44, 0.28) 45%,
     rgba(7, 15, 32, 0.65) 100%
   );
-  backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   z-index: -1; /* Above slides, below content */
 }
 
 .glass-card-hero {
   background: transparent !important;
   border: 1px solid rgba(250, 204, 21, 0.45) !important;
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
   box-shadow: 0 20px 55px rgba(5, 11, 23, 0.42),
     0 0 0 1px rgba(250, 204, 21, 0.16) !important;
   padding: clamp(1.5rem, 6vw, 3.5rem) !important;
@@ -468,8 +557,8 @@ nav button.active,
     rgba(15, 23, 42, 0.22)
   );
   border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: saturate(125%) blur(16px);
   -webkit-backdrop-filter: saturate(125%) blur(16px);
+  backdrop-filter: saturate(125%) blur(16px);
   color: rgba(226, 232, 240, 0.88);
   font-size: 0.85rem;
 }
@@ -512,8 +601,8 @@ nav button.active,
     rgba(15, 23, 42, 0.3)
   );
   border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: saturate(130%) blur(18px);
   -webkit-backdrop-filter: saturate(130%) blur(18px);
+  backdrop-filter: saturate(130%) blur(18px);
   box-shadow: 0 24px 60px rgba(5, 11, 23, 0.35),
     0 10px 25px rgba(8, 16, 35, 0.25);
   transition: transform 0.35s ease, box-shadow 0.35s ease,
@@ -673,8 +762,8 @@ nav button.active,
 .service-hero .glass-card-hero {
   background: transparent !important;
   border: 1px solid rgba(250, 204, 21, 0.45) !important;
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
   box-shadow: 0 18px 50px rgba(5, 11, 23, 0.4),
     0 0 0 1px rgba(250, 204, 21, 0.14) !important;
 }
@@ -718,8 +807,8 @@ nav button.active,
     rgba(15, 23, 42, 0.78),
     rgba(15, 23, 42, 0.56)
   ) !important;
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--brand-border);
   box-shadow: 0 22px 55px rgba(5, 11, 23, 0.4);
 }
@@ -731,8 +820,8 @@ nav button.active,
     rgba(15, 23, 42, 0.88),
     rgba(15, 23, 42, 0.64)
   ) !important;
-  backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border: 1px solid var(--brand-border-strong);
   box-shadow: 0 28px 70px rgba(5, 11, 23, 0.5);
 }
@@ -831,7 +920,6 @@ nav button.active,
 }
 
 .about-highlights {
-  margin-top: 1.75rem;
   display: grid;
   gap: 0.75rem;
 }
@@ -867,7 +955,6 @@ nav button.active,
 .gallery-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
 .gallery-page-grid {
@@ -1040,8 +1127,8 @@ nav button.active,
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .lightbox.active {
@@ -1074,8 +1161,8 @@ nav button.active,
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
@@ -1096,8 +1183,8 @@ nav button.active,
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   user-select: none;
   border: 1px solid rgba(255, 255, 255, 0.28);
 }
@@ -1163,8 +1250,8 @@ nav button.active,
     rgba(15, 23, 42, 0.9),
     rgba(15, 23, 42, 0.65)
   ) !important;
-  backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
   border: 1px solid var(--brand-border-strong) !important;
   box-shadow: 0 32px 80px rgba(5, 11, 23, 0.55) !important;
 }
@@ -1452,8 +1539,8 @@ footer {
     rgba(15, 23, 42, 0.85),
     rgba(15, 23, 42, 0.6)
   ) !important;
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   border-top: 1px solid var(--brand-border);
 }
 
@@ -1504,10 +1591,6 @@ footer {
   color: #0f172a;
 }
 
-.btn-gold:hover {
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4), 0 0 40px rgba(250, 204, 21, 0.22);
-}
-
 /* Floating animation for CTA button */
 .float-animation {
   animation: float 3s ease-in-out infinite;
@@ -1550,8 +1633,8 @@ button:focus-visible {
 /* Better backdrop blur support */
 @supports (backdrop-filter: blur(10px)) {
   .backdrop-blur-header {
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
 }
 
@@ -1780,8 +1863,8 @@ button:focus-visible {
 /* Mobile menu - same clear glass effect as desktop dropdown */
 #mobile-menu {
   background: rgba(255, 255, 255, 0.05) !important; /* Same as glass-card */
-  backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
 }
@@ -1830,4 +1913,6 @@ button:focus-visible {
 
 .mobile-contact-item:hover {
   color: rgba(255, 255, 255, 0.9);
+}
+
 }

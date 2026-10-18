@@ -1,11 +1,8 @@
 import { spawnSync } from 'node:child_process';
 
-// Advisories with no patched release that cannot reach site visitors or the Worker.
-// Each needs a reason. Remove an entry as soon as a fix ships.
-const accepted = new Map([
-  ['GHSA-vfj7-8cjw-p6xm', 'braces via Tailwind 3: no patched release. It only expands the fixed '
-    + 'content globs in tailwind.config.cjs at build time. Cleared by moving to Tailwind 4.'],
-]);
+// Advisories with no patched release that cannot reach site visitors or the Worker,
+// as [id, reason] pairs. Each needs a reason. Remove an entry as soon as a fix ships.
+const accepted = new Map([]);
 const blocking = new Set(['high', 'critical']);
 
 // A fixed command string: Windows needs a shell to find npm.cmd.

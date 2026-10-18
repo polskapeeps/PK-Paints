@@ -244,7 +244,7 @@
                   <span class="gradient-text">PK Paints &amp; Renovations</span>
                 </h1>
                 <p class="hero-subtitle max-w-3xl mx-auto">
-                  The <span class='gradient-text'>golden standard</span> for every home.
+                  The <span class='gradient-text'>gold standard</span> for every home.
                 </p>
                 <div class="hero-actions">
                   <a href="request-estimate.html" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-2xl">
@@ -384,7 +384,7 @@
     <!-- About Section -->
     <section id="about" class="py-12 md:py-20 relative">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           <div class="order-2 lg:order-1">
             <div class="glass-card stack-layer rounded-2xl p-8">
               <h2 class="text-4xl lg:text-5xl font-bold text-white mb-8">
@@ -417,12 +417,14 @@
             </div>
           </div>
           <div class="order-1 lg:order-2">
-            <div class="overflow-hidden rounded-2xl">
+            <!-- Phones and tablets show the whole photo. Desktop fills the text column's height and
+              crops toward the painter on the right, so the image renders wider than its column. -->
+            <div class="overflow-hidden rounded-2xl lg:h-full">
               <img src="/assets/content/about-1200.webp"
-                srcset="/assets/content/about-640.webp 640w, /assets/content/about-1200.webp 1200w"
-                sizes="(max-width: 1023px) 100vw, 50vw" width="1200" height="800"
+                srcset="/assets/content/about-640.webp 640w, /assets/content/about-1200.webp 1200w, /assets/content/about-2048.webp 2048w"
+                sizes="100vw" width="1200" height="800"
                 alt="PK Paints &amp; Renovations spray-finishing porch columns with landscaping protected under drop cloths"
-                loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full h-auto" />
+                loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full h-auto lg:h-full lg:object-cover lg:object-[90%_center]" />
             </div>
           </div>
         </div>

@@ -163,7 +163,8 @@ async function createFeaturedImages() {
     ['src/assets/painting_162.png', 'gallery-hero.webp'],
   ];
   const contentSources = [
-    ['src/assets/home/aboutus_2.jpeg', 'about'],
+    // Desktop crops the About photo to the text column's height, so it needs a wider file.
+    ['src/assets/home/aboutus_2.jpeg', 'about', [[2048, 1365]]],
     ['src/assets/gallery/Interior Painting/[16]interior_04-2021.jpeg', 'painting'],
     ['src/assets/gallery/Carpentry/capentry_0052.jpeg', 'trim'],
   ];
@@ -191,10 +192,11 @@ async function createFeaturedImages() {
   );
 
   await Promise.all(
-    contentSources.flatMap(([source, output]) =>
+    contentSources.flatMap(([source, output, extraSizes = []]) =>
       [
         [640, 427],
         [1200, 800],
+        ...extraSizes,
       ].map(([width, height]) =>
         sharp(path.join(rootDir, source))
           .rotate()

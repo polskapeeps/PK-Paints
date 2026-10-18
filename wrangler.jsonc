@@ -6,6 +6,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "preview_urls": true,
+  // Required by `wrangler preview`, which Workers Builds runs for branches and pull requests.
+  // Previews inherit the top-level assets and compatibility settings.
+  "previews": {},
   // Cloudflare creates and manages the apex DNS record for this custom domain.
   // www redirects to the apex with a zone Redirect Rule, outside the Worker.
   "routes": [{ "pattern": "pkpaintsrenovations.com", "custom_domain": true }],

@@ -1,9 +1,12 @@
 # Cloudflare migration checklist
 
+> **Done, October 18, 2026:** the migration is complete and the site is live on Cloudflare.
+> [GO_LIVE.md](GO_LIVE.md) describes the current setup. This checklist is kept as background,
+> and its cutover steps below no longer need doing.
+>
 > **Update, October 2, 2026:** the domain expired on September 14, 2026 (auto-renew was off)
-> and now uses the registrar's parking nameservers, so there is no live Vercel site or DNS
-> zone to preserve. Follow [GO_LIVE.md](GO_LIVE.md) for the current order of steps:
-> renew the domain, deploy to Cloudflare, configure email, then point the nameservers.
+> and used the registrar's parking nameservers, so there was no live Vercel site or DNS
+> zone to preserve.
 > Since the recheck below, wrangler (4.149.0) and sharp (0.35.5) were upgraded to clear
 > new high-severity advisories, and the test suite is 16 unit + 6 workerd integration tests.
 > The audit step now runs `npm run audit:deps`, which fails on any high or critical advisory

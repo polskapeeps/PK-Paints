@@ -1,6 +1,9 @@
 # Vercel deployment setup
 
-To get the site back online, see [GO_LIVE.md](GO_LIVE.md). For the prepared Cloudflare migration, see [CLOUDFLARE_MIGRATION.md](CLOUDFLARE_MIGRATION.md). Keep this Vercel setup available for rollback; the migration branch does not disconnect Vercel or change DNS.
+> **Retired, October 18, 2026.** The site now runs on Cloudflare; see [GO_LIVE.md](GO_LIVE.md).
+> The Vercel team is paused, so this setup no longer serves the site and is not a rollback
+> option. Vercel only holds the domain registration until it moves to Cloudflare. This page
+> is kept for history.
 
 The live site is a Vite project deployed by Vercel from this repository. Vercel should use:
 

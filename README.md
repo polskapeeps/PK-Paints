@@ -4,7 +4,8 @@ Marketing site and estimate form for [pkpaintsrenovations.com](https://pkpaintsr
 a Vite multi-page site with Tailwind, hosted on Cloudflare Workers (static assets plus one
 `/api/estimate` endpoint that emails requests through Resend).
 
-**Site offline? Start with [docs/GO_LIVE.md](docs/GO_LIVE.md).**
+**How it's hosted, where the secrets go, and what to check if it's down:
+[docs/GO_LIVE.md](docs/GO_LIVE.md).**
 
 ```bash
 npm ci

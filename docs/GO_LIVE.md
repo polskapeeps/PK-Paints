@@ -1,106 +1,112 @@
-# Getting pkpaintsrenovations.com back online
+# How pkpaintsrenovations.com runs
 
-Status as of October 17, 2026. Start here; [CLOUDFLARE_MIGRATION.md](CLOUDFLARE_MIGRATION.md)
-has the longer technical background.
+Status as of October 18, 2026: **live on Cloudflare.** [CLOUDFLARE_MIGRATION.md](CLOUDFLARE_MIGRATION.md)
+has the background on the move from Vercel.
 
-## Where things stand
+## Where everything lives
 
-- **The domain expired on September 14, 2026.** It was registered through Vercel with
-  auto-renew turned off. Its nameservers now point at the registrar's
-  "renew your name" parking servers, so the site and any domain email are offline.
-  Rechecked October 17: still parked, so it has not been renewed yet.
-- **The code is ready for Cloudflare.** This branch builds, passes every test, and
-  deploys to Cloudflare Workers on the Free plan ($0 for this site's traffic).
-- **Cloudflare is not connected to the GitHub repo yet.** Once it is, a Cloudflare
-  check appears next to each commit on GitHub.
-- **The estimate form** needs one free Resend account to deliver email (step 3).
+| Piece | Where | Notes |
+| --- | --- | --- |
+| Code | GitHub `polskapeeps/PK-Paints`, branch `main` | Every push to `main` redeploys the site. |
+| Hosting | Cloudflare Workers, Worker `pk-paints-renovations` (Free plan) | Pages and photos are static files. Only `/api/estimate` runs code. |
+| DNS | Cloudflare zone `pkpaintsrenovations.com` (Free plan) | Nameservers `amir.ns.cloudflare.com` and `aryanna.ns.cloudflare.com`. |
+| Domain registration | Vercel (team "polskapeeps' projects") | Paid through **September 14, 2027**. Auto-renew is **off**. |
+| Estimate emails | Resend, workspace `pkpaintsreno` | Free plan: 100 emails a day, 3,000 a month. |
 
-## 1. Renew the domain now (urgent, about $10–20)
+Vercel no longer serves the site. Its team is paused, so every Vercel project returns
+"402 DEPLOYMENT_DISABLED", but domain renewals and nameserver changes still work there.
+Vercel's GitHub app also adds a failing "Vercel: Account is blocked" check to each commit.
+That check changes nothing; see [To do](#to-do).
 
-A `.com` gets a grace period of up to about 45 days after expiry where it renews
-at the normal price. For this domain that window closes around **October 29, 2026**,
-possibly sooner. After that it enters a 30-day redemption period with a large restore
-fee (often $80–$200+) and can't be transferred. If that also lapses, anyone can buy it.
+## How updates go live
 
-1. Sign in at vercel.com (account `polskapeeps`, team "polskapeeps' projects").
-   The username matches the GitHub account, so try **Continue with GitHub** first, then
-   the email option with your Gmail address (Vercel emails a sign-in link).
-2. **The Vercel account is currently blocked.** GitHub shows "Vercel: Account is blocked" on
-   every commit, and the site returned HTTP 402 before the domain lapsed. This is usually an
-   unpaid invoice (for example, after a Pro trial) or a plan problem. Check
-   **Settings → Billing → Invoices**. Pay it, or if it's for a plan you never meant to use,
-   open a billing case at vercel.com/help and ask them to downgrade you to Hobby and waive it.
-   Mention that you need to renew an expiring domain. A block can stop the renewal, so
-   do this first.
-3. Go to **Domains → pkpaintsrenovations.com → Renew**. Pay for 1 year (or more).
-4. Turn **auto-renew on** so this doesn't happen again.
+1. Push or merge to `main` on GitHub.
+2. Cloudflare Workers Builds runs `npm run build`, then `npx wrangler deploy`. This takes
+   about 1–2 minutes.
+3. Follow it under **Workers & Pages → pk-paints-renovations → Deployments**. If a build fails,
+   the previous version stays live.
 
-You only need Vercel to keep the domain registered. You don't need any paid Vercel plan.
-If the domain is lost anyway, the site still works on Cloudflare. Register a new name there
-and update the `pkpaintsrenovations.com` references in the HTML, `sitemap.xml`, and `robots.txt`.
+Other branches and pull requests get their own preview copy (`npx wrangler preview`) on a
+temporary `workers.dev` address. The Worker also keeps its own
+`pk-paints-renovations.<account>.workers.dev` address. Google is told not to index any
+`workers.dev` address. Previews don't get the email secrets, so their estimate form tells
+visitors to call or email instead.
 
-## 2. Put the site on Cloudflare (free)
+**To undo a bad release:** in Deployments, open the menu on the last good version and roll
+back to it. Then fix the code and push again.
 
-1. Create a free account at dash.cloudflare.com.
-2. **Workers & Pages → Create → Import a repository**, connect GitHub, and pick
-   `polskapeeps/PK-Paints`.
-3. Settings:
-   - Project name: `pk-paints-renovations` (must match `wrangler.jsonc`)
-   - Production branch: `main` once this branch is merged (until then, `chore/cloudflare-migration`)
-   - Build command: `npm run build`
-   - Deploy command: `npx wrangler deploy`
-4. Save and deploy. You'll get a working address like
-   `pk-paints-renovations.<your-name>.workers.dev`. That address is hidden from Google on
-   purpose (`noindex`) because it's temporary.
+Build settings, for reference if the repo ever needs reconnecting (**Settings → Builds**):
 
-From then on, every push to the production branch redeploys automatically.
+- Production branch `main`, root directory `/`
+- Build command `npm run build`, deploy command `npx wrangler deploy`,
+  preview command `npx wrangler preview`
+- No build variables or secrets
 
-Prefer the command line? `npx wrangler login`, then `npm run deploy:cloudflare`.
+## Domain, www, and HTTPS
 
-## 3. Make the estimate form deliver email
+- **Main domain:** connected through `routes` in [`wrangler.jsonc`](../wrangler.jsonc) with
+  `custom_domain: true`. Cloudflare creates and manages its DNS record. Keep the domain in that
+  file: a domain added only in the dashboard can be removed by the next deploy.
+- **www:** a proxied placeholder record (`A`, name `www`, address `192.0.2.1`) plus a redirect
+  under **Rules → Redirect Rules**:
+  - Wildcard pattern. Request URL `https://www.pkpaintsrenovations.com*`
+  - Target URL `https://pkpaintsrenovations.com${1}`, status `301`, **Preserve query string** on
+  - Never choose "All incoming requests" here. It also catches the main domain and redirects
+    it to itself forever.
+- **HTTPS:** **SSL/TLS → Edge Certificates → Always Use HTTPS** is on. The site has no separate
+  origin server, so this can't cause a redirect loop.
+- The domain has no email (MX) records and doesn't receive email. Leads go to Gmail.
 
-The form sends email through Resend. You don't need a working domain for this:
+## Estimate form email
 
-1. Sign up at resend.com **using `pkpaintsreno@gmail.com`** and create an API key.
-2. In Cloudflare: **Workers → pk-paints-renovations → Settings → Variables and Secrets**.
-   Add each of these as type **Secret**, so later deploys don't wipe them:
-   - `RESEND_API_KEY`: the key from Resend
-   - `ESTIMATE_FROM_EMAIL`: `PK Paints Website <onboarding@resend.dev>`
-   - `ESTIMATE_TO_EMAIL`: `pkpaintsreno@gmail.com`
-3. Send yourself a test request from the live form, once with a photo and once without.
+The form posts to `/api/estimate`, which emails the request through Resend with any photo
+attached and Reply-To set to the customer's email address.
 
-Resend's shared `onboarding@resend.dev` sender can only deliver to the email that owns
-the Resend account. That's exactly where estimate requests should go anyway. Later, you can
-verify the domain in Resend and switch to a branded sender like
-`forms@send.pkpaintsrenovations.com`.
+The Worker reads three **runtime** secrets. They live under **Workers & Pages →
+pk-paints-renovations → Settings → Runtime variables and secrets** (Production), each with
+the **Secret** switch on:
 
-Without these secrets the site still works, and the form tells visitors to call or email.
+| Name | Value |
+| --- | --- |
+| `RESEND_API_KEY` | An API key from Resend with Sending access |
+| `ESTIMATE_FROM_EMAIL` | `PK Paints Website <onboarding@resend.dev>` |
+| `ESTIMATE_TO_EMAIL` | `pkpaintsreno@gmail.com` |
 
-## 4. Point the domain at Cloudflare (after step 1)
+- Don't put these under **Builds → Variables and secrets**. Only the build can see those, and
+  the form then says "Online delivery is not configured yet."
+- `onboarding@resend.dev` only delivers to the email address that owns the Resend account.
+  To send leads anywhere else, or to send from your own address (for example
+  `forms@send.pkpaintsrenovations.com`), verify the domain in Resend first. With DNS on
+  Cloudflare, Resend can add its records for you.
+- **To replace the API key:** create a new one in Resend, update `RESEND_API_KEY` in
+  Cloudflare, send a test request, then delete the old key in Resend.
+- Resend → **Emails** shows each request as Delivered, Opened, or Bounced.
 
-1. In Cloudflare: **Add a domain → pkpaintsrenovations.com → Free plan**. Cloudflare shows
-   two nameservers, e.g. `xxx.ns.cloudflare.com`.
-2. In Vercel: **Domains → pkpaintsrenovations.com → Nameservers**, replace the current
-   ones with Cloudflare's two. Before switching, glance at Vercel's DNS records for
-   anything you still use (e.g. Resend verification records) and re-create them in Cloudflare.
-3. When Cloudflare says the domain is **Active** (minutes to a few hours), add the
-   custom domain to the top-level `routes` in `wrangler.jsonc` and push:
+## If the site looks down
 
-   ```jsonc
-   "routes": [{ "pattern": "pkpaintsrenovations.com", "custom_domain": true }],
+1. Try a phone on mobile data. A VPN or router can hold on to an old DNS answer for about
+   30 minutes.
+2. Run the read-only check. It sends no email.
+
+   ```bash
+   npm run check:cloudflare -- https://pkpaintsrenovations.com
    ```
 
-   Keep `env.preview.routes` empty.
-4. Redirect `www` to the main address: add a DNS record `www` → CNAME →
-   `pkpaintsrenovations.com` (Proxied). Then use **Rules → Redirect Rules → template
-   "Redirect from WWW to root"**.
-5. Check the site at `https://pkpaintsrenovations.com`, then run
-   `npm run check:cloudflare -- https://pkpaintsrenovations.com` (read-only, sends no email).
+3. In Cloudflare → Deployments, check that the latest build says **Ready**.
+4. Check the domain hasn't expired. It's paid through **September 14, 2027**, and auto-renew
+   is off.
+5. If the form says "We could not confirm delivery", Resend → Emails or Logs shows the reason.
 
-## Optional later: move the registration to Cloudflare
+## To do
 
-Cloudflare Registrar charges the wholesale price with no markup (about $10.50/year for a
-`.com`, with free privacy). It also keeps the domain, DNS, and hosting in one account.
-Once the domain is renewed and active, start a transfer from **Cloudflare → Domain
-Registration → Transfer Domains**, using the auth code from Vercel. A transfer adds one
-year. This step is optional: keeping the registration at Vercel with auto-renew on also works.
+- **Move the domain registration to Cloudflare, but only after October 29, 2026.** The domain
+  was renewed during its post-expiry grace period. A transfer before that period ends cancels
+  the year that was just paid for. After it, a transfer costs about $10.50, adds a year (to
+  September 2028), and takes the domain out of the paused Vercel account.
+  1. In Vercel: **Domains → pkpaintsrenovations.com → ⋯ → Transfer Out** to get the
+     authorization code.
+  2. In Cloudflare: **Domains → Transfers**, enter the domain and the code, and pay.
+  3. Until the transfer is done, keep a reminder, since auto-renew is off at Vercel.
+- Remove Vercel's GitHub access (GitHub → **Settings → Applications → Vercel**) so the failing
+  check stops appearing.
+- Delete the old test Worker `pk-paints-renovations-preview` in Cloudflare.
